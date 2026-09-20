@@ -7,6 +7,15 @@
 **Depende de**: 001
 **Input**: User description: "Criar as entidades de programa, treino, exercício, agenda semanal, estado de sequência por programa e sessões, conforme docs/modelo-dados.md."
 
+## Clarifications
+
+### Session 2026-09-20
+
+- Q: Quando as linhas de exercício da sessão são criadas? → A: Ao iniciar a sessão, uma linha por exercício do treino (todas desmarcadas, sem peso); marcar/pesar apenas atualiza a linha.
+- Q: O que significa "remover" programa, treino ou exercício já usado em sessão? → A: Apenas desativar (`active = 0`); a exclusão física de item referenciado por sessão é bloqueada pelo banco.
+- Q: Em que formato as datas/horas são gravadas? → A: Texto ISO com hora local e deslocamento do fuso (ex.: `2026-09-20T18:30:00-03:00`); o dia local é o da parte de data gravada.
+- Q: O que identifica um exercício? → A: O nome, único sem diferenciar maiúsculas/minúsculas; o esquema rejeita duplicata e o seed reaproveita o exercício pelo nome.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Programas, treinos e exercícios armazenáveis (Priority: P1)
@@ -22,6 +31,7 @@ Como dono do app, quero que programas, seus treinos e exercícios (com prescriç
 1. **Given** um programa com 2 treinos, **When** salvo e consulto, **Then** recebo treinos e exercícios na ordem definida.
 2. **Given** um exercício usado em dois treinos, **When** consulto, **Then** existe um único exercício referenciado duas vezes.
 3. **Given** o mesmo exercício adicionado duas vezes ao mesmo treino, **When** salvo, **Then** a duplicidade é rejeitada.
+4. **Given** um exercício "Supino inclinado", **When** tento cadastrar "supino INCLINADO", **Then** é rejeitado como duplicata.
 
 ---
 
@@ -52,26 +62,29 @@ Como dono do app, quero registrar sessões que guardam programa, treino, exercí
 
 1. **Given** uma sessão, **When** informo peso negativo, **Then** é rejeitado; peso vazio ou zero é aceito.
 2. **Given** uma finalização, **When** qualquer etapa falha, **Then** nada é gravado parcialmente.
-3. **Given** que existe no máximo uma sessão em andamento, **When** tento criar outra, **Then** é impedido.
+3. **Given** uma sessão recém-criada de um treino com N exercícios, **When** consulto, **Then** existem N linhas de exercício desmarcadas e sem peso; marcar ou pesar atualiza a linha existente.
+4. **Given** que existe no máximo uma sessão em andamento, **When** tento criar outra, **Then** é impedido.
 
 ### Edge Cases
 
-- Remover/alterar exercício de programa não deve corromper sessões antigas.
-- Datas de sessão usam o dia local do usuário.
+- Remover um programa, treino ou exercício significa desativá-lo; a exclusão física de item referenciado por alguma sessão é rejeitada e as sessões antigas continuam íntegras e legíveis.
+- Datas de sessão usam o dia local do usuário: uma sessão iniciada às 23h30 pertence ao dia local em que começou, independentemente do fuso ou de mudança de fuso posterior.
 
 ## Requirements *(mandatory)*
 
 ### Functional Requirements
 
 - **FR-001**: O sistema MUST armazenar programas, treinos, exercícios e a relação treino–exercício com prescrição, técnica e observações como texto.
-- **FR-002**: Um exercício reutilizado MUST ser uma única entidade referenciada por vários treinos, sem duplicar no mesmo treino.
+- **FR-002**: Um exercício reutilizado MUST ser uma única entidade referenciada por vários treinos, sem duplicar no mesmo treino; o nome do exercício MUST ser único sem diferenciar maiúsculas/minúsculas.
 - **FR-003**: O sistema MUST armazenar agenda semanal por programa, permitindo dia sem treino e nota do dia.
 - **FR-004**: O sistema MUST manter posição na sequência contínua separada por programa.
-- **FR-005**: O sistema MUST armazenar sessões com programa, treino, datas, status e exercícios com marcação e peso.
+- **FR-005**: O sistema MUST armazenar sessões com programa, treino, datas, status e exercícios com marcação e peso, criando ao iniciar a sessão uma linha por exercício do treino (desmarcada, sem peso).
 - **FR-006**: O peso MUST ser vazio ou maior/igual a zero; a "última carga" MUST ser derivada, nunca armazenada.
 - **FR-007**: O sistema MUST guardar configurações globais em registro único (programa ativo, tipo de sequência, cronômetro).
 - **FR-008**: O sistema MUST guardar nota de aquecimento por treino e sugestão da Home por programa.
 - **FR-009**: O sistema MUST guardar músculo principal, secundários e descrição por exercício.
+- **FR-010**: Programas, treinos e exercícios MUST ser desativados (não excluídos) quando já usados em sessões; o esquema MUST rejeitar a exclusão física de itens referenciados por sessão.
+- **FR-011**: Datas e horas MUST ser gravadas como texto ISO com hora local e deslocamento do fuso; o dia local de uma sessão MUST ser o da data gravada, sem conversão para UTC.
 
 ### Key Entities
 
