@@ -68,6 +68,7 @@ Como dono do app, quero registrar sessões que guardam programa, treino, exercí
 ### Edge Cases
 
 - Remover um programa, treino ou exercício significa desativá-lo; a exclusão física de item referenciado por alguma sessão é rejeitada e as sessões antigas continuam íntegras e legíveis.
+- Descartar uma sessão em andamento apaga a sessão e suas linhas de exercício (sem marca de "descartada"); apenas sessões finalizadas são preservadas.
 - Datas de sessão usam o dia local do usuário: uma sessão iniciada às 23h30 pertence ao dia local em que começou, independentemente do fuso ou de mudança de fuso posterior.
 
 ## Requirements *(mandatory)*

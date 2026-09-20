@@ -235,6 +235,11 @@ WEEKLY
 -   O estado de sequência contínua é separado por programa.
 -   Agenda semanal pertence ao programa.
 -   Estatísticas usam apenas sessões finalizadas.
+-   O nome do exercício é único, sem diferenciar maiúsculas/minúsculas.
+-   Programa, treino e exercício usados em sessão nunca são excluídos: são desativados (`active = 0`).
+-   Ao iniciar uma sessão, é criada uma linha em `workout_session_exercise` para cada exercício do treino.
+-   Existe no máximo uma sessão em andamento.
+-   Datas e horas são texto ISO local com deslocamento de fuso.
 
 ------------------------------------------------------------------------
 
@@ -274,7 +279,7 @@ CREATE TABLE workout (
 
 CREATE TABLE exercise (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
+    name TEXT NOT NULL COLLATE NOCASE UNIQUE,
     muscle_group TEXT,
     active INTEGER NOT NULL DEFAULT 1
 );
@@ -345,6 +350,10 @@ CREATE TABLE app_settings (
     updated_at TEXT NOT NULL,
     FOREIGN KEY (active_program_id) REFERENCES training_program(id)
 );
+
+-- no máximo uma sessão em andamento
+CREATE UNIQUE INDEX ux_workout_session_in_progress
+    ON workout_session ((1)) WHERE completed = 0 AND finished_at IS NULL;
 ```
 
 # 14. Conteúdo educativo do exercício
@@ -410,3 +419,40 @@ ALTER TABLE training_program ADD COLUMN home_suggestion TEXT;
 Bi-set: cada exercício do par é uma linha própria em `workout_exercise`, com
 `technique = 'BI-SET'` e `notes` indicando o parceiro. Não existe entidade de
 "par"; a proximidade de `display_order` os agrupa visualmente.
+
+
+# 16. Decisões de integridade e formato
+
+## Linhas de exercício da sessão
+
+Ao iniciar a sessão, o app cria uma linha em `workout_session_exercise` para **cada**
+exercício do treino, com `completed = 0` e `weight = NULL`. Marcar ou informar peso apenas
+atualiza a linha. Assim o histórico mostra a lista completa daquele dia, inclusive o que não
+foi feito, mesmo que a ficha mude depois. A criação da sessão e dessas linhas é uma única
+transação.
+
+## Desativar em vez de excluir
+
+`training_program`, `workout` e `exercise` usados em alguma sessão são apenas desativados
+(`active = 0`). As chaves estrangeiras das sessões não têm `ON DELETE CASCADE` (comportamento
+`RESTRICT`), e `PRAGMA foreign_keys = ON` é ativado em toda conexão, de modo que a exclusão
+física de um item referenciado por sessão é rejeitada pelo banco.
+
+## Identidade do exercício
+
+`exercise.name` é `UNIQUE` sem diferenciar maiúsculas/minúsculas (`COLLATE NOCASE`). O seed
+reaproveita o exercício pelo nome. Variações reais recebem um nome diferente (ex.: "Tríceps
+testa" e "Tríceps testa unilateral no cross").
+
+## Formato de datas
+
+`created_at`, `updated_at`, `started_at` e `finished_at` guardam texto ISO 8601 com hora
+**local** e deslocamento do fuso, por exemplo `2026-09-20T18:30:00-03:00`. O dia local de uma
+sessão é a parte de data do texto gravado, sem conversão para UTC. O texto ordena
+cronologicamente enquanto o deslocamento for o mesmo; para ordem estrita, comparar o instante.
+
+## Uma sessão em andamento
+
+O índice único parcial `ux_workout_session_in_progress` (seção 13) garante no schema que só
+existe uma sessão com `completed = 0` e `finished_at IS NULL`. Sessão descartada é removida
+(não finalizada), portanto não conta como histórico.
