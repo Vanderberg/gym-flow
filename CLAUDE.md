@@ -8,6 +8,7 @@ App pessoal de controle de treinos (Android + iOS). Registra treinos de academia
 - `docs/arquitetura.md` — stack, camadas, estrutura de diretórios, regras técnicas
 - `docs/modelo-dados.md` — entidades, schema SQL, regras de integridade
 - `docs/telas.md` — telas, fluxos, estados de UI
+- `docs/design-telas.md` — direção visual ("Placar de academia", tema escuro), tokens, componentes e definição detalhada de cada tela
 - `docs/backlog.md` — épicos BL-xxx com prioridade P0/P1/P2 e roadmap por sprint
 
 Ao implementar um item, referencie o ID do backlog (ex.: BL-021). Se o código divergir da documentação, atualize a documentação junto.
