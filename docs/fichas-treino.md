@@ -21,7 +21,7 @@ Regras de transcrição:
   (constituição, princípio VII).
 - **Aquecimento é livre:** o rótulo "Aquecimento:" da ficha não é um exercício
   registrado. O app só mostra uma nota de aquecimento livre no treino (guardada no
-  treino, não como item). No Treino A a nota sugere aquecimento de manguito rotador.
+  treino, não como item). Decisão do dono do app: todos os treinos, dos dois programas, levam a mesma nota: "Aquecimento de manguito rotador + aquecimento livre".
 
 ### Treino A — Ombros completos
 
@@ -96,9 +96,9 @@ Regras de transcrição:
 | Quinta  | C                                                        |
 | Sexta   | D                                                        |
 | Sábado  | Opcional                                                 |
-| Domingo | Não citado na ficha (tratar como descanso)               |
+| Domingo | Opcional (decisão do dono do app; a ficha não cita)      |
 
-**Opcional (quarta e sábado):** abdominais supra/infra e oblíquos. Não é um
+**Opcional (sábado e domingo):** abdominais supra/infra e oblíquos. A quarta é descanso puro, sem texto (decisão do dono do app; a nota da ficha citava a quarta). Não é um
 treino A–D; a Home mostra o texto e nenhuma sessão é criada.
 
 ## Sugestões da ficha exibidas como texto

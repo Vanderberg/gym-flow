@@ -78,7 +78,7 @@ Regras de camada:
 ## Pontos em aberto na documentação (confirmar antes de implementar)
 
 - **Variações de exercício** (assumido, não confirmado): "tríceps testa unilateral no cross" (Monstro) foi tratado como exercício distinto do "Tríceps testa" (Padrão); só há reuso com o mesmo nome (ex.: Supino inclinado, Elevação lateral, Elevação frontal). Confirmar.
-- **Aquecimento sugerido**: a nota do Treino A diz "aquecimento de manguito rotador" (interpretei "manguito" como manguito rotador) e só o Treino A traz a sugestão; os demais mostram só "Aquecimento livre". Confirmar texto e se vale para os outros treinos.
+- ~~Aquecimento sugerido~~ (resolvido): todos os treinos de todos os programas levam a nota "Aquecimento de manguito rotador + aquecimento livre".
 - **Cardio**: a ficha diz "360 horas semanais"; provavelmente 360 minutos. A sugestão da Home reproduz só a divisão (30 min manhã + 30 min noite, ou 1 h), sem o total.
 - **`sequence_type` global**: fica em `app_settings` (único), mas o estado contínuo é por programa. Definir o que acontece ao escolher `WEEKLY` num programa sem agenda (ex.: Treino Padrão) e o que a Home exibe.
 - **Troca de programa com sessão em andamento**: a arquitetura diz "finalizar/impedir"; escolher um comportamento.
