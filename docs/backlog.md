@@ -473,3 +473,26 @@ Adicionar `?` ao lado de uma técnica especial para abrir diretamente sua explic
 ## BL-116 — Testar ajuda sem alterar sessão — P0
 
 Garantir que abrir/fechar ajuda não altere status, peso, sequência, cronômetro ou sessão.
+
+
+# 16. Épico — Conteúdo da ficha
+
+## BL-120 — Seed do Treino Monstro conforme a ficha — P0
+
+Cadastrar os 43 exercícios (A = 11, B = 10, C = 10, D = 12) de `docs/fichas-treino.md`, com prescrição, técnica e observações. Bi-sets como exercícios distintos.
+
+## BL-121 — Nota de aquecimento livre — P0
+
+Exibir `workout.warmup_note` no treino, sem contar como exercício.
+
+## BL-122 — Texto do dia opcional — P0
+
+Exibir `weekly_schedule.note` na Home nos dias opcionais, sem criar sessão.
+
+## BL-123 — Sugestão do programa na Home — P1
+
+Exibir `training_program.home_suggestion` (cardio do Treino Monstro).
+
+## BL-124 — Testar seed completo — P0
+
+Garantir que todo exercício do seed tenha músculos e descrição (BL-110) e que os bi-sets estejam separados.

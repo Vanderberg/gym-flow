@@ -388,3 +388,25 @@ WorkoutExercise
 WorkoutSessionExercise
   → o que foi realizado
 ```
+
+
+# 15. Conteúdo textual do programa (fichas)
+
+Campos de texto opcionais para conteúdo que vem da ficha do programa, exibido
+sem interpretação:
+
+| Tabela             | Campo             | Tipo | Uso                                                         |
+| ------------------ | ----------------- | ---- | ----------------------------------------------------------- |
+| `workout`          | `warmup_note`     | TEXT | nota de aquecimento livre (não é exercício)                 |
+| `weekly_schedule`  | `note`            | TEXT | texto do dia opcional (ex.: abdominais supra/infra e oblíquos) |
+| `training_program` | `home_suggestion` | TEXT | sugestão exibida na Home (ex.: cardio)                      |
+
+```sql
+ALTER TABLE workout ADD COLUMN warmup_note TEXT;
+ALTER TABLE weekly_schedule ADD COLUMN note TEXT;
+ALTER TABLE training_program ADD COLUMN home_suggestion TEXT;
+```
+
+Bi-set: cada exercício do par é uma linha própria em `workout_exercise`, com
+`technique = 'BI-SET'` e `notes` indicando o parceiro. Não existe entidade de
+"par"; a proximidade de `display_order` os agrupa visualmente.

@@ -1,6 +1,9 @@
 <!--
 Sync Impact Report
-- Version change: 2.0.0 → 2.1.0 (MINOR: VIII exige informações do exercício preenchidas para todo
+- Version change: 2.1.0 → 2.2.0 (MINOR: VII define bi-set como exercícios distintos; VIII esclarece
+  que textos da ficha do programa — aquecimento, dia opcional, sugestão de cardio — são conteúdo do
+  programa, não recomendação do app)
+- Histórico: 2.0.0 → 2.1.0 (MINOR: VIII exige informações do exercício preenchidas para todo
   exercício de todo programa; `ⓘ` funciona em qualquer tipo de treino)
 - Histórico: 1.0.0 → 2.0.0 (MAJOR: o modelo deixou de ser uma sequência fixa 1–5 e passou a
   ter programas de treino e estratégias de sequência independentes; princípios redefinidos)
@@ -80,7 +83,8 @@ e finaliza a sessão. Novos programas MUST poder ser adicionados sem mudar a arq
 ### VII. Prescrição como Dado
 A prescrição de um exercício (`prescription`, `technique`, `notes`) é texto armazenado em
 `workout_exercise`; o app a exibe e MUST NOT interpretá-la nem limitá-la a `min_reps` e
-`max_reps`. Bi-set, drop-set, pirâmides, falha e afins são apenas dados exibidos. O
+`max_reps`. Bi-set, drop-set, pirâmides, falha e afins são apenas dados exibidos. Um bi-set são dois
+exercícios distintos: cada um MUST ser um item próprio, marcável e com carga própria. O
 exercício (`exercise`) descreve movimento e músculos; a prescrição descreve como o
 programa o usa; a sessão registra o que foi feito. Essas três responsabilidades MUST
 permanecer separadas.
@@ -88,6 +92,9 @@ permanecer separadas.
 ### VIII. Sem Recomendações
 O app registra o que foi feito; MUST NOT sugerir cargas, exercícios ou treinos, nem incluir
 IA, personal trainer virtual, análise médica/esportiva, dieta, peso corporal ou calorias.
+Textos que fazem parte da ficha do programa (prescrição, técnica, observações, nota de
+aquecimento livre, texto do dia opcional e sugestão de cardio na Home) são conteúdo do
+programa exibido como está; o app MUST NOT gerar, adaptar nem registrar essas sugestões.
 Conteúdo educativo (legenda de técnicas e músculos/descrição do exercício) é informativo,
 MUST ser exibido sob demanda (`?` e `ⓘ` em bottom sheet) e MUST NOT alterar exercício,
 peso, sequência, cronômetro ou sessão ao ser aberto ou fechado. As informações do
@@ -154,4 +161,4 @@ MINOR para novo princípio ou expansão material, PATCH para esclarecimentos. To
 de spec, plano e código MUST verificar conformidade. Orientação de uso diário em
 `CLAUDE.md`.
 
-**Version**: 2.1.0 | **Ratified**: 2026-09-19 | **Last Amended**: 2026-09-19
+**Version**: 2.2.0 | **Ratified**: 2026-09-19 | **Last Amended**: 2026-09-19

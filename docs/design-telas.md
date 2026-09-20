@@ -192,6 +192,14 @@ O cartão principal é o mesmo nas duas sequências; muda só o indicador acima 
 O app **não** cria nem registra sessão sozinho: o dia programado só mostra o
 treino; a sessão começa no toque em COMEÇAR.
 
+## 4.2.1 Sugestão do programa
+
+Se o programa define `home_suggestion` (Treino Monstro: cardio), a Home mostra um
+cartão discreto "SUGESTÃO DA FICHA" abaixo dos cartões de ÚLTIMO / ESTE MÊS, com o
+texto da ficha (caminhada ligeira, sem correr; 30 min de manhã e 30 min à noite,
+ou 1 h, longe do treino). É só texto, não tem botão, não registra nada e não
+aparece em programas que não a definem.
+
 ## 4.3 Estados
 
 - *Dia de descanso* (`null` na agenda): o cartão vira "QUARTA-FEIRA · DESCANSO",
@@ -255,6 +263,16 @@ treino; a sessão começa no toque em COMEÇAR.
 
 Regra de UI: informação essencial (nome, prescrição, técnica, carga, estado) fica
 sempre visível; complementar (legenda, músculos, descrição) só sob demanda.
+
+**Aquecimento e bi-sets:**
+
+- **Aquecimento é livre:** a nota do treino (`warmup_note`, ex.: "Aquecimento livre.
+  Sugestão: manguito rotador.") aparece como texto sob o cabeçalho. Não é cartão,
+  não é marcável e não entra em "X / Y realizados".
+- **Bi-set = dois cartões vizinhos:** cada exercício do par tem seu cartão, carga e
+  marcação; ambos mostram o chip BI-SET e a observação "Bi-set com ...". Uma barra
+  lateral fina em `accent` liga os dois cartões do par (sem depender de cor: o
+  chip e a observação já dizem que são um par).
 
 **Comportamento:**
 

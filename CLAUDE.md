@@ -12,7 +12,7 @@ App pessoal de controle de treinos (Android + iOS). Registra treinos de academia
 - `docs/backlog.md` — épicos BL-xxx com prioridade P0/P1/P2 e roadmap por sprint
 - `docs/design-telas.md` e `docs/prototipo-telas.html` — direção visual "Placar de academia" (tema escuro), definição detalhada das telas e protótipo navegável. Cobrem programas, tipo de sequência, agenda semanal, filtros, `?` e `ⓘ`. A seção 12 do design lista propostas de UI para as lacunas abaixo (a confirmar).
 
-A constituição do projeto está em `.specify/memory/constitution.md` (v2.1.0) e prevalece sobre este arquivo. Ao implementar um item, referencie o ID do backlog (ex.: BL-031). Se o código divergir da documentação, atualize a documentação junto.
+A constituição do projeto está em `.specify/memory/constitution.md` (v2.2.0) e prevalece sobre este arquivo. Ao implementar um item, referencie o ID do backlog (ex.: BL-031). Se o código divergir da documentação, atualize a documentação junto.
 
 ## Stack
 
@@ -26,7 +26,7 @@ Duas configurações **independentes** determinam o próximo treino:
 Programa ativo (tipo de treino)  +  Tipo de sequência  =  regra para o próximo treino
 ```
 
-- Programas iniciais (seed, como dados): **Treino Padrão** (Dia 1–5: Peito e Tríceps · Costas e Bíceps · Perna Completo · Ombro Isolado · Bíceps e Tríceps) e **Treino Monstro** (A Ombros completos · B Costas e Bíceps · C Pernas completas · D Peito e Tríceps).
+- Programas iniciais (seed, como dados): **Treino Padrão** (Dia 1–5: Peito e Tríceps · Costas e Bíceps · Perna Completo · Ombro Isolado · Bíceps e Tríceps) e **Treino Monstro** (A Ombros completos, 11 exercícios · B Costas e Bíceps, 10 · C Pernas completas, 10 · D Peito e Tríceps, 12; ficha em `docs/fichas-treino.md`).
 - Sequências: `CONTINUOUS` (avança ao finalizar; 1→…→N→1) e `WEEKLY` (agenda por dia da semana do programa; dia sem treino = `null`).
 - **Nunca** codificar regra por nome de programa (ex.: "Monstro usa semana"). Qualquer programa pode usar qualquer sequência.
 
@@ -59,6 +59,8 @@ Regras de camada:
 - **Sessão** guarda `program_id` e `workout_id`. Finalizar é **transacional** (persistir exercícios → `completed` → atualizar sequência quando aplicável → limpar sessão em andamento).
 - **Ordem livre**: `display_order` é só visual. Finalizar treino incompleto (0 ou mais exercícios) é permitido.
 - **Sessão em andamento** é persistida; ao reabrir, Continuar / Descartar. Descartar não altera sequência nem estatísticas.
+- **Bi-set = dois exercícios distintos** (técnica: dois exercícios em sequência, sem descanso). Cada exercício do par é um item próprio, marcável e com carga própria, `technique = BI-SET`, `notes` indicando o parceiro. Não existe entidade "par".
+- **Aquecimento é livre**: não é exercício nem entra em contagens; é uma nota (`workout.warmup_note`). **Dia opcional** (abdominais supra/infra e oblíquos no Monstro): mostrar `weekly_schedule.note` na Home, sem criar sessão. **Sugestão de cardio** na Home vem de `training_program.home_suggestion` (só texto; o app não registra cardio). Esses textos são conteúdo do programa, não recomendação gerada pelo app.
 - **Prescrição é dado**: `prescription`, `technique`, `notes` em `workout_exercise` (texto). O app exibe, **não interpreta**; não há `min_reps`/`max_reps`. Sem repetições realizadas.
 - **Carga**: `weight` nulo ou >= 0. A "última carga" é derivada (última sessão finalizada do **mesmo programa** e exercício com peso) — **não** criar coluna `last_weight`.
 - **Ajuda contextual** (sob demanda, bottom sheet): `?` abre a legenda de técnicas (bi-set, drop-set, pirâmides, falha, excêntrica, concêntrica, progressão de carga — conteúdo estático); `ⓘ` abre músculo principal, secundários e descrição (`exercise.primary_muscle/secondary_muscles/description`) e **deve estar preenchido para todo exercício de todo programa**: o seed não pode deixar nenhum exercício sem essas informações (teste de seed cobre isso). Abrir/fechar **não** altera exercício, peso, sequência, cronômetro ou sessão. Nunca exibir permanentemente.
@@ -68,18 +70,16 @@ Regras de camada:
 
 ## Persistência
 
-- Tabelas: `training_program`, `workout`, `exercise`, `workout_exercise`, `weekly_schedule`, `program_sequence_state`, `workout_session`, `workout_session_exercise`, `app_settings` (registro único, `id = 1`: `active_program_id`, `sequence_type`, cronômetro).
+- Tabelas: `training_program` (+ `home_suggestion`), `workout` (+ `warmup_note`), `exercise`, `workout_exercise`, `weekly_schedule` (+ `note`), `program_sequence_state`, `workout_session`, `workout_session_exercise`, `app_settings` (registro único, `id = 1`: `active_program_id`, `sequence_type`, cronômetro).
 - Migrations versionadas; seed idempotente (programas, treinos, exercícios, prescrições, agenda do Monstro, estado de sequência por programa, settings).
 - Exercício reutilizado entre treinos é **uma entidade** `exercise` referenciada por vários `workout_exercise` (`UNIQUE(workout_id, exercise_id)`).
 - **Datas**: usar data/dia da semana **local** do usuário; evitar UTC que desloque o treino de dia.
 
 ## Pontos em aberto na documentação (confirmar antes de implementar)
 
-- **Bi-set = um item ou dois?** A ficha do Monstro escreve cada bi-set em uma linha (ex.: "bi-set de panturrilha sentado e em pé"). Hoje ele é modelado como **um** item marcável com `technique = BI-SET` e **uma** carga; se você quiser carga separada por exercício do bi-set, ele precisa virar dois itens.
-- **Variações de exercício**: exercícios com variação na ficha (ex.: "tríceps testa unilateral no cross" vs "Tríceps testa" do Padrão) foram tratados como exercícios distintos; só há reuso quando o nome é o mesmo (ex.: Supino inclinado, Elevação lateral). Confirmar.
-- **"Aquecimento" na ficha do Monstro**: cada treino traz o rótulo "Aquecimento:" antes da lista; foi entendido como marcando só o primeiro item. Não há campo próprio para aquecimento (fica em `notes`).
-- **Sábado/quarta "Opcional"**: a ficha define como **abdominais supra/infra e oblíquos**, não um treino A–D. `weekly_schedule.optional` com `workout_id` nulo não guarda esse texto: falta decidir onde ele mora (ex.: campo de nota na agenda) e se o app registra o abdominal como sessão.
-- **Cardio da ficha**: "360 horas semanais de caminhada" provavelmente é 360 **minutos**; o app não registra cardio (fora do escopo). Confirmar e ignorar.
+- **Variações de exercício** (assumido, não confirmado): "tríceps testa unilateral no cross" (Monstro) foi tratado como exercício distinto do "Tríceps testa" (Padrão); só há reuso com o mesmo nome (ex.: Supino inclinado, Elevação lateral, Elevação frontal). Confirmar.
+- **Aquecimento sugerido**: a nota do Treino A diz "aquecimento de manguito rotador" (interpretei "manguito" como manguito rotador) e só o Treino A traz a sugestão; os demais mostram só "Aquecimento livre". Confirmar texto e se vale para os outros treinos.
+- **Cardio**: a ficha diz "360 horas semanais"; provavelmente 360 minutos. A sugestão da Home reproduz só a divisão (30 min manhã + 30 min noite, ou 1 h), sem o total.
 - **`sequence_type` global**: fica em `app_settings` (único), mas o estado contínuo é por programa. Definir o que acontece ao escolher `WEEKLY` num programa sem agenda (ex.: Treino Padrão) e o que a Home exibe.
 - **Troca de programa com sessão em andamento**: a arquitetura diz "finalizar/impedir"; escolher um comportamento.
 - **Agenda semanal editável**: BL-042 a configura, mas não está definido se o usuário pode alterar a agenda ou só escolher entre treinos existentes.

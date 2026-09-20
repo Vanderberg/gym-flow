@@ -623,3 +623,51 @@ Tela de treino
 - A descrição muscular não aparece permanentemente.
 - O recurso funciona no Treino Padrão e no Treino Monstro.
 - Abrir ajuda não altera exercício, peso, sequência ou cronômetro.
+
+
+# 22. Decisões sobre a ficha do Treino Monstro
+
+Base: transcrição em `docs/fichas-treino.md` (imagens em `docs/treino monstro/`).
+
+## 22.1 Bi-set são dois exercícios distintos
+
+Bi-set é uma técnica em que dois exercícios diferentes são feitos em sequência,
+sem descanso entre eles. Cada exercício do par é um item próprio do treino:
+marcável, com carga própria e com `technique = BI-SET`. O par fica em posições
+vizinhas e a observação indica o parceiro ("Bi-set com ...").
+
+Exemplo (Treino C): "Panturrilha sentado" e "Panturrilha em pé", ambos 3 × 15.
+
+Contagem resultante: Treino A = 11, B = 10, C = 10, D = 12.
+
+## 22.2 Aquecimento é livre
+
+O rótulo "Aquecimento:" da ficha não é um exercício registrado. O treino pode
+exibir uma nota de aquecimento livre; no Treino A a nota sugere aquecimento de
+manguito rotador. Nada é marcado nem contabilizado.
+
+## 22.3 Dia opcional
+
+Quarta e sábado "Opcional" significam abdominais supra/infra e oblíquos. Não é um
+treino A–D: a Home mostra esse texto e nenhuma sessão é criada.
+
+## 22.4 Sugestão de cardio na Home
+
+A Home do Treino Monstro exibe a sugestão da ficha: caminhada ligeira, sem correr,
+dividida à vontade (30 min de manhã e 30 min à noite, ou 1 h), longe do treino
+resistido. É conteúdo do programa exibido como texto; o app não registra cardio
+e não gera recomendações próprias.
+
+### Requisitos adicionais
+
+- RF-27: tratar cada exercício de um bi-set como item distinto.
+- RF-28: exibir nota de aquecimento livre do treino, sem registrá-lo.
+- RF-29: exibir o texto do dia opcional sem criar sessão.
+- RF-30: exibir sugestão do programa (cardio) na Home.
+
+### Critérios de aceite
+
+- Cada exercício de um bi-set pode ser marcado e ter carga independentemente.
+- O aquecimento livre não aparece nas contagens "X / Y realizados".
+- O dia opcional não cria sessão nem entra nas estatísticas.
+- A sugestão de cardio só aparece em programas que a definem.
