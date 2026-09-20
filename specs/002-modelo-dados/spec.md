@@ -31,7 +31,7 @@ Como dono do app, quero que programas, seus treinos e exercícios (com prescriç
 1. **Given** um programa com 2 treinos, **When** salvo e consulto, **Then** recebo treinos e exercícios na ordem definida.
 2. **Given** um exercício usado em dois treinos, **When** consulto, **Then** existe um único exercício referenciado duas vezes.
 3. **Given** o mesmo exercício adicionado duas vezes ao mesmo treino, **When** salvo, **Then** a duplicidade é rejeitada.
-4. **Given** um exercício "Supino inclinado", **When** tento cadastrar "supino INCLINADO", **Then** é rejeitado como duplicata.
+4. **Given** um exercício "Supino inclinado", **When** tento cadastrar "supino INCLINADO" (ou "Tríceps testa" e "TRÍCEPS TESTA", com acentos), **Then** é rejeitado como duplicata.
 
 ---
 
@@ -61,7 +61,7 @@ Como dono do app, quero registrar sessões que guardam programa, treino, exercí
 **Acceptance Scenarios**:
 
 1. **Given** uma sessão, **When** informo peso negativo, **Then** é rejeitado; peso vazio ou zero é aceito.
-2. **Given** uma finalização, **When** qualquer etapa falha, **Then** nada é gravado parcialmente.
+2. **Given** o início de uma sessão ou uma finalização composta (marcar como finalizada + atualizar a sequência, orquestrada pela spec 007), **When** qualquer etapa falha, **Then** nada é gravado parcialmente.
 3. **Given** uma sessão recém-criada de um treino com N exercícios, **When** consulto, **Then** existem N linhas de exercício desmarcadas e sem peso; marcar ou pesar atualiza a linha existente.
 4. **Given** que existe no máximo uma sessão em andamento, **When** tento criar outra, **Then** é impedido.
 
@@ -76,7 +76,7 @@ Como dono do app, quero registrar sessões que guardam programa, treino, exercí
 ### Functional Requirements
 
 - **FR-001**: O sistema MUST armazenar programas, treinos, exercícios e a relação treino–exercício com prescrição, técnica e observações como texto.
-- **FR-002**: Um exercício reutilizado MUST ser uma única entidade referenciada por vários treinos, sem duplicar no mesmo treino; o nome do exercício MUST ser único sem diferenciar maiúsculas/minúsculas.
+- **FR-002**: Um exercício reutilizado MUST ser uma única entidade referenciada por vários treinos, sem duplicar no mesmo treino; o nome do exercício MUST ser único sem diferenciar maiúsculas/minúsculas, inclusive em caracteres acentuados.
 - **FR-003**: O sistema MUST armazenar agenda semanal por programa, permitindo dia sem treino e nota do dia.
 - **FR-004**: O sistema MUST manter posição na sequência contínua separada por programa.
 - **FR-005**: O sistema MUST armazenar sessões com programa, treino, datas, status e exercícios com marcação e peso, criando ao iniciar a sessão uma linha por exercício do treino (desmarcada, sem peso).
@@ -94,8 +94,8 @@ Como dono do app, quero registrar sessões que guardam programa, treino, exercí
 ## Success Criteria *(mandatory)*
 
 - **SC-001**: Todas as regras de integridade listadas nas histórias são cobertas por testes automatizados.
-- **SC-002**: Gravar e recuperar uma sessão completa (15 exercícios) leva menos de 1 segundo percebido.
-- **SC-003**: 0 casos em que falha na finalização deixa dados parciais.
+- **SC-002**: Criar, marcar com peso, finalizar e reler uma sessão de 15 exercícios leva menos de 1 segundo em teste de integração automatizado; a validação no aparelho fica para a spec 007.
+- **SC-003**: 0 casos em que falha no início da sessão ou na finalização composta deixa dados parciais.
 
 ## Assumptions
 

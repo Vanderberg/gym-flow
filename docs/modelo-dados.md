@@ -279,7 +279,8 @@ CREATE TABLE workout (
 
 CREATE TABLE exercise (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL COLLATE NOCASE UNIQUE,
+    name TEXT NOT NULL,
+    name_key TEXT NOT NULL UNIQUE,
     muscle_group TEXT,
     active INTEGER NOT NULL DEFAULT 1
 );
@@ -440,9 +441,11 @@ física de um item referenciado por sessão é rejeitada pelo banco.
 
 ## Identidade do exercício
 
-`exercise.name` é `UNIQUE` sem diferenciar maiúsculas/minúsculas (`COLLATE NOCASE`). O seed
-reaproveita o exercício pelo nome. Variações reais recebem um nome diferente (ex.: "Tríceps
-testa" e "Tríceps testa unilateral no cross").
+`exercise.name_key` é `UNIQUE` e guarda o nome normalizado (sem espaços nas pontas nem repetidos,
+Unicode NFC, minúsculas pt-BR). Isso torna o nome único sem diferenciar caixa nem acentos em
+caixa alta ("Tríceps testa" = "TRÍCEPS TESTA"), o que o `COLLATE NOCASE` do SQLite não faz fora
+de ASCII. O seed reaproveita o exercício pela `name_key`. Variações reais recebem um nome
+diferente (ex.: "Tríceps testa" e "Tríceps testa unilateral no cross").
 
 ## Formato de datas
 
