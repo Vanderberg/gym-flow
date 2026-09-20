@@ -1,326 +1,390 @@
 # Modelo de Dados --- App de Controle de Treinos
 
-## 1. Visão geral
-
-O modelo precisa representar:
-
--   treinos;
--   exercícios;
--   sessões realizadas;
--   exercícios realizados;
--   peso;
--   sequência atual;
--   configurações.
-
-O banco será SQLite.
-
-------------------------------------------------------------------------
-
-# 2. Entidades
+## 1. Entidades
 
 ``` text
-WorkoutPlan
+TrainingProgram
     │
-    └── WorkoutExercise
-              │
-              └── Exercise
+    ├── Workout
+    │      │
+    │      └── WorkoutExercise
+    │                 └── Exercise
+    │
+    ├── WeeklySchedule
+    │
+    └── ProgramSequenceState
 
 WorkoutSession
     │
     └── WorkoutSessionExercise
-              │
               └── Exercise
 
-SequenceState
-Settings
+AppSettings
 ```
 
 ------------------------------------------------------------------------
 
-# 3. WorkoutPlan
+# 2. TrainingProgram
 
-Representa um dos cinco treinos.
+Representa um programa completo.
 
-Campos:
+  Campo         Tipo
+  ------------- ---------
+  id            INTEGER
+  name          TEXT
+  description   TEXT
+  active        INTEGER
+  created_at    TEXT
+  updated_at    TEXT
 
-  Campo        Tipo      Descrição
-  ------------ --------- ---------------
-  id           INTEGER   Identificador
-  day_number   INTEGER   Dia 1--5
-  name         TEXT      Nome
-  active       INTEGER   Ativo/inativo
-
-Exemplo:
+Exemplos:
 
 ``` text
-1 | 1 | Peito e Tríceps | 1
-2 | 2 | Costas e Bíceps | 1
+Treino Padrão
+Treino Monstro
 ```
 
-`day_number` deve ser único.
+------------------------------------------------------------------------
+
+# 3. Workout
+
+Representa um treino dentro de um programa.
+
+  Campo        Tipo
+  ------------ ---------
+  id           INTEGER
+  program_id   INTEGER
+  code         TEXT
+  name         TEXT
+  position     INTEGER
+  active       INTEGER
+
+Exemplos:
+
+``` text
+Programa: Treino Padrão
+1 / Dia 1 / Peito e Tríceps
+2 / Dia 2 / Costas e Bíceps
+```
+
+ou:
+
+``` text
+Programa: Treino Monstro
+A / Ombros completos
+B / Costas e Bíceps
+C / Pernas completas
+D / Peito e Tríceps
+```
 
 ------------------------------------------------------------------------
 
 # 4. Exercise
 
-Representa um exercício.
+Entidade reutilizável.
 
-  Campo          Tipo      Descrição
-  -------------- --------- ----------------------
-  id             INTEGER   Identificador
-  name           TEXT      Nome
-  muscle_group   TEXT      Grupo muscular
-  sets           INTEGER   Número de séries
-  min_reps       INTEGER   Mínimo de repetições
-  max_reps       INTEGER   Máximo de repetições
-  active         INTEGER   Ativo/inativo
+  Campo          Tipo
+  -------------- ---------
+  id             INTEGER
+  name           TEXT
+  muscle_group   TEXT
+  active         INTEGER
+
+------------------------------------------------------------------------
+
+# 5. WorkoutExercise
+
+Relaciona exercício ao treino.
+
+  Campo           Tipo
+  --------------- ---------
+  id              INTEGER
+  workout_id      INTEGER
+  exercise_id     INTEGER
+  display_order   INTEGER
+  prescription    TEXT
+  technique       TEXT
+  notes           TEXT
+
+`prescription` permite valores como:
+
+``` text
+3 × 10–12
+4 × 8
+3 × 6/8/10
+3 × até a falha
+```
+
+`technique` pode conter:
+
+``` text
+DROP-SET
+BI-SET
+PIRÂMIDE CRESCENTE
+PIRÂMIDE DECRESCENTE
+PROGRESSÃO DE CARGA
+```
+
+O aplicativo exibe esses dados e não precisa interpretá-los.
+
+------------------------------------------------------------------------
+
+# 6. WeeklySchedule
+
+Define a agenda para programas que utilizam sequência semanal.
+
+  Campo        Tipo
+  ------------ ---------
+  id           INTEGER
+  program_id   INTEGER
+  weekday      INTEGER
+  workout_id   INTEGER
+  optional     INTEGER
 
 Exemplo:
 
 ``` text
-Supino
-Peito
-3
-10
-12
+1 → Segunda → A
+2 → Terça → B
+3 → Quarta → NULL
+4 → Quinta → C
+5 → Sexta → D
+6 → Sábado → NULL / opcional
+7 → Domingo → NULL
 ```
 
 ------------------------------------------------------------------------
 
-# 5. WorkoutPlanExercise
+# 7. ProgramSequenceState
 
-Relaciona um treino aos seus exercícios.
+Guarda o estado de sequência contínua de cada programa.
 
-  Campo             Tipo
-  ----------------- ---------
-  id                INTEGER
-  workout_plan_id   INTEGER
-  exercise_id       INTEGER
-  display_order     INTEGER
+  Campo              Tipo
+  ------------------ ---------
+  id                 INTEGER
+  program_id         INTEGER
+  current_position   INTEGER
+  updated_at         TEXT
 
-`display_order` representa a ordem visual padrão.
-
-Não representa a ordem obrigatória de execução.
+`current_position` aponta para o próximo treino.
 
 ------------------------------------------------------------------------
 
-# 6. WorkoutSession
+# 8. WorkoutSession
 
-Representa uma realização de um treino.
+Registro de uma sessão.
 
-  Campo             Tipo      Descrição
-  ----------------- --------- ---------------
-  id                INTEGER   Identificador
-  workout_plan_id   INTEGER   Treino
-  day_number        INTEGER   Dia executado
-  started_at        TEXT      Início
-  finished_at       TEXT      Fim
-  completed         INTEGER   Finalizado
-  created_at        TEXT      Criação
-  updated_at        TEXT      Atualização
-
-Mesmo que apenas 1 exercício seja feito, se o usuário finalizar a
-sessão:
-
-`completed = 1`
+  Campo         Tipo
+  ------------- ---------
+  id            INTEGER
+  program_id    INTEGER
+  workout_id    INTEGER
+  started_at    TEXT
+  finished_at   TEXT
+  completed     INTEGER
+  created_at    TEXT
+  updated_at    TEXT
 
 ------------------------------------------------------------------------
 
-# 7. WorkoutSessionExercise
+# 9. WorkoutSessionExercise
 
-Representa o estado de um exercício naquela sessão.
+Estado de cada exercício naquela sessão.
+
+  Campo         Tipo
+  ------------- ---------
+  id            INTEGER
+  session_id    INTEGER
+  exercise_id   INTEGER
+  completed     INTEGER
+  weight        REAL
+  updated_at    TEXT
+
+Não registrar repetições realizadas.
+
+------------------------------------------------------------------------
+
+# 10. AppSettings
 
   Campo                Tipo
   -------------------- ---------
   id                   INTEGER
-  workout_session_id   INTEGER
-  exercise_id          INTEGER
-  completed            INTEGER
-  weight               REAL
-  updated_at           TEXT
-
-`weight` pode ser nulo caso o usuário não tenha informado a carga.
-
-Não existe campo para repetições realizadas.
-
-------------------------------------------------------------------------
-
-# 8. SequenceState
-
-Representa o estado atual da sequência.
-
-  Campo                     Tipo
-  ------------------------- ---------
-  id                        INTEGER
-  current_day               INTEGER
-  last_workout_session_id   INTEGER
-  updated_at                TEXT
-
-Deve existir apenas um registro ativo.
-
-Exemplo:
-
-``` text
-current_day = 3
-```
-
-significa que o próximo treino é Dia 3.
-
-------------------------------------------------------------------------
-
-# 9. Settings
-
-Configurações do aplicativo.
-
-  Campo                Tipo
-  -------------------- ---------
-  id                   INTEGER
+  active_program_id    INTEGER
+  sequence_type        TEXT
   rest_timer_enabled   INTEGER
   rest_timer_seconds   INTEGER
   updated_at           TEXT
 
-Exemplo:
+Valores de `sequence_type`:
 
 ``` text
-rest_timer_enabled = 1
-rest_timer_seconds = 90
+CONTINUOUS
+WEEKLY
 ```
 
 ------------------------------------------------------------------------
 
-# 10. Relacionamentos
+# 11. Regras
 
-``` text
-WorkoutPlan
-    1 ───── N WorkoutPlanExercise
-                  N ───── 1 Exercise
-
-WorkoutPlan
-    1 ───── N WorkoutSession
-
-WorkoutSession
-    1 ───── N WorkoutSessionExercise
-                  N ───── 1 Exercise
-```
+-   Um programa possui vários treinos.
+-   Um treino pertence a exatamente um programa.
+-   Um treino possui vários exercícios.
+-   Um exercício pode ser reutilizado em vários treinos.
+-   Uma sessão pertence a um programa e a um treino.
+-   Sessões antigas não mudam quando o programa atual muda.
+-   O estado de sequência contínua é separado por programa.
+-   Agenda semanal pertence ao programa.
+-   Estatísticas usam apenas sessões finalizadas.
 
 ------------------------------------------------------------------------
 
-# 11. Regras de integridade
+# 12. Última carga
 
--   `WorkoutPlan.day_number` deve ser único.
--   `WorkoutPlanExercise` não deve duplicar o mesmo exercício dentro do
-    mesmo treino.
--   `WorkoutSessionExercise` não deve duplicar exercício dentro da mesma
-    sessão.
--   `SequenceState.current_day` deve estar entre 1 e 5.
--   Peso deve ser `NULL` ou maior/igual a zero.
--   Sessões descartadas não devem aparecer nas estatísticas.
--   Somente sessões finalizadas entram nas estatísticas.
+Não armazenar `last_weight` no exercício.
+
+Buscar a última sessão finalizada do mesmo programa/exercício com peso
+preenchido.
+
+Isso evita dados duplicados.
 
 ------------------------------------------------------------------------
 
-# 12. Exemplo de schema SQL
+# 13. Exemplo SQL
 
 ``` sql
-CREATE TABLE workout_plan (
+CREATE TABLE training_program (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    day_number INTEGER NOT NULL UNIQUE,
     name TEXT NOT NULL,
-    active INTEGER NOT NULL DEFAULT 1
+    description TEXT,
+    active INTEGER NOT NULL DEFAULT 1,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+);
+
+CREATE TABLE workout (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    program_id INTEGER NOT NULL,
+    code TEXT NOT NULL,
+    name TEXT NOT NULL,
+    position INTEGER NOT NULL,
+    active INTEGER NOT NULL DEFAULT 1,
+    FOREIGN KEY (program_id) REFERENCES training_program(id),
+    UNIQUE(program_id, code)
 );
 
 CREATE TABLE exercise (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     muscle_group TEXT,
-    sets INTEGER NOT NULL,
-    min_reps INTEGER NOT NULL,
-    max_reps INTEGER NOT NULL,
     active INTEGER NOT NULL DEFAULT 1
 );
 
-CREATE TABLE workout_plan_exercise (
+CREATE TABLE workout_exercise (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    workout_plan_id INTEGER NOT NULL,
+    workout_id INTEGER NOT NULL,
     exercise_id INTEGER NOT NULL,
     display_order INTEGER NOT NULL,
-    FOREIGN KEY (workout_plan_id) REFERENCES workout_plan(id),
+    prescription TEXT,
+    technique TEXT,
+    notes TEXT,
+    FOREIGN KEY (workout_id) REFERENCES workout(id),
     FOREIGN KEY (exercise_id) REFERENCES exercise(id),
-    UNIQUE(workout_plan_id, exercise_id)
+    UNIQUE(workout_id, exercise_id)
+);
+
+CREATE TABLE weekly_schedule (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    program_id INTEGER NOT NULL,
+    weekday INTEGER NOT NULL,
+    workout_id INTEGER,
+    optional INTEGER NOT NULL DEFAULT 0,
+    FOREIGN KEY (program_id) REFERENCES training_program(id),
+    FOREIGN KEY (workout_id) REFERENCES workout(id),
+    UNIQUE(program_id, weekday)
+);
+
+CREATE TABLE program_sequence_state (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    program_id INTEGER NOT NULL UNIQUE,
+    current_position INTEGER NOT NULL,
+    updated_at TEXT NOT NULL,
+    FOREIGN KEY (program_id) REFERENCES training_program(id)
 );
 
 CREATE TABLE workout_session (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    workout_plan_id INTEGER NOT NULL,
-    day_number INTEGER NOT NULL,
+    program_id INTEGER NOT NULL,
+    workout_id INTEGER NOT NULL,
     started_at TEXT NOT NULL,
     finished_at TEXT,
     completed INTEGER NOT NULL DEFAULT 0,
     created_at TEXT NOT NULL,
     updated_at TEXT NOT NULL,
-    FOREIGN KEY (workout_plan_id) REFERENCES workout_plan(id)
+    FOREIGN KEY (program_id) REFERENCES training_program(id),
+    FOREIGN KEY (workout_id) REFERENCES workout(id)
 );
 
 CREATE TABLE workout_session_exercise (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    workout_session_id INTEGER NOT NULL,
+    session_id INTEGER NOT NULL,
     exercise_id INTEGER NOT NULL,
     completed INTEGER NOT NULL DEFAULT 0,
     weight REAL,
     updated_at TEXT NOT NULL,
-    FOREIGN KEY (workout_session_id) REFERENCES workout_session(id),
+    FOREIGN KEY (session_id) REFERENCES workout_session(id),
     FOREIGN KEY (exercise_id) REFERENCES exercise(id),
-    UNIQUE(workout_session_id, exercise_id)
+    UNIQUE(session_id, exercise_id)
 );
 
-CREATE TABLE sequence_state (
+CREATE TABLE app_settings (
     id INTEGER PRIMARY KEY CHECK (id = 1),
-    current_day INTEGER NOT NULL,
-    last_workout_session_id INTEGER,
-    updated_at TEXT NOT NULL
-);
-
-CREATE TABLE settings (
-    id INTEGER PRIMARY KEY CHECK (id = 1),
+    active_program_id INTEGER NOT NULL,
+    sequence_type TEXT NOT NULL,
     rest_timer_enabled INTEGER NOT NULL DEFAULT 0,
     rest_timer_seconds INTEGER NOT NULL DEFAULT 90,
-    updated_at TEXT NOT NULL
+    updated_at TEXT NOT NULL,
+    FOREIGN KEY (active_program_id) REFERENCES training_program(id)
 );
 ```
 
-------------------------------------------------------------------------
+# 14. Conteúdo educativo do exercício
 
-# 13. Estatísticas
+Adicionar ao `Exercise`:
 
-As estatísticas não precisam de tabelas próprias no MVP.
-
-Serão calculadas a partir de `workout_session`.
+| Campo | Tipo |
+|---|---|
+| primary_muscle | TEXT |
+| secondary_muscles | TEXT |
+| description | TEXT |
 
 Exemplo:
 
-``` sql
-SELECT COUNT(*)
-FROM workout_session
-WHERE completed = 1
-AND started_at >= ?
-AND started_at < ?;
+```text
+Supino reto
+Principal: Peitoral maior
+Secundários: Tríceps, Deltoide anterior
+Descrição: Exercício de empurrar que enfatiza o peitoral.
 ```
 
-A média semanal pode ser calculada dividindo a quantidade de sessões
-pelo número de semanas do período.
+A legenda das técnicas pode ser conteúdo estático da aplicação:
 
-O cálculo deve ser centralizado em um serviço de estatísticas.
+```ts
+type TechniqueLegend = {
+  key: string;
+  title: string;
+  description: string;
+};
+```
 
-------------------------------------------------------------------------
+Separação:
 
-# 14. Última carga
+```text
+Exercise
+  → informações sobre movimento e músculos
 
-Para exibir a última carga de um exercício:
+WorkoutExercise
+  → prescrição do programa
 
-1.  Buscar sessões finalizadas.
-2.  Filtrar pelo exercício.
-3.  Ordenar por data decrescente.
-4.  Retornar o último peso não nulo.
-
-Não existe uma coluna `last_weight` no exercício, evitando duplicação de
-estado.
+WorkoutSessionExercise
+  → o que foi realizado
+```

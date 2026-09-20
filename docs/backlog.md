@@ -2,14 +2,17 @@
 
 ## 1. Estratégia
 
-O backlog está organizado para entregar primeiro um aplicativo funcional
-e utilizável no celular.
+O aplicativo será construído em torno de três conceitos:
 
-Prioridade:
+1.  Programa de treino.
+2.  Tipo de sequência.
+3.  Sessão realizada.
 
--   **P0:** obrigatório para MVP.
--   **P1:** importante, mas pode entrar após o fluxo principal.
--   **P2:** melhoria futura.
+Prioridades:
+
+-   P0 --- obrigatório para MVP.
+-   P1 --- importante.
+-   P2 --- futuro.
 
 ------------------------------------------------------------------------
 
@@ -17,437 +20,321 @@ Prioridade:
 
 ## BL-001 --- Criar projeto React Native
 
-**Prioridade:** P0
+P0
 
-Criar projeto com:
-
--   React Native;
--   TypeScript;
--   Expo.
-
-### Critérios de aceite
-
--   projeto executa no Android;
--   projeto executa no iOS;
--   TypeScript configurado.
-
-------------------------------------------------------------------------
+-   React Native
+-   TypeScript
+-   Expo
 
 ## BL-002 --- Configurar Expo Router
 
-**Prioridade:** P0
+P0
 
-Criar estrutura inicial de navegação.
+## BL-003 --- Configurar ESLint, Prettier e TypeScript strict
 
-------------------------------------------------------------------------
-
-## BL-003 --- Configurar qualidade de código
-
-**Prioridade:** P0
-
-Configurar:
-
--   ESLint;
--   Prettier;
--   TypeScript strict;
--   scripts de desenvolvimento.
+P0
 
 ------------------------------------------------------------------------
 
-# 3. Épico --- Banco local
+# 3. Épico --- Banco
 
 ## BL-010 --- Configurar SQLite
 
-**Prioridade:** P0
-
-Criar banco local.
-
-------------------------------------------------------------------------
+P0
 
 ## BL-011 --- Criar migrations
 
-**Prioridade:** P0
+P0
 
-Criar tabelas definidas no modelo de dados.
+## BL-012 --- Criar entidades de programas
 
-------------------------------------------------------------------------
+P0
 
-## BL-012 --- Criar seed inicial
+-   TrainingProgram
+-   Workout
+-   Exercise
+-   WorkoutExercise
 
-**Prioridade:** P0
+## BL-013 --- Criar agenda semanal
 
-Inserir:
+P0
 
--   5 treinos;
--   28 exercícios no total considerando as repetições entre dias;
--   relacionamentos.
+## BL-014 --- Criar estado de sequência por programa
 
-Observação: exercícios repetidos, como tríceps corda, devem ser uma
-única entidade quando representarem o mesmo exercício.
+P0
 
-------------------------------------------------------------------------
+## BL-015 --- Criar sessões
 
-## BL-013 --- Criar repositories
-
-**Prioridade:** P0
-
-Implementar repositories para:
-
--   WorkoutPlan;
--   Exercise;
--   WorkoutSession;
--   WorkoutSessionExercise;
--   SequenceState;
--   Settings.
+P0
 
 ------------------------------------------------------------------------
 
-# 4. Épico --- Sequência
+# 4. Épico --- Programas
 
-## BL-020 --- Implementar sequência atual
+## BL-020 --- Criar programa Treino Padrão
 
-**Prioridade:** P0
+P0
 
-Manter o próximo dia entre 1 e 5.
+Cadastrar os cinco treinos.
 
-------------------------------------------------------------------------
+## BL-021 --- Criar programa Treino Monstro
 
-## BL-021 --- Avançar sequência
+P0
 
-**Prioridade:** P0
+Cadastrar:
 
-Ao finalizar:
+-   A --- Ombros completos
+-   B --- Costas e bíceps
+-   C --- Pernas completas
+-   D --- Peito e tríceps
 
-``` text
-1 → 2
-2 → 3
-3 → 4
-4 → 5
-5 → 1
-```
+## BL-022 --- Cadastrar prescrições detalhadas
 
-------------------------------------------------------------------------
+P0
 
-## BL-022 --- Reiniciar sequência
+Suportar:
 
-**Prioridade:** P0
+-   séries;
+-   repetições;
+-   bi-set;
+-   drop-set;
+-   pirâmide;
+-   falha;
+-   progressão;
+-   observações.
 
-Permitir reiniciar para Dia 1 sem apagar histórico.
+## BL-023 --- Criar seed idempotente
 
-------------------------------------------------------------------------
-
-## BL-023 --- Testar sequência
-
-**Prioridade:** P0
-
-Testar todos os ciclos e reinício.
+P0
 
 ------------------------------------------------------------------------
 
-# 5. Épico --- Home
+# 5. Épico --- Tipo de sequência
 
-## BL-030 --- Criar Home
+## BL-030 --- Criar interface SequenceStrategy
 
-**Prioridade:** P0
+P0
 
-Mostrar próximo treino.
+## BL-031 --- Implementar sequência contínua
 
-------------------------------------------------------------------------
+P0
 
-## BL-031 --- Botão começar treino
+## BL-032 --- Implementar sequência semanal
 
-**Prioridade:** P0
+P0
 
-Criar sessão em andamento.
+## BL-033 --- Criar configuração de agenda
 
-------------------------------------------------------------------------
+P0
 
-## BL-032 --- Detectar sessão em andamento
+## BL-034 --- Reiniciar sequência
 
-**Prioridade:** P0
+P0
 
-Ao abrir o app, detectar sessão aberta.
+## BL-035 --- Manter estado por programa
 
-------------------------------------------------------------------------
-
-# 6. Épico --- Execução
-
-## BL-040 --- Criar tela de treino
-
-**Prioridade:** P0
-
-Exibir exercícios do treino atual.
+P0
 
 ------------------------------------------------------------------------
 
-## BL-041 --- Marcar exercício como feito
+# 6. Épico --- Configurações
 
-**Prioridade:** P0
+## BL-040 --- Selecionar programa ativo
 
-Permitir marcar e desmarcar.
+P0
 
-------------------------------------------------------------------------
+## BL-041 --- Selecionar tipo de sequência
 
-## BL-042 --- Permitir ordem livre
+P0
 
-**Prioridade:** P0
+## BL-042 --- Configurar agenda semanal
 
-Nenhuma dependência entre exercícios.
+P0
 
-------------------------------------------------------------------------
+## BL-043 --- Configurar cronômetro
 
-## BL-043 --- Registrar peso
-
-**Prioridade:** P0
-
-Permitir informar carga.
+P1
 
 ------------------------------------------------------------------------
 
-## BL-044 --- Mostrar última carga
+# 7. Épico --- Home
 
-**Prioridade:** P0
+## BL-050 --- Exibir programa atual
 
-Buscar último peso registrado para o exercício.
+P0
 
-------------------------------------------------------------------------
+## BL-051 --- Resolver próximo treino
 
-## BL-045 --- Finalizar treino incompleto
+P0
 
-**Prioridade:** P0
+## BL-052 --- Iniciar treino
 
-Permitir finalizar mesmo com exercícios pendentes.
+P0
 
-------------------------------------------------------------------------
+## BL-053 --- Detectar treino em andamento
 
-## BL-046 --- Recuperar treino em andamento
-
-**Prioridade:** P0
-
-Fechar/reabrir app sem perder a sessão.
+P0
 
 ------------------------------------------------------------------------
 
-# 7. Épico --- Cronômetro
+# 8. Épico --- Execução
 
-## BL-050 --- Configuração do cronômetro
+## BL-060 --- Tela de treino
 
-**Prioridade:** P1
+P0
 
-Permitir ativar/desativar.
+## BL-061 --- Marcar exercício
 
-------------------------------------------------------------------------
+P0
 
-## BL-051 --- Configurar tempo
+## BL-062 --- Permitir ordem livre
 
-**Prioridade:** P1
+P0
 
-Permitir alterar tempo padrão.
+## BL-063 --- Registrar peso
 
-------------------------------------------------------------------------
+P0
 
-## BL-052 --- Cronômetro durante treino
+## BL-064 --- Exibir última carga
 
-**Prioridade:** P1
+P0
 
-Iniciar, pausar e encerrar.
+## BL-065 --- Exibir prescrição
 
-------------------------------------------------------------------------
+P0
 
-# 8. Épico --- Histórico
+## BL-066 --- Finalizar treino incompleto
 
-## BL-060 --- Lista de histórico
+P0
 
-**Prioridade:** P0
+## BL-067 --- Recuperar sessão
 
-Mostrar sessões finalizadas.
-
-------------------------------------------------------------------------
-
-## BL-061 --- Detalhes do treino
-
-**Prioridade:** P0
-
-Mostrar exercícios, status e pesos.
+P0
 
 ------------------------------------------------------------------------
 
-## BL-062 --- Editar histórico
+# 9. Épico --- Histórico
 
-**Prioridade:** P0
+## BL-070 --- Lista de sessões
 
-Permitir corrigir exercícios e pesos.
+P0
 
-------------------------------------------------------------------------
+## BL-071 --- Detalhes da sessão
 
-## BL-063 --- Testar edição
+P0
 
-**Prioridade:** P0
+## BL-072 --- Identificar programa e treino
 
-Garantir que alterações persistam.
+P0
 
-------------------------------------------------------------------------
+## BL-073 --- Filtrar por programa
 
-# 9. Épico --- Estatísticas
+P1
 
-## BL-070 --- Estatística semanal
+## BL-074 --- Editar sessão
 
-**Prioridade:** P0
-
-Quantidade de treinos.
+P0
 
 ------------------------------------------------------------------------
 
-## BL-071 --- Estatística mensal
+# 10. Épico --- Estatísticas
 
-**Prioridade:** P0
+## BL-080 --- Estatística semanal
 
-Quantidade, média semanal e intervalo médio.
+P0
 
-------------------------------------------------------------------------
+## BL-081 --- Estatística mensal
 
-## BL-072 --- Estatística trimestral
+P0
 
-**Prioridade:** P0
+## BL-082 --- Estatística trimestral
 
-Mesmas métricas.
+P0
 
-------------------------------------------------------------------------
+## BL-083 --- Estatística semestral
 
-## BL-073 --- Estatística semestral
+P0
 
-**Prioridade:** P0
+## BL-084 --- Estatística anual
 
-Mesmas métricas.
+P0
 
-------------------------------------------------------------------------
+## BL-085 --- Média de treinos por semana
 
-## BL-074 --- Estatística anual
+P0
 
-**Prioridade:** P0
+## BL-086 --- Intervalo médio entre treinos
 
-Mesmas métricas.
+P0
 
-------------------------------------------------------------------------
+## BL-087 --- Filtro por programa
 
-## BL-075 --- Calendário de frequência
-
-**Prioridade:** P1
-
-Visualizar dias com treino.
+P1
 
 ------------------------------------------------------------------------
 
-# 10. Épico --- Configurações
+# 11. Épico --- Cronômetro
 
-## BL-080 --- Tela de configurações
+## BL-090 --- Ativar/desativar
 
-**Prioridade:** P1
+P1
 
-------------------------------------------------------------------------
+## BL-091 --- Configurar duração
 
-## BL-081 --- Configurar cronômetro
+P1
 
-**Prioridade:** P1
+## BL-092 --- Iniciar/pausar/encerrar
 
-------------------------------------------------------------------------
-
-## BL-082 --- Reiniciar sequência
-
-**Prioridade:** P0
+P1
 
 ------------------------------------------------------------------------
 
-# 11. Épico --- Qualidade
+# 12. Épico --- Testes
 
-## BL-090 --- Testes unitários
+## BL-100 --- Testar sequência contínua
 
-**Prioridade:** P0
+P0
 
-Cobrir:
+Casos:
 
--   sequência;
--   estatísticas;
--   datas;
--   médias.
+-   primeiro treino;
+-   meio da sequência;
+-   último → primeiro;
+-   reinício.
 
-------------------------------------------------------------------------
+## BL-101 --- Testar sequência semanal
 
-## BL-091 --- Testes de persistência
+P0
 
-**Prioridade:** P0
+Casos:
 
-Garantir gravação e recuperação SQLite.
+-   dia com treino;
+-   dia de descanso;
+-   sábado opcional;
+-   domingo;
+-   mudança de semana.
 
-------------------------------------------------------------------------
+## BL-102 --- Testar troca de programa
 
-## BL-092 --- Testes do fluxo de treino
+P0
 
-**Prioridade:** P0
+Garantir preservação do histórico.
 
-Fluxo:
+## BL-103 --- Testar troca de sequência
 
-``` text
-Home
-→ começar
-→ marcar exercícios
-→ registrar peso
-→ finalizar
-→ avançar sequência
-```
+P0
 
-------------------------------------------------------------------------
+## BL-104 --- Testar persistência
 
-## BL-093 --- Teste em Android
+P0
 
-**Prioridade:** P0
+## BL-105 --- Testar estatísticas
 
-Validar fluxo completo em aparelho Android.
+P0
 
 ------------------------------------------------------------------------
 
-## BL-094 --- Teste em iOS
-
-**Prioridade:** P0
-
-Validar fluxo completo em dispositivo/simulador iOS.
-
-------------------------------------------------------------------------
-
-# 12. Épico --- UX
-
-## BL-100 --- Loading states
-
-**Prioridade:** P1
-
-------------------------------------------------------------------------
-
-## BL-101 --- Empty states
-
-**Prioridade:** P1
-
-------------------------------------------------------------------------
-
-## BL-102 --- Tratamento de erros
-
-**Prioridade:** P0
-
-Erros de banco e operações críticas devem ser tratados.
-
-------------------------------------------------------------------------
-
-## BL-103 --- Acessibilidade básica
-
-**Prioridade:** P1
-
--   tamanhos adequados;
--   contraste;
--   labels;
--   áreas de toque.
-
-------------------------------------------------------------------------
-
-# 13. Roadmap sugerido
+# 13. Roadmap
 
 ## Sprint 1 --- Fundação
 
@@ -456,104 +343,133 @@ Erros de banco e operações críticas devem ser tratados.
 -   BL-003
 -   BL-010
 -   BL-011
+
+## Sprint 2 --- Modelo e programas
+
 -   BL-012
 -   BL-013
-
-## Sprint 2 --- Sequência + Home
-
+-   BL-014
+-   BL-015
 -   BL-020
 -   BL-021
 -   BL-022
 -   BL-023
+
+## Sprint 3 --- Sequências e configurações
+
 -   BL-030
 -   BL-031
 -   BL-032
-
-## Sprint 3 --- Treino
-
+-   BL-033
+-   BL-034
+-   BL-035
 -   BL-040
 -   BL-041
 -   BL-042
--   BL-043
--   BL-044
--   BL-045
--   BL-046
 
-## Sprint 4 --- Histórico
+## Sprint 4 --- Execução
 
+-   BL-050
+-   BL-051
+-   BL-052
+-   BL-053
 -   BL-060
 -   BL-061
 -   BL-062
 -   BL-063
+-   BL-064
+-   BL-065
+-   BL-066
+-   BL-067
 
-## Sprint 5 --- Estatísticas
+## Sprint 5 --- Histórico
 
 -   BL-070
 -   BL-071
 -   BL-072
 -   BL-073
 -   BL-074
--   BL-075
 
-## Sprint 6 --- Cronômetro + Configurações
+## Sprint 6 --- Estatísticas
 
--   BL-050
--   BL-051
--   BL-052
 -   BL-080
 -   BL-081
+-   BL-082
+-   BL-083
+-   BL-084
+-   BL-085
+-   BL-086
+-   BL-087
 
-## Sprint 7 --- Qualidade
+## Sprint 7 --- Cronômetro e qualidade
 
 -   BL-090
 -   BL-091
 -   BL-092
--   BL-093
--   BL-094
+-   BL-100
+-   BL-101
 -   BL-102
+-   BL-103
+-   BL-104
+-   BL-105
 
 ------------------------------------------------------------------------
 
-# 14. MVP Release
+# 14. MVP
 
-O MVP deve conter:
+O MVP deve entregar:
 
--   Home;
--   sequência 1--5;
--   reinício da sequência;
--   cinco treinos;
--   exercícios;
--   ordem livre;
--   marcar exercício;
--   peso;
--   última carga;
+-   Android;
+-   iOS;
+-   React Native;
+-   SQLite;
+-   Treino Padrão;
+-   Treino Monstro;
+-   seleção de programa;
+-   seleção de sequência;
+-   sequência contínua;
+-   agenda semanal;
+-   reinício;
+-   exercícios em qualquer ordem;
+-   marcação de exercício;
+-   registro de peso;
+-   prescrição detalhada;
 -   finalização incompleta;
 -   recuperação de sessão;
 -   histórico;
 -   edição;
--   estatísticas semana/mês/trimestre/semestre/ano;
--   funcionamento offline;
--   Android;
--   iOS.
+-   estatísticas;
+-   funcionamento offline.
 
-O cronômetro pode ser entregue no mesmo MVP se não aumentar
-significativamente a complexidade; caso contrário, entra imediatamente
-após o fluxo principal.
+O cronômetro entra como P1 caso não seja necessário para validar o fluxo
+principal.
 
-------------------------------------------------------------------------
+# 15. Épico — Ajuda contextual
 
-# 15. Backlog futuro
+## BL-110 — Cadastro de músculos — P0
 
-Após o MVP, possíveis funcionalidades:
+Adicionar músculo principal, músculos secundários e descrição aos exercícios.
 
--   backup manual;
--   exportação JSON/CSV;
--   importação;
--   sincronização entre dispositivos;
--   tema escuro/claro;
--   widgets;
--   notificações;
--   gráficos adicionais;
--   gerenciamento avançado de treinos.
+## BL-111 — Componente de legenda — P0
 
-Nenhuma dessas funcionalidades deve bloquear o MVP.
+Criar explicações para bi-set, drop-set, pirâmides, falha, excêntrica, concêntrica e progressão de carga.
+
+## BL-112 — Ícone de ajuda no treino — P0
+
+Abrir legenda sem sair da sessão.
+
+## BL-113 — Ícone de informações no exercício — P0
+
+Abrir detalhes do exercício.
+
+## BL-114 — Bottom sheet de músculos — P0
+
+Exibir músculos e descrição sob demanda.
+
+## BL-115 — Ajuda contextual por técnica — P1
+
+Adicionar `?` ao lado de uma técnica especial para abrir diretamente sua explicação.
+
+## BL-116 — Testar ajuda sem alterar sessão — P0
+
+Garantir que abrir/fechar ajuda não altere status, peso, sequência, cronômetro ou sessão.

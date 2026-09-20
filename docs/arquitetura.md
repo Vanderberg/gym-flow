@@ -1,11 +1,6 @@
 # Arquitetura --- App de Controle de Treinos
 
-## 1. Objetivo
-
-Definir uma arquitetura simples, modular e adequada para um aplicativo
-pessoal multiplataforma usando React Native.
-
-## 2. Stack
+## 1. Stack
 
 -   React Native
 -   TypeScript
@@ -13,59 +8,133 @@ pessoal multiplataforma usando React Native.
 -   Expo Router
 -   SQLite
 -   Zustand
--   React Native Testing Library
 -   Jest
+-   React Native Testing Library
 -   ESLint
 -   Prettier
 
-A implementação deve priorizar dependências pequenas e maduras.
-
 ------------------------------------------------------------------------
 
-# 3. Princípios
+# 2. Conceito arquitetural
 
-## 3.1 Offline-first
-
-Toda funcionalidade essencial deve funcionar sem internet.
-
-O banco local é a fonte de verdade do MVP.
-
-## 3.2 Local-first
-
-Não haverá backend inicialmente.
+O domínio principal é:
 
 ``` text
-UI
- ↓
-Hooks / Application
- ↓
-Services
- ↓
-Repositories
- ↓
-SQLite
+TrainingProgram
+      │
+      ├── Workout
+      │      └── Exercise
+      │
+      └── SequenceStrategy
 ```
 
-## 3.3 Domínio independente da interface
+Uma sessão registra:
 
-As regras de sequência, finalização e estatísticas não devem ficar
-diretamente nos componentes React.
-
-## 3.4 Evolução futura
-
-A arquitetura deve permitir futuramente adicionar:
-
--   backup;
--   sincronização;
--   exportação;
--   cloud;
--   autenticação.
-
-Essas funcionalidades não fazem parte do MVP.
+``` text
+WorkoutSession
+ ├── Program
+ ├── Workout
+ ├── Date/time
+ └── Exercise executions
+```
 
 ------------------------------------------------------------------------
 
-# 4. Estrutura de diretórios
+# 3. Separação entre programa e sequência
+
+O sistema não deve associar um programa diretamente a uma única
+estratégia.
+
+``` text
+Programa
+    +
+Estratégia de sequência
+    ↓
+NextWorkoutResolver
+```
+
+Exemplo:
+
+``` text
+Treino Padrão + CONTINUOUS
+→ próximo treino pelo índice da sequência
+
+Treino Monstro + WEEKLY
+→ próximo treino pela agenda semanal
+```
+
+------------------------------------------------------------------------
+
+# 4. Estratégias
+
+Criar uma abstração:
+
+``` ts
+interface SequenceStrategy {
+  getNextWorkout(
+    context: SequenceContext
+  ): Promise<WorkoutReference | null>;
+}
+```
+
+Implementações iniciais:
+
+``` text
+ContinuousSequenceStrategy
+WeeklyScheduleSequenceStrategy
+```
+
+Isso evita `if/else` espalhado pela aplicação.
+
+------------------------------------------------------------------------
+
+# 5. ContinuousSequenceStrategy
+
+Responsável por:
+
+-   descobrir o próximo treino;
+-   avançar índice;
+-   reiniciar sequência.
+
+Regra:
+
+``` text
+currentIndex + 1
+
+se chegar ao fim:
+volta para 0
+```
+
+------------------------------------------------------------------------
+
+# 6. WeeklyScheduleSequenceStrategy
+
+Responsável por:
+
+-   descobrir o dia atual;
+-   consultar agenda;
+-   retornar o treino programado.
+
+Exemplo:
+
+``` text
+MONDAY    → A
+TUESDAY   → B
+WEDNESDAY → null
+THURSDAY  → C
+FRIDAY    → D
+SATURDAY  → optional
+SUNDAY    → null
+```
+
+Importante: `null` significa que não existe treino programado para
+aquele dia.
+
+Isso não cria uma sessão automaticamente.
+
+------------------------------------------------------------------------
+
+# 7. Estrutura de diretórios
 
 ``` text
 src/
@@ -77,311 +146,236 @@ src/
 │   ├── statistics.tsx
 │   └── settings.tsx
 │
-├── components/
-│   ├── ExerciseCard/
-│   ├── WorkoutCard/
-│   ├── Timer/
-│   ├── StatCard/
-│   └── common/
-│
 ├── domain/
+│   ├── program/
 │   ├── workout/
-│   │   ├── entities/
-│   │   ├── services/
-│   │   └── types/
 │   ├── exercise/
 │   ├── sequence/
+│   │   ├── strategies/
+│   │   └── services/
+│   ├── session/
 │   └── statistics/
 │
 ├── application/
+│   ├── program/
 │   ├── workout/
 │   ├── sequence/
-│   ├── history/
+│   ├── session/
 │   └── statistics/
 │
 ├── data/
 │   ├── database/
 │   ├── repositories/
-│   ├── mappers/
+│   ├── migrations/
 │   └── seed/
 │
 ├── store/
 │   ├── workoutStore.ts
-│   ├── sequenceStore.ts
-│   └── settingsStore.ts
+│   ├── settingsStore.ts
+│   └── sessionStore.ts
 │
+├── components/
 ├── hooks/
-│   ├── useWorkout.ts
-│   ├── useSequence.ts
-│   ├── useHistory.ts
-│   └── useStatistics.ts
-│
 ├── utils/
-│   ├── date.ts
-│   ├── format.ts
-│   └── calculations.ts
-│
 └── constants/
-    └── ...
 ```
 
 ------------------------------------------------------------------------
 
-# 5. Camadas
+# 8. Camadas
 
 ## Presentation
 
-Responsável por:
-
--   telas;
--   componentes;
--   interação;
--   navegação.
-
-Não deve conter regras complexas de negócio.
+Telas, componentes e navegação.
 
 ## Application
 
-Orquestra casos de uso:
+Casos de uso.
 
--   iniciar treino;
--   marcar exercício;
--   finalizar treino;
--   reiniciar sequência;
--   editar sessão.
+Exemplos:
+
+-   SelectProgram;
+-   SelectSequenceStrategy;
+-   StartWorkout;
+-   CompleteExercise;
+-   FinishWorkout;
+-   ResetSequence;
+-   EditWorkoutSession;
+-   GetStatistics.
 
 ## Domain
 
-Contém regras puras:
-
--   cálculo do próximo dia;
--   validação de sequência;
--   cálculo de frequência;
--   cálculo de cadência.
+Regras de negócio puras.
 
 ## Data
 
-Responsável por:
-
--   SQLite;
--   repositories;
--   migrations;
--   seed;
--   conversão banco ↔ domínio.
+SQLite, repositories, migrations e seed.
 
 ------------------------------------------------------------------------
 
-# 6. Estado
+# 9. Estado
 
-Zustand será usado para estado de interface e sessão em andamento.
+Zustand:
 
-Não deve substituir o banco como persistência principal.
+-   sessão atual;
+-   exercício selecionado;
+-   cronômetro;
+-   estado temporário de UI;
+-   configurações carregadas.
+
+SQLite:
+
+-   programas;
+-   treinos;
+-   exercícios;
+-   agenda;
+-   sessões;
+-   pesos;
+-   sequência;
+-   configurações persistentes.
+
+------------------------------------------------------------------------
+
+# 10. Navegação
+
+``` text
+Home
+├── Workout
+├── History
+├── Statistics
+└── Settings
+```
+
+Settings:
+
+``` text
+Settings
+├── Program selection
+├── Sequence type
+├── Weekly schedule
+└── Timer
+```
+
+------------------------------------------------------------------------
+
+# 11. Persistência
+
+SQLite é a fonte de verdade.
+
+Toda sessão deve ser persistida antes de ser considerada finalizada.
+
+------------------------------------------------------------------------
+
+# 12. Transição de programa
+
+Ao alterar o programa:
+
+1.  finalizar/impedir alteração se houver sessão incompatível em
+    andamento;
+2.  atualizar programa ativo;
+3.  carregar a estratégia configurada;
+4.  determinar próximo treino;
+5.  manter histórico.
+
+A troca não deve modificar sessões antigas.
+
+------------------------------------------------------------------------
+
+# 13. Mudança de estratégia
+
+Ao alterar:
+
+``` text
+CONTINUOUS → WEEKLY
+```
+
+ou:
+
+``` text
+WEEKLY → CONTINUOUS
+```
+
+o histórico permanece.
+
+A estratégia passa a ser aplicada somente para determinar próximos
+treinos.
+
+Para `CONTINUOUS`, o estado de sequência deve ser mantido por programa.
+
+------------------------------------------------------------------------
+
+# 14. Estado de sequência por programa
+
+Recomendação importante:
+
+Cada programa deve possuir seu próprio estado de sequência.
 
 Exemplo:
 
 ``` text
-Zustand
-- sessão atual
-- exercício selecionado
-- cronômetro
-- estado temporário de UI
+Treino Padrão
+current_position = Dia 3
 
-SQLite
-- treinos
-- exercícios
-- sessões
-- registros de execução
-- configurações persistentes
-- sequência
+Treino Monstro
+agenda semanal
 ```
 
-------------------------------------------------------------------------
-
-# 7. Navegação
-
-Usar Expo Router.
-
-Rotas principais:
-
-``` text
-/
-├── index
-├── workout
-├── history
-├── statistics
-└── settings
-```
-
-Fluxo:
-
-``` text
-Home
-  ↓
-Começar treino
-  ↓
-Workout
-  ↓
-Finalizar
-  ↓
-Home
-```
+Ao voltar para um programa, ele retoma seu próprio contexto.
 
 ------------------------------------------------------------------------
 
-# 8. Persistência
+# 15. Testes
 
-SQLite será utilizado para:
+Testar isoladamente:
 
--   dados dos treinos;
--   exercícios;
--   sessões;
--   execução dos exercícios;
--   sequência;
--   configurações.
-
-As migrations devem ser versionadas.
-
-------------------------------------------------------------------------
-
-# 9. Seed inicial
-
-Na primeira execução:
-
-1.  Criar banco.
-2.  Executar migrations.
-3.  Inserir os cinco treinos.
-4.  Inserir exercícios.
-5.  Criar estado inicial da sequência com Dia 1.
-
-O seed deve ser idempotente.
-
-------------------------------------------------------------------------
-
-# 10. Regra de sequência
-
-A lógica deve estar em serviço puro.
-
-Exemplo conceitual:
-
-``` ts
-function nextWorkoutDay(currentDay: number): number {
-  return currentDay === 5 ? 1 : currentDay + 1;
-}
-```
-
-Reinício:
-
-``` ts
-function resetSequence(): number {
-  return 1;
-}
-```
-
-Nenhuma dessas regras deve depender de React.
-
-------------------------------------------------------------------------
-
-# 11. Finalização
-
-Ao finalizar uma sessão:
-
-``` text
-1. Persistir estado dos exercícios.
-2. Criar/atualizar WorkoutSession.
-3. Marcar como completed.
-4. Calcular próximo dia.
-5. Atualizar SequenceState.
-6. Limpar sessão em andamento.
-```
-
-Essa operação deve ser transacional no banco sempre que possível.
-
-------------------------------------------------------------------------
-
-# 12. Estatísticas
-
-As estatísticas devem ser calculadas a partir das sessões finalizadas.
-
-Não contar:
-
--   sessões descartadas;
--   sessões incompletas ainda abertas.
-
-Uma sessão pode ter exercícios incompletos e ainda assim contar como
-treino se foi finalizada.
-
-------------------------------------------------------------------------
-
-# 13. Datas
-
-Usar uma representação consistente para:
-
--   início;
--   término;
--   data do treino.
-
-Para estatísticas por calendário, trabalhar com a data local do usuário.
-
-Evitar conversões que façam um treino aparecer em outro dia por causa de
-UTC.
-
-------------------------------------------------------------------------
-
-# 14. Testes
-
-Prioridade de testes:
-
-### Unitários
-
--   sequência;
+-   sequência contínua;
+-   sequência semanal;
+-   troca de programa;
+-   troca de estratégia;
 -   reinício;
--   cálculo de média;
--   intervalo médio;
--   filtros de período.
+-   datas;
+-   estatísticas;
+-   persistência.
 
-### Integração
+# 16. Conteúdo educativo e ajuda contextual
 
--   criação de sessão;
--   finalização;
--   persistência;
--   recuperação de sessão.
+O domínio `Exercise` deve suportar:
 
-### UI
-
--   iniciar treino;
--   marcar exercício;
--   registrar peso;
--   finalizar;
--   editar histórico.
-
-------------------------------------------------------------------------
-
-# 15. Segurança e privacidade
-
-Como o MVP é local:
-
--   nenhum dado precisa sair do aparelho;
--   não existe conta;
--   não existe coleta remota.
-
-O aplicativo não deve solicitar permissões desnecessárias.
-
-------------------------------------------------------------------------
-
-# 16. Evolução futura
-
-Se no futuro for necessário sincronizar:
-
-``` text
-React Native
-      ↓
-Application / Domain
-      ↓
-Repository Interface
-      ↓
-Local Repository
-      +
-Remote Repository
+```text
+primary_muscle
+secondary_muscles
+description
 ```
 
-O domínio não deverá depender diretamente de SQLite ou de uma API.
+Enquanto `WorkoutExercise` continua representando como o exercício foi prescrito:
+
+```text
+Exercise
+├── nome
+├── músculos
+└── descrição
+
+WorkoutExercise
+├── prescrição
+├── técnica
+└── observações
+```
+
+Componentes sugeridos:
+
+```text
+HelpIcon
+InfoIcon
+LegendSheet
+MuscleInfoSheet
+```
+
+A abertura das sheets não altera o estado da sessão.
+
+O banco pode receber:
+
+```sql
+ALTER TABLE exercise ADD COLUMN primary_muscle TEXT;
+ALTER TABLE exercise ADD COLUMN secondary_muscles TEXT;
+ALTER TABLE exercise ADD COLUMN description TEXT;
+```

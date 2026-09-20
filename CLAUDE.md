@@ -1,82 +1,99 @@
 # CLAUDE.md
 
-App pessoal de controle de treinos (Android + iOS). Registra treinos de academia, controla uma sequência fixa de 5 dias e acompanha frequência/cadência. Uso pessoal, sem comercialização.
+App pessoal de controle de treinos (Android + iOS). Registra treinos de academia, permite alternar entre **programas de treino** (Treino Padrão, Treino Monstro) e entre **tipos de sequência** (contínua ou dias da semana), e acompanha frequência/cadência. Uso pessoal, sem comercialização.
 
-**Estado atual:** o repositório contém apenas documentação em `docs/` (nenhum código ainda). A documentação é a fonte de verdade; consulte antes de implementar:
+**Estado atual:** o repositório contém apenas documentação em `docs/` e a configuração do spec-kit (nenhum código ainda). A documentação é a fonte de verdade; consulte antes de implementar:
 
-- `docs/PRD.md` — produto, regras de negócio, requisitos (RF-01..23), critérios de aceite
-- `docs/arquitetura.md` — stack, camadas, estrutura de diretórios, regras técnicas
+- `docs/PRD.md` (v1.1) — produto, programas, sequências, requisitos (RF-01..26), critérios de aceite
+- `docs/arquitetura.md` — stack, estratégias de sequência, camadas, estrutura de diretórios
 - `docs/modelo-dados.md` — entidades, schema SQL, regras de integridade
 - `docs/telas.md` — telas, fluxos, estados de UI
-- `docs/design-telas.md` — direção visual ("Placar de academia", tema escuro), tokens, componentes e definição detalhada de cada tela
 - `docs/backlog.md` — épicos BL-xxx com prioridade P0/P1/P2 e roadmap por sprint
+- `docs/design-telas.md` e `docs/prototipo-telas.html` — direção visual "Placar de academia" (tema escuro), definição detalhada das telas e protótipo navegável. Cobrem programas, tipo de sequência, agenda semanal, filtros, `?` e `ⓘ`. A seção 12 do design lista propostas de UI para as lacunas abaixo (a confirmar).
 
-Ao implementar um item, referencie o ID do backlog (ex.: BL-021). Se o código divergir da documentação, atualize a documentação junto.
+A constituição do projeto está em `.specify/memory/constitution.md` (v2.1.0) e prevalece sobre este arquivo. Ao implementar um item, referencie o ID do backlog (ex.: BL-031). Se o código divergir da documentação, atualize a documentação junto.
 
 ## Stack
 
 React Native + TypeScript (strict) + Expo, Expo Router, SQLite, Zustand, Jest + React Native Testing Library, ESLint, Prettier. Priorizar dependências pequenas e maduras.
 
+## Conceito central
+
+Duas configurações **independentes** determinam o próximo treino:
+
+```text
+Programa ativo (tipo de treino)  +  Tipo de sequência  =  regra para o próximo treino
+```
+
+- Programas iniciais (seed, como dados): **Treino Padrão** (Dia 1–5: Peito e Tríceps · Costas e Bíceps · Perna Completo · Ombro Isolado · Bíceps e Tríceps) e **Treino Monstro** (A Ombros completos · B Costas e Bíceps · C Pernas completas · D Peito e Tríceps).
+- Sequências: `CONTINUOUS` (avança ao finalizar; 1→…→N→1) e `WEEKLY` (agenda por dia da semana do programa; dia sem treino = `null`).
+- **Nunca** codificar regra por nome de programa (ex.: "Monstro usa semana"). Qualquer programa pode usar qualquer sequência.
+
 ## Arquitetura
 
-Camadas (dependência de cima para baixo): `UI → Hooks/Application → Services (domain) → Repositories → SQLite`.
+Camadas: `UI → Hooks/Application → Domain → Repositories → SQLite`.
 
 ```text
 src/
 ├── app/          # rotas Expo Router: index, workout, history, statistics, settings
-├── components/   # ExerciseCard, WorkoutCard, Timer, StatCard, common
-├── domain/       # regras puras (workout, exercise, sequence, statistics)
-├── application/  # casos de uso (iniciar, marcar, finalizar, reiniciar, editar)
-├── data/         # database (migrations), repositories, mappers, seed
-├── store/        # Zustand: workoutStore, sequenceStore, settingsStore
-├── hooks/        # useWorkout, useSequence, useHistory, useStatistics
-├── utils/        # date, format, calculations
-└── constants/
+├── domain/       # regras puras: program, workout, exercise, sequence/{strategies,services}, session, statistics
+├── application/  # casos de uso: SelectProgram, SelectSequenceStrategy, StartWorkout, CompleteExercise,
+│                 #   FinishWorkout, ResetSequence, EditWorkoutSession, GetStatistics
+├── data/         # database, repositories, migrations, seed
+├── store/        # Zustand: workoutStore, settingsStore, sessionStore
+├── components/  hooks/  utils/  constants/
 ```
 
 Regras de camada:
 
-- **Domain é puro**: sem React, sem SQLite, sem API. Sequência, finalização, frequência e cadência vivem aqui, nunca em componentes.
-- **Presentation** não contém regra de negócio complexa.
-- **Zustand** guarda apenas estado de UI/sessão em andamento/cronômetro. **SQLite é a fonte de verdade** e a persistência principal.
-- O domínio não deve depender de SQLite, para permitir um repositório remoto no futuro.
+- **Domain é puro**: sem React, sem SQLite, sem API. Resolução do próximo treino, sequências, finalização e estatísticas vivem aqui.
+- **Estratégias**: `SequenceStrategy.getNextWorkout(context)` com `ContinuousSequenceStrategy` e `WeeklyScheduleSequenceStrategy`, escolhidas via `NextWorkoutResolver`. Sem `if/else` de estratégia espalhado.
+- **Presentation** sem regra de negócio complexa. **Zustand** só guarda estado de UI/sessão atual/cronômetro/configurações carregadas; **SQLite é a fonte de verdade**.
 
 ## Regras de negócio essenciais
 
-- **Sequência**: `currentDay` de 1 a 5; Dia 1→2→3→4→5→1. Avança **somente ao finalizar** treino. Independe de dias da semana e de intervalos sem treinar.
-  - Treinos: 1 Peito e Tríceps · 2 Costas e Bíceps · 3 Perna Completo · 4 Ombro Isolado · 5 Bíceps e Tríceps.
-- **Reiniciar sequência** volta para Dia 1 e **nunca apaga histórico**.
-- **Ordem livre**: exercícios têm `display_order` só visual; nenhuma dependência entre eles.
-- **Finalizar treino incompleto** é permitido (0 ou mais exercícios feitos); a sessão vira `completed = 1` e a sequência avança.
-- **Descartar sessão em andamento** não altera a sequência e não conta em estatísticas.
-- **Sessão em andamento é persistida** localmente; ao reabrir, oferecer Continuar / Descartar.
-- **Carga**: por exercício/sessão, `weight` nulo ou >= 0. Sem repetições registradas por série. A "última carga" é derivada (último peso não nulo em sessões finalizadas) — **não** criar coluna `last_weight`.
+- **Sequência contínua**: estado por programa (`program_sequence_state.current_position`); avança **somente ao finalizar**; independe de calendário. Reiniciar volta ao primeiro treino do programa e **nunca apaga histórico**. Reiniciar só existe para sequência contínua.
+- **Agenda semanal**: pertence ao programa (`weekly_schedule`). Dia sem treino → `null`. **Não criar sessão automaticamente**; o usuário inicia e finaliza.
+- **Trocar programa ou tipo de sequência** não apaga nem altera sessões antigas; respeitar sessão em andamento incompatível; ao voltar a um programa, ele retoma seu próprio estado.
+- **Sessão** guarda `program_id` e `workout_id`. Finalizar é **transacional** (persistir exercícios → `completed` → atualizar sequência quando aplicável → limpar sessão em andamento).
+- **Ordem livre**: `display_order` é só visual. Finalizar treino incompleto (0 ou mais exercícios) é permitido.
+- **Sessão em andamento** é persistida; ao reabrir, Continuar / Descartar. Descartar não altera sequência nem estatísticas.
+- **Prescrição é dado**: `prescription`, `technique`, `notes` em `workout_exercise` (texto). O app exibe, **não interpreta**; não há `min_reps`/`max_reps`. Sem repetições realizadas.
+- **Carga**: `weight` nulo ou >= 0. A "última carga" é derivada (última sessão finalizada do **mesmo programa** e exercício com peso) — **não** criar coluna `last_weight`.
+- **Ajuda contextual** (sob demanda, bottom sheet): `?` abre a legenda de técnicas (bi-set, drop-set, pirâmides, falha, excêntrica, concêntrica, progressão de carga — conteúdo estático); `ⓘ` abre músculo principal, secundários e descrição (`exercise.primary_muscle/secondary_muscles/description`) e **deve estar preenchido para todo exercício de todo programa**: o seed não pode deixar nenhum exercício sem essas informações (teste de seed cobre isso). Abrir/fechar **não** altera exercício, peso, sequência, cronômetro ou sessão. Nunca exibir permanentemente.
 - **Nunca recomendar** cargas, exercícios ou treinos; sem IA, dieta, peso corporal.
-- **Histórico editável**: marcar/desmarcar e alterar peso; não permite mudar o dia da sequência do treino.
-- **Estatísticas** (semana/mês/trimestre/semestre/ano): só frequência e cadência (qtd de treinos, média/semana, intervalo médio); apenas sessões finalizadas; calculadas a partir de `workout_session`, centralizadas em um serviço de estatísticas.
+- **Histórico editável**: marcar/desmarcar e alterar peso; nunca muda programa/treino da sessão.
+- **Estatísticas** (semana/mês/trimestre/semestre/ano): só frequência e cadência (qtd, média/semana, intervalo médio), filtro por programa (Todos / cada programa); apenas sessões finalizadas; serviço centralizado sobre `workout_session`.
 
 ## Persistência
 
-- Migrations versionadas; seed idempotente na primeira execução (5 treinos, exercícios, relacionamentos, `sequence_state` com Dia 1).
-- Exercício repetido entre dias (ex.: Tríceps corda) é **uma única entidade** `exercise` referenciada por vários `workout_plan_exercise`. Nota: o backlog BL-012 cita "28 exercícios" contando repetições; deduplicados são 22 únicos — confirmar a contagem ao implementar o seed.
-- Finalizar sessão deve ser **transacional**: persistir exercícios → marcar `completed` → calcular próximo dia → atualizar `sequence_state` → limpar sessão em andamento.
-- `sequence_state` e `settings` têm exatamente um registro (`id = 1`).
-- **Datas**: usar data local do usuário para estatísticas de calendário; evitar conversões UTC que desloquem o treino de dia.
+- Tabelas: `training_program`, `workout`, `exercise`, `workout_exercise`, `weekly_schedule`, `program_sequence_state`, `workout_session`, `workout_session_exercise`, `app_settings` (registro único, `id = 1`: `active_program_id`, `sequence_type`, cronômetro).
+- Migrations versionadas; seed idempotente (programas, treinos, exercícios, prescrições, agenda do Monstro, estado de sequência por programa, settings).
+- Exercício reutilizado entre treinos é **uma entidade** `exercise` referenciada por vários `workout_exercise` (`UNIQUE(workout_id, exercise_id)`).
+- **Datas**: usar data/dia da semana **local** do usuário; evitar UTC que desloque o treino de dia.
+
+## Pontos em aberto na documentação (confirmar antes de implementar)
+
+- **Conteúdo do Treino Monstro**: o PRD lista só as técnicas de cada treino, não os exercícios/prescrições da "ficha original". O seed (BL-021/022) depende dessa ficha.
+- **Sábado "Opcional"**: `weekly_schedule` tem `optional` mas `workout_id` nulo no exemplo — não está definido qual treino é sugerido nesse dia nem o que a Home mostra.
+- **`sequence_type` global**: fica em `app_settings` (único), mas o estado contínuo é por programa. Definir o que acontece ao escolher `WEEKLY` num programa sem agenda (ex.: Treino Padrão) e o que a Home exibe.
+- **Troca de programa com sessão em andamento**: a arquitetura diz "finalizar/impedir"; escolher um comportamento.
+- **Agenda semanal editável**: BL-042 a configura, mas não está definido se o usuário pode alterar a agenda ou só escolher entre treinos existentes.
 
 ## Requisitos não funcionais
 
 - Offline-first, sem backend, sem login, sem sincronização no MVP; nenhum dado sai do aparelho e nenhuma permissão desnecessária.
 - Código compartilhado entre Android e iOS; TypeScript strict; inicialização rápida.
-- Fora do escopo do MVP: login, backend, nuvem, multiusuário, pagamentos, rede social, wearables, integrações de saúde.
+- Fora do escopo: recomendações, IA, personal virtual, dieta, calorias, peso corporal, rede social, login, pagamentos, assinaturas, nuvem, wearables.
 
 ## Testes
 
-Prioridade: unitários (sequência, reinício, média, intervalo médio, filtros de período) → integração (criar/finalizar/recuperar sessão, persistência) → UI (iniciar, marcar, peso, finalizar, editar histórico). Validar em Android e iOS.
+Unitários (domínio): sequência contínua (primeiro, meio, último→primeiro, reinício), sequência semanal (dia com treino, descanso, sábado opcional, domingo, mudança de semana), troca de programa e de estratégia, médias, intervalo médio, filtros de período, datas. Integração: criar/finalizar/recuperar/editar sessão e persistência. UI: iniciar, marcar, peso, finalizar, editar histórico, abrir ajuda sem alterar a sessão. Validar em Android e iOS.
 
 ## Convenções
 
 - Documentação e textos de UI em **português (pt-BR)**.
-- Prioridades do backlog: P0 obrigatório para o MVP, P1 depois do fluxo principal, P2 futuro. Cronômetro de descanso é P1.
+- Prioridades: P0 obrigatório no MVP; P1 depois do fluxo principal (cronômetro, filtro de histórico/estatísticas por programa, ajuda por técnica); P2 futuro.
 - Comandos de build/test/lint: definir aqui assim que o projeto Expo for criado (BL-001..003).
 
 <!-- SPECKIT START -->

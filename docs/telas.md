@@ -1,255 +1,320 @@
 # Telas --- App de Controle de Treinos
 
-## 1. Mapa de navegação
+## 1. Navegação
 
 ``` text
-                 ┌─────────┐
-                 │  Home   │
-                 └────┬────┘
-                      │
-        ┌─────────────┼─────────────┐
-        ↓             ↓             ↓
-     Treino        Histórico     Estatísticas
-        │
-        ↓
-   Finalizar
-        │
-        ↓
-      Home
-
-                 Configurações
+Home
+├── Treino
+├── Histórico
+├── Estatísticas
+└── Configurações
 ```
 
 ------------------------------------------------------------------------
 
 # 2. Home
 
-## Objetivo
-
-Mostrar imediatamente o próximo treino e permitir começar.
-
-Elementos:
-
--   Dia atual;
--   nome do treino;
--   quantidade de exercícios;
--   botão começar;
--   último treino;
--   quantidade de treinos no período atual;
--   ação de reiniciar sequência.
-
-Exemplo:
+A Home deve mostrar o contexto atual:
 
 ``` text
-MEU TREINO
+PROGRAMA
+Treino Monstro
 
-DIA 3
-PERNA COMPLETO
+PRÓXIMO TREINO
+C — Pernas completas
 
-6 exercícios
+QUINTA-FEIRA
 
 [ COMEÇAR TREINO ]
+```
 
-Último treino
-Dia 2 • 16/09
+Para sequência contínua:
 
-Treinos este mês
-8
+``` text
+PROGRAMA
+Treino Padrão
 
-[ REINICIAR SEQUÊNCIA ]
+PRÓXIMO
+Dia 3 — Perna Completo
+
+[ COMEÇAR TREINO ]
 ```
 
 ------------------------------------------------------------------------
 
-# 3. Tela de treino
+# 3. Configurações
 
-## Objetivo
+``` text
+CONFIGURAÇÕES
 
-Registrar rapidamente o que foi realizado.
+Programa de treino
+Treino Padrão                         ›
+
+Tipo de sequência
+Sequência contínua                   ›
+
+Cronômetro
+Desativado                           ›
+```
+
+------------------------------------------------------------------------
+
+# 4. Seleção de programa
+
+``` text
+TIPO DE TREINO
+
+● Treino Padrão
+  5 treinos em sequência
+
+○ Treino Monstro
+  A/B/C/D
+  Programação semanal
+```
+
+A descrição é informativa. A estratégia de sequência é uma configuração
+independente.
+
+------------------------------------------------------------------------
+
+# 5. Seleção de sequência
+
+``` text
+TIPO DE SEQUÊNCIA
+
+● Sequência contínua
+
+  O próximo treino é definido pelo
+  último treino finalizado.
+
+○ Dias da semana
+
+  O próximo treino é definido pela
+  agenda do programa.
+```
+
+------------------------------------------------------------------------
+
+# 6. Agenda semanal
+
+Aparece quando o tipo de sequência é "Dias da semana".
+
+``` text
+AGENDA
+
+Segunda
+Treino A                         ›
+
+Terça
+Treino B                         ›
+
+Quarta
+Descanso
+
+Quinta
+Treino C                         ›
+
+Sexta
+Treino D                         ›
+
+Sábado
+Opcional                         ›
+
+Domingo
+Descanso
+```
+
+A configuração deve ser por programa.
+
+------------------------------------------------------------------------
+
+# 7. Reiniciar sequência
+
+Disponível para programas que utilizam sequência contínua.
+
+``` text
+REINICIAR SEQUÊNCIA
+
+O próximo treino será:
+
+Dia 1 — Peito e Tríceps
+
+O histórico não será apagado.
+
+[ CANCELAR ] [ REINICIAR ]
+```
+
+Para um programa com letras:
+
+``` text
+Próximo:
+A — Ombros completos
+```
+
+------------------------------------------------------------------------
+
+# 8. Tela de treino
 
 Cabeçalho:
 
 ``` text
-DIA 3
-PERNA COMPLETO
+TREINO C
+PERNAS COMPLETAS
 
-4 / 6 realizados
+0 / 9 realizados
 ```
 
 Cada exercício:
 
 ``` text
 ┌─────────────────────────────┐
-│ AGACHAMENTO HACK            │
-│ 3 × 10–12                   │
+│ AGACHAMENTO LIVRE / SMITH   │
 │                             │
-│ Última carga: 100 kg        │
+│ 3 × 12/10/8                 │
+│ Progressão de carga         │
 │                             │
 │ Carga                       │
 │ [ 100 ] kg                  │
 │                             │
-│             [ ✓ FEITO ]     │
+│ ○ NÃO FEITO                 │
 └─────────────────────────────┘
 ```
 
-O exercício pode ser marcado em qualquer ordem.
+Outro exemplo:
+
+``` text
+┌─────────────────────────────┐
+│ CADEIRA EXTENSORA           │
+│                             │
+│ 3 × 10/10/10                │
+│ DROP-SET                    │
+│ Pirâmide crescente          │
+│                             │
+│ Carga [ 60 ] kg             │
+│                             │
+│ ✓ FEITO                     │
+└─────────────────────────────┘
+```
 
 ------------------------------------------------------------------------
 
-# 4. Estado realizado
+# 9. Ordem dos exercícios
 
-Quando concluído:
+Não bloquear a ordem.
+
+O usuário pode marcar:
 
 ``` text
-✓ AGACHAMENTO HACK
-
-3 × 10–12
-100 kg
+✓ Exercício 5
+✓ Exercício 2
+✓ Exercício 8
+✓ Exercício 1
 ```
 
-Permitir tocar novamente para editar/desmarcar.
+O contador deve refletir apenas quantidade realizada.
 
 ------------------------------------------------------------------------
 
-# 5. Cronômetro
-
-O cronômetro deve aparecer apenas quando habilitado.
-
-Exemplo:
+# 10. Finalização
 
 ``` text
-DESCANSO
+FINALIZAR TREINO?
 
-01:30
-
-[ PAUSAR ]
-[ ENCERRAR ]
-```
-
-A tela não deve obrigar o usuário a usar o cronômetro.
-
-------------------------------------------------------------------------
-
-# 6. Finalização
-
-Botão:
-
-``` text
-[ FINALIZAR TREINO ]
-```
-
-Ao tocar:
-
-``` text
-Finalizar treino?
-
-4 de 6 exercícios realizados.
+7 de 9 exercícios realizados.
 
 [ CANCELAR ]
 [ FINALIZAR ]
 ```
 
-Após confirmar:
+Depois:
 
 ``` text
 TREINO FINALIZADO
 
-DIA 3 — PERNA COMPLETO
+Treino C
+Pernas completas
 
-4 de 6 exercícios realizados.
+7/9 exercícios
 
 Próximo:
-DIA 4 — OMBRO ISOLADO
+Treino D
 ```
 
 ------------------------------------------------------------------------
 
-# 7. Histórico
+# 11. Histórico
 
-Lista cronológica:
+Mostrar programa e treino:
 
 ``` text
 HISTÓRICO
 
 19 SET
-Dia 1
-Peito e Tríceps
-5/6 exercícios
+Treino Monstro
+D — Peito e tríceps
+8/10 exercícios
 
-16 SET
-Dia 5
-Bíceps e Tríceps
+17 SET
+Treino Monstro
+C — Pernas completas
+7/9 exercícios
+
+12 SET
+Treino Padrão
+Dia 2 — Costas e Bíceps
 6/6 exercícios
-
-14 SET
-Dia 4
-Ombro Isolado
-4/4 exercícios
 ```
 
 ------------------------------------------------------------------------
 
-# 8. Detalhes do histórico
-
-Ao tocar:
+# 12. Filtro de histórico
 
 ``` text
-DIA 1 — PEITO E TRÍCEPS
+[ Todos ▼ ]
+
+Todos
+Treino Padrão
+Treino Monstro
+```
+
+------------------------------------------------------------------------
+
+# 13. Detalhes do histórico
+
+``` text
+TREINO D
+PEITO E TRÍCEPS
 
 19/09/2026
 
-✓ Supino
+✓ Supino reto
 80 kg
+4 × 8
 
-✓ Supino inclinado
-70 kg
+✓ Crucifixo reto
+20 kg
+3 × 12
 
-○ Fly
-
-✓ Tríceps corda
-40 kg
-
-✓ Tríceps francês
-30 kg
-
-✓ Tríceps testa
-25 kg
+○ Voador
+—
+3 × até a falha
 
 [ EDITAR ]
 ```
 
 ------------------------------------------------------------------------
 
-# 9. Edição de histórico
-
-Permitir:
-
--   marcar exercício;
--   desmarcar exercício;
--   alterar peso;
--   salvar alterações.
-
-Não permitir alterar o treino para outro dia da sequência no MVP.
-
-------------------------------------------------------------------------
-
-# 10. Estatísticas
-
-## Navegação
+# 14. Estatísticas
 
 ``` text
 ESTATÍSTICAS
 
-[ SEMANA ]
-[ MÊS ]
-[ TRIMESTRE ]
-[ SEMESTRE ]
-[ ANO ]
-```
+[ Semana ]
+[ Mês ]
+[ Trimestre ]
+[ Semestre ]
+[ Ano ]
 
-## Conteúdo
-
-``` text
 SETEMBRO
 
 17
@@ -260,140 +325,98 @@ TREINOS / SEMANA
 
 2,0
 DIAS ENTRE TREINOS
+
+[ Todos ▼ ]
 ```
 
-Também pode apresentar um calendário simples com os dias em que houve
-treino.
-
-------------------------------------------------------------------------
-
-# 11. Estatística semanal
-
-Exemplo:
+Filtro:
 
 ``` text
-ESTA SEMANA
-
-3 treinos
-
-SEG  TER  QUA  QUI  SEX  SÁB  DOM
- ●         ●         ●
+Todos
+Treino Padrão
+Treino Monstro
 ```
 
 ------------------------------------------------------------------------
 
-# 12. Configurações
+# 15. Sessão em andamento
 
-Itens:
+Ao abrir o app:
 
 ``` text
-CONFIGURAÇÕES
+TREINO EM ANDAMENTO
 
-Cronômetro de descanso
-[ OFF ]
+Treino C — Pernas completas
 
-Tempo de descanso
+Você possui um treino em andamento.
+
+[ CONTINUAR ]
+[ DESCARTAR ]
+```
+
+Descartar não altera sequência.
+
+------------------------------------------------------------------------
+
+# 16. Cronômetro
+
+Se habilitado:
+
+``` text
+DESCANSO
+
 01:30
 
-────────────────
-
-Treinos
-
-Gerenciar treinos
-
-Exercícios
-
-Gerenciar exercícios
-
-────────────────
-
-Sequência
-
-Reiniciar sequência
+[ PAUSAR ]
+[ ENCERRAR ]
 ```
 
-------------------------------------------------------------------------
+Pode ser ignorado.
 
-# 13. Gerenciamento de treinos
+# 17. Ajuda e informações contextuais
 
-Mesmo que inicialmente os cinco treinos sejam fixos, a tela pode
-permitir futuramente:
+A tela de execução deve permanecer limpa.
 
--   alterar nome;
--   ativar/desativar;
--   alterar exercícios.
-
-Não é prioridade do MVP.
-
-------------------------------------------------------------------------
-
-# 14. Gerenciamento de exercícios
-
-Futuramente:
-
--   adicionar;
--   editar;
--   desativar;
--   alterar séries;
--   alterar faixa de repetições.
-
-Também não é necessário para a primeira entrega se o seed inicial for
-suficiente.
-
-------------------------------------------------------------------------
-
-# 15. Navegação inferior
-
-Sugestão:
-
-``` text
-┌─────────────────────────────────┐
-│                                 │
-│           CONTEÚDO              │
-│                                 │
-├─────────────────────────────────┤
-│ 🏋 Treino │ 📋 Histórico │ 📊 Stats │
-│                         ⚙ Config │
-└─────────────────────────────────┘
+```text
+TREINO C — PERNAS COMPLETAS
+0 / 9 realizados                         [?]
 ```
 
-A navegação deve priorizar:
+O `?` abre a legenda.
 
-1.  Treino;
-2.  Histórico;
-3.  Estatísticas;
-4.  Configurações.
+## Card
 
-------------------------------------------------------------------------
+```text
+┌─────────────────────────────┐
+│ AGACHAMENTO LIVRE / SMITH ⓘ│
+│ 3 × 12/10/8                 │
+│ Progressão de carga         │
+│ Carga [ 100 ] kg            │
+│ ○ NÃO FEITO                 │
+└─────────────────────────────┘
+```
 
-# 16. Estados importantes
+O `ⓘ` abre um bottom sheet com:
 
-A UI deve tratar:
+- músculo principal;
+- músculos secundários;
+- descrição curta.
 
-### Sem treino em andamento
+## Legenda
 
-Mostrar botão "Começar treino".
+O `?` abre um bottom sheet com:
 
-### Treino em andamento
+- BI-SET;
+- DROP-SET;
+- PIRÂMIDE CRESCENTE;
+- PIRÂMIDE DECRESCENTE;
+- FALHA;
+- EXCÊNTRICA;
+- CONCÊNTRICA;
+- outros termos usados pelo programa.
 
-Mostrar "Continuar treino".
+No MVP, a legenda global é suficiente. Como evolução P1, uma técnica individual poderá ter seu próprio `?` para abrir diretamente sua explicação.
 
-### Nenhum histórico
+## Regra de UI
 
-Mostrar mensagem amigável:
-
-> Ainda não existem treinos registrados.
-
-### Sem dados estatísticos
-
-Mostrar:
-
-> Complete seu primeiro treino para começar a acompanhar sua frequência.
-
-### Treino incompleto
-
-Não bloquear finalização.
-
-### Sessão recuperada
-
-Mostrar opção de continuar.
+Informação essencial fica visível. Informação complementar fica escondida até ser solicitada.

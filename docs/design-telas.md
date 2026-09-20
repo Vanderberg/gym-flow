@@ -21,8 +21,13 @@ Lembra um placar: números grandes e condensados, informação em blocos.
   importante da tela); texto corrido em grotesca humanista legível.
 - **Um único acento** (verde-limão) reservado para: ação principal, item feito,
   item ativo. Tudo o mais é neutro. Assim o olho acha o "próximo toque" sem ler.
-- **Sequência 1–5 é uma sequência real**, então aparece como trilho de 5 passos
-  (não como decoração). O dia atual é o único preenchido.
+- **A sequência é mostrada como ela é**: na sequência contínua, um trilho com um
+  passo por treino do programa (o atual é o único preenchido); nos dias da
+  semana, uma faixa SEG…DOM com o treino de cada dia. Nunca como decoração.
+- **Programa e tipo de sequência são configurações independentes**: o programa
+  ativo aparece sempre como selo, e a sequência muda só o indicador da Home.
+- **Informação essencial sempre visível; complementar sob demanda** (`?` legenda
+  e `ⓘ` músculos, em bottom sheet).
 - **Progresso segmentado** (um segmento por exercício) em vez de barra contínua:
   cada exercício é um toque, e o segmento mostra qual falta.
 - **Alvos grandes**: controles frequentes com no mínimo 48 dp.
@@ -63,7 +68,7 @@ Carregar via `expo-font` (pacotes `@expo-google-fonts/*`, offline após bundle).
 
 | Papel          | Fonte                      | Tamanho/linha | Uso                              |
 | -------------- | -------------------------- | ------------- | -------------------------------- |
-| `display`      | Barlow Condensed 700       | 56/56         | "DIA 3", números de estatística  |
+| `display`      | Barlow Condensed 700       | 56/56         | código do treino, estatísticas   |
 | `title`        | Barlow Condensed 700       | 28/32         | títulos de tela, nome do treino  |
 | `numeric`      | Barlow Condensed 600       | 40/44         | carga (kg), cronômetro           |
 | `body`         | Barlow 500                 | 16/22         | texto, listas                    |
@@ -87,29 +92,45 @@ desabilitar `allowFontScaling`; layouts devem quebrar linha, não cortar).
 
 # 3. Componentes base
 
-Extensões de um conjunto mínimo em `src/components/common/` (não criar
-variações paralelas):
+Conjunto mínimo em `src/components/common/` (não criar variações paralelas):
 
 - **Button** — `primary` (fundo `accent`), `secondary` (contorno `border`),
   `danger` (texto `danger`, contorno), `ghost`. Altura 56 (primário) / 48.
   Estados: default, pressed (escurece 8%), disabled (opacidade 40% + texto
   explicando o motivo quando relevante), loading (spinner + `accessibilityState.busy`).
 - **Card** — `surface`, raio `md`, padding 16, contorno `border` 1 dp.
-- **SequenceRail** — 5 passos ligados por linha; passo atual preenchido com
-  `accent` e número; anteriores com ✓ discreto só quando a sequência já rodou
-  neste ciclo; demais vazios. Cada passo tem `accessibilityLabel` ("Dia 3, Perna
-  Completo, próximo treino").
+- **ProgramBadge** — pílula com o nome do programa ativo (`label`, contorno
+  `border`). Aparece na Home, no cabeçalho do treino e nos itens do histórico
+  quando o filtro é "Todos".
+- **SequenceRail** — para `CONTINUOUS`: N passos ligados por linha, N = quantidade
+  de treinos do programa (5 no Padrão, 4 no Monstro). Passo atual preenchido com
+  `accent`; concluídos no ciclo com ✓; demais vazios. O rótulo de cada passo é o
+  código do treino (`1…5` ou `A…D`).
+- **WeekStrip** — para `WEEKLY`: 7 colunas SEG…DOM; cada uma mostra o código do
+  treino ("A"), "—" (descanso) ou "opc." (opcional). Hoje = preenchido com `accent`;
+  dias em que houve sessão finalizada = ponto + ✓ (sem depender de cor).
 - **SegmentedProgress** — N segmentos (um por exercício); feitos em `accent`.
   Acompanha texto "4 / 6 realizados" (nunca só a barra).
 - **ExerciseCard** — ver seção 5.
+- **PrescriptionBlock** — exibe `prescription` (em `numeric` reduzido, ex.
+  "3 × 6/8/10"), `technique` como **TechniqueChip** (contorno `accent`, caixa alta,
+  ex. DROP-SET) e `notes` em `body` secundário. Só exibição: nunca interpreta o
+  texto. Aceita texto longo com quebra de linha.
+- **HelpIcon (`?`) / InfoIcon (`ⓘ`)** — botões de 44 dp (ícone 20 dp) com
+  `accessibilityLabel` "Legenda das técnicas" e "Informações do exercício".
+- **LegendSheet / MuscleInfoSheet** — bottom sheets somente leitura (seção 5.2).
 - **WeightInput** — campo numérico grande com teclado decimal, sufixo "kg",
   botões `−` / `+` de 2,5 kg (apenas ajuda de digitação, não sugestão).
 - **StatCard** — número em `display`, rótulo em `label`, sem gradiente.
 - **BottomTabs** — 4 abas: Treino, Histórico, Estatísticas, Config. Aba ativa:
   ícone preenchido + rótulo em `text` + indicador superior de 3 dp em `accent`;
   inativas: ícone contornado + rótulo `textSecondary`. Altura 64 + safe area.
-- **Sheet / ConfirmDialog** — sheet inferior (raio `lg`) para confirmações;
-  ação destrutiva nunca é a ação primária padrão.
+- **RadioCard** — opção única em cartão (círculo ● / ○ + título + descrição), usado
+  nas seleções de programa e de tipo de sequência. Selecionado = borda `accent` +
+  ● preenchido (não só cor).
+- **FilterSelect** — botão "Todos ▼" que abre sheet com a lista (Todos + programas).
+- **Sheet / ConfirmDialog** — sheet inferior (raio `lg`); ação destrutiva nunca é
+  a primária padrão.
 - **EmptyState** — ícone simples, título curto, uma frase, uma ação útil.
 
 Ícones: um único conjunto (`@expo/vector-icons`, Lucide/Feather-like), traço 2 dp.
@@ -118,50 +139,84 @@ variações paralelas):
 
 # 4. Home
 
-**Objetivo:** mostrar imediatamente o próximo treino e permitir começar.
-**Ação primária:** COMEÇAR TREINO (ou CONTINUAR TREINO).
+**Objetivo:** mostrar o contexto atual (programa + tipo de sequência) e o próximo
+treino, e permitir começar. **Ação primária:** COMEÇAR TREINO (ou CONTINUAR TREINO).
+
+O cartão principal é o mesmo nas duas sequências; muda só o indicador acima dele.
+
+## 4.1 Sequência contínua (ex.: Treino Padrão)
 
 ```text
 ┌───────────────────────────────┐
-│ MEU TREINO                    │  título (Config fica na aba inferior)
+│ MEU TREINO                    │
+│ [Treino Padrão]  Sequência contínua
 │                               │
-│  ①──②──●3──④──⑤              │  SequenceRail (dia 3 é o próximo)
+│  ✓──✓──●3──④──⑤              │  SequenceRail
 │                               │
 │ ┌───────────────────────────┐ │
-│ │ PRÓXIMO TREINO            │ │  label
-│ │ DIA 3                     │ │  display 56
-│ │ Perna Completo            │ │  title
-│ │ 6 exercícios              │ │  body secundário
-│ │                           │ │
-│ │ [   COMEÇAR TREINO   ]    │ │  primary, 56 dp, largura total
+│ │ PRÓXIMO TREINO            │ │
+│ │ DIA 3                     │ │  código do treino em display
+│ │ Perna Completo            │ │
+│ │ 6 exercícios              │ │
+│ │ [   COMEÇAR TREINO   ]    │ │
 │ └───────────────────────────┘ │
-│                               │
 │ ┌────────────┐ ┌────────────┐ │
-│ │ ÚLTIMO     │ │ ESTE MÊS   │ │  2 StatCards
+│ │ ÚLTIMO     │ │ ESTE MÊS   │ │
 │ │ Dia 2·16/09│ │ 8 treinos  │ │
 │ └────────────┘ └────────────┘ │
-│                               │
-│   Reiniciar sequência         │  ghost, discreto, no rodapé
-├───────────────────────────────┤
-│ Treino  Histórico  Stats  Cfg │
+│   Reiniciar sequência         │  ghost; SÓ na sequência contínua
 └───────────────────────────────┘
 ```
 
-**Estados:**
+## 4.2 Dias da semana (ex.: Treino Monstro)
 
+```text
+┌───────────────────────────────┐
+│ MEU TREINO                    │
+│ [Treino Monstro]  Dias da semana
+│                               │
+│ SEG TER QUA QUI SEX SÁB DOM   │  WeekStrip (hoje = quinta)
+│  A   B   —  [C]  D  opc. —    │
+│                               │
+│ ┌───────────────────────────┐ │
+│ │ QUINTA-FEIRA              │ │  label = dia da semana local
+│ │ TREINO C                  │ │
+│ │ Pernas completas          │ │
+│ │ 9 exercícios              │ │
+│ │ [   COMEÇAR TREINO   ]    │ │
+│ └───────────────────────────┘ │
+│ (ÚLTIMO / ESTE MÊS iguais)    │
+└───────────────────────────────┘
+```
+
+O app **não** cria nem registra sessão sozinho: o dia programado só mostra o
+treino; a sessão começa no toque em COMEÇAR.
+
+## 4.3 Estados
+
+- *Dia de descanso* (`null` na agenda): o cartão vira "QUARTA-FEIRA · DESCANSO",
+  sem botão primário; ação secundária **Ver treinos do programa**.
+  **Proposta (a confirmar):** essa ação abre uma lista para o usuário iniciar
+  qualquer treino do programa mesmo assim, sem alterar a agenda.
+- *Dia opcional* (sábado do Monstro): cartão "SÁBADO · OPCIONAL" com o texto "Treino
+  opcional" e **Ver treinos do programa** (mesma ação). Não há treino sugerido,
+  porque a documentação ainda não define qual (ver seção 12).
+- *Programa sem agenda* (ex.: Treino Padrão com "Dias da semana"): cartão
+  "Sem agenda configurada para este programa" + botão **Configurar agenda**
+  (leva às Configurações). Nunca mostrar tela vazia.
 - *Carregando* (leitura do SQLite): esqueleto do cartão principal com a mesma
   altura, sem salto de layout.
 - *Treino em andamento:* o cartão troca o rótulo para "TREINO EM ANDAMENTO",
-  mostra "4 / 6 realizados" e o botão vira **CONTINUAR TREINO**; ao abrir o app
-  com sessão pendente, exibir diálogo "Existe um treino em andamento. Deseja
-  continuar?" com **Continuar** (primário) e **Descartar sessão** (danger,
-  com segunda confirmação).
+  mostra o treino, "4 / 9 realizados" e o botão vira **CONTINUAR TREINO**. Ao
+  abrir o app com sessão pendente, diálogo "Você possui um treino em andamento"
+  com o nome do treino, **Continuar** (primário) e **Descartar** (danger, com
+  segunda confirmação). Descartar não altera a sequência.
 - *Primeiro uso / sem histórico:* "ÚLTIMO" mostra "Ainda não há treinos" e
-  "ESTE MÊS" mostra 0; nada quebrado.
-- *Erro de banco:* cartão com mensagem "Não foi possível carregar seus treinos"
-  e botão **Tentar de novo**.
-- *Reiniciar sequência:* sheet "Reiniciar sequência? O próximo treino volta a
-  ser o Dia 1. Seu histórico é mantido." → **Cancelar** / **Reiniciar**.
+  "ESTE MÊS" mostra 0.
+- *Erro de banco:* cartão "Não foi possível carregar seus treinos" + **Tentar de novo**.
+- *Reiniciar sequência* (só contínua): sheet "O próximo treino será: Dia 1 —
+  Peito e Tríceps (ou A — Ombros completos). O histórico não será apagado."
+  → **Cancelar** / **Reiniciar**. O texto do primeiro treino vem do programa ativo.
 - Nome de treino longo: até 2 linhas, sem cortar o botão.
 
 ------------------------------------------------------------------------
@@ -173,25 +228,24 @@ variações paralelas):
 
 ```text
 ┌───────────────────────────────┐
-│ ‹  DIA 3                 ⏱   │  voltar mantém sessão; ⏱ abre descanso
-│    Perna Completo             │
-│ ▰▰▰▰▱▱   4 / 6 realizados     │  SegmentedProgress + texto
+│ ‹  TREINO C            [?] ⏱ │  ? = legenda das técnicas; ⏱ = descanso
+│    Pernas completas           │
+│    [Treino Monstro]           │  ProgramBadge
+│ ▰▰▰▰▱▱▱▱▱   4 / 9 realizados  │  SegmentedProgress + texto
 ├───────────────────────────────┤
 │ ┌───────────────────────────┐ │
-│ │ ✓ Agachamento Hack        │ │  feito: borda accent, ícone ✓,
-│ │   3 × 10–12 · 100 kg      │ │  resumo em uma linha, colapsado
+│ │ ✓ Agachamento livre/Smith ⓘ│ │  feito: borda accent, colapsado
+│ │   3 × 12/10/8 · 100 kg    │ │
 │ └───────────────────────────┘ │
 │ ┌───────────────────────────┐ │
-│ │ ○ Cadeira extensora       │ │  pendente e expandido
-│ │   3 × 10–12               │ │
-│ │ ÚLTIMA CARGA  45 kg       │ │  referência histórica (label)
-│ │ CARGA                     │ │
-│ │ [ − ]   [  45  ] kg  [ + ]│ │  WeightInput
-│ │ [ Usar 45 kg ]            │ │  chip opcional: preenche a última carga
-│ │              [ ✓ FEITO ]  │ │  botão 56 dp
-│ └───────────────────────────┘ │
-│ ┌───────────────────────────┐ │
-│ │ ○ Adutora   3 × 10–12     │ │  pendente colapsado (toque expande)
+│ │ ○ Cadeira extensora      ⓘ│ │  pendente e expandido
+│ │ 3 × 10/10/10              │ │  prescription
+│ │ [DROP-SET]                │ │  technique (chip)
+│ │ Pirâmide crescente        │ │  notes
+│ │ ÚLTIMA CARGA  60 kg       │ │  referência histórica (mesmo programa)
+│ │ [ − ]   [  60  ] kg  [ + ]│ │
+│ │ [ Usar 60 kg ]            │ │
+│ │              [ ✓ FEITO ]  │ │
 │ └───────────────────────────┘ │
 │           …                   │
 ├───────────────────────────────┤
@@ -199,49 +253,87 @@ variações paralelas):
 └───────────────────────────────┘
 ```
 
+Regra de UI: informação essencial (nome, prescrição, técnica, carga, estado) fica
+sempre visível; complementar (legenda, músculos, descrição) só sob demanda.
+
 **Comportamento:**
 
-- Exercícios na ordem padrão (`display_order`) mas **qualquer um** pode ser
-  expandido e marcado; nenhum bloqueio ou ordem forçada. Vários podem ficar
-  expandidos; o último tocado fica em foco.
+- Exercícios na ordem padrão (`display_order`), mas **qualquer um** pode ser
+  expandido e marcado. Nenhum bloqueio ou ordem forçada.
 - Tocar em ✓ FEITO marca; tocar no cartão feito reabre para editar ou
-  **desmarcar** (ação "Desmarcar" explícita no cartão expandido).
+  **desmarcar**.
 - Carga não é obrigatória para marcar como feito (`weight` pode ser nulo).
-- "Última carga" é só referência; o app **não** sugere aumentar/diminuir. O chip
-  "Usar X kg" é um atalho de digitação e nunca vem preenchido sozinho.
-- Cada alteração persiste imediatamente (sessão recuperável, RF-13).
-- Botão FINALIZAR sempre ativo (mesmo com 0 feitos).
+- "Última carga" é só referência, buscada no **mesmo programa**; o app não sugere
+  aumentar/diminuir. O chip "Usar X kg" é atalho de digitação e nunca preenche
+  sozinho. Sem histórico do exercício: "Sem carga anterior".
+- Cada alteração persiste imediatamente (sessão recuperável).
+- FINALIZAR sempre ativo (mesmo com 0 feitos).
+- Prescrições longas quebram linha; o cartão colapsado mostra só a primeira linha
+  da prescrição + carga.
 
-**Finalização (sheet de confirmação):**
+## 5.1 Finalização
 
 ```text
 Finalizar treino?
-4 de 6 exercícios realizados.
+7 de 9 exercícios realizados.
 (2 pendentes serão registrados como não realizados)
 [ CANCELAR ]   [ FINALIZAR ]
 ```
 
-Depois: tela de resumo com o treino concluído, "4 de 6 exercícios realizados",
-duração e **Próximo: DIA 4 — Ombro Isolado**, botão **Voltar ao início**.
-Sem confete ou parabéns exagerados.
+Depois, resumo: treino concluído, "7 de 9 exercícios realizados", duração e
+**Próximo**:
 
-**Cronômetro de descanso (P1, só se habilitado):** ao marcar um exercício, aparece
-uma barra de descanso acima do botão Finalizar: tempo grande em `numeric`
-(`01:30`), **Pausar** e **Encerrar**. É ignorável, não bloqueia nada e não tem
-som obrigatório. Anunciar término por vibração e texto ("Descanso encerrado").
+- contínua: "Próximo: Treino D" (o seguinte na sequência do programa);
+- semanal: "Próximo: SEXTA — Treino D" (próximo dia com treino na agenda).
 
-**Estados:**
+Botão **Voltar ao início**. Sem confete.
 
-- *Sem exercícios ativos no treino:* EmptyState "Este treino não tem exercícios"
+## 5.2 Ajuda contextual (somente leitura)
+
+Abrir ou fechar qualquer sheet **não** altera exercício, peso, sequência,
+cronômetro nem sessão; o estado do cartão (expandido, valor digitado) é mantido.
+
+**LegendSheet (`?`)** — lista rolável de termos, cada um com título em `title` e
+descrição em `body`: BI-SET, DROP-SET, PIRÂMIDE CRESCENTE, PIRÂMIDE DECRESCENTE,
+FALHA, EXCÊNTRICA, CONCÊNTRICA, PROGRESSÃO DE CARGA e outros usados pelo programa.
+Conteúdo estático do app. *P1 (BL-115):* um `?` ao lado de cada TechniqueChip abre
+o sheet já rolado até aquele termo.
+
+**MuscleInfoSheet (`ⓘ`)**:
+
+```text
+SUPINO RETO
+MÚSCULO PRINCIPAL      Peitoral maior
+MÚSCULOS SECUNDÁRIOS   Tríceps · Deltoide anterior
+DESCRIÇÃO
+Exercício de empurrar que enfatiza a musculatura do peito…
+```
+
+**Regra de conteúdo:** o `ⓘ` aparece em **todo** exercício de **todo** programa, e
+o sheet vem sempre preenchido (músculo principal, secundários e descrição). O seed
+MUST fornecer `primary_muscle`, `secondary_muscles` e `description` para cada
+exercício (BL-110); como o exercício é uma única entidade reutilizada, a mesma
+informação vale em qualquer treino ou programa que o use. "Não informado" é só
+rede de segurança para exercícios que o usuário venha a criar no futuro; não deve
+aparecer para nenhum exercício do seed. Fecha com toque no fundo, botão
+**Fechar** ou Escape/voltar.
+
+## 5.3 Cronômetro de descanso (P1, só se habilitado)
+
+Ao marcar um exercício, barra de descanso acima do botão Finalizar: tempo em
+`numeric` (`01:30`), **Pausar** e **Encerrar**. Ignorável, não bloqueia nada. Pode
+ser ativado/desativado durante o treino pelo ícone ⏱ do cabeçalho.
+
+## 5.4 Estados
+
+- *Sem exercícios no treino:* EmptyState "Este treino não tem exercícios"
   (finalizar continua permitido).
-- *Erro ao salvar carga/marcação:* aviso inline no cartão ("Não foi possível
-  salvar") com **Tentar de novo**; o valor digitado não é perdido.
-- *Nome longo de exercício:* quebra em 2 linhas; o resumo "3 × 10–12 · 100 kg"
-  vai para a linha de baixo.
-- *Teclado aberto:* a lista rola para manter o campo visível; a barra
-  FINALIZAR esconde enquanto digita.
-- *Valor inválido de carga:* negativo/texto → mensagem "Informe um valor maior
-  ou igual a 0" ligada ao campo.
+- *Erro ao salvar:* aviso inline no cartão + **Tentar de novo**; o valor digitado
+  não se perde.
+- *Nome longo:* quebra em 2 linhas.
+- *Teclado aberto:* a lista rola para manter o campo visível; a barra FINALIZAR
+  se esconde enquanto digita.
+- *Carga inválida:* "Informe um valor maior ou igual a 0", ligada ao campo.
 
 ------------------------------------------------------------------------
 
@@ -251,91 +343,83 @@ som obrigatório. Anunciar término por vibração e texto ("Descanso encerrado"
 
 ```text
 ┌───────────────────────────────┐
-│ HISTÓRICO                     │
+│ HISTÓRICO          [ Todos ▼ ]│  FilterSelect (P1)
 │                               │
-│ SETEMBRO 2026                 │  cabeçalho de mês (label, sticky)
+│ SETEMBRO 2026                 │
 │ ┌───────────────────────────┐ │
-│ │ 19  Dia 1 · Peito e Trí.. │ │  data em display pequeno à esquerda
-│ │ SET 5 / 6 realizados · 52m│ │  duração só se disponível
+│ │ 19  Treino Monstro        │ │  data à esquerda; programa; treino
+│ │ SET D — Peito e tríceps   │ │
+│ │     8 / 10 · 52 min       │ │
 │ └───────────────────────────┘ │
-│ ┌───────────────────────────┐ │
-│ │ 16  Dia 5 · Bíceps e Trí..│ │
-│ │ SET 6 / 6 realizados      │ │
-│ └───────────────────────────┘ │
-├───────────────────────────────┤
+│ │ 12  Treino Padrão         │ │
+│ │ SET Dia 2 — Costas e Bíc. │ │
+│ │     ✓ 6 / 6               │ │
+└───────────────────────────────┘
 ```
 
-- Item inteiro é um botão (toque abre detalhes), altura mínima 72.
-- Sessão 6/6 mostra ✓ ao lado do texto; parcial mostra só a contagem.
-- *Vazio:* ícone + "Ainda não existem treinos registrados." + botão
-  **Ir para o treino**.
-- *Carregando:* 4 esqueletos de item. *Erro:* mensagem + **Tentar de novo**.
-- Listas longas com `FlatList` (paginação/virtualização).
+- Item inteiro é um botão (altura mínima 72). 6/6 mostra ✓ + contagem.
+- Programa e treino sempre visíveis no item (a sessão os registra). Com filtro por
+  programa ativo, o nome do programa pode sair do item.
+- *Vazio:* "Ainda não existem treinos registrados." + **Ir para o treino**.
+  *Vazio com filtro:* "Nenhum treino deste programa." + **Limpar filtro**.
+- *Carregando:* 4 esqueletos. *Erro:* mensagem + **Tentar de novo**.
+- `FlatList` para listas longas.
 
 ## 6.1 Detalhe da sessão
 
 ```text
-‹  DIA 1 — PEITO E TRÍCEPS
-   19/09/2026 · 5 / 6 realizados
+‹  TREINO D — PEITO E TRÍCEPS
+   Treino Monstro · 19/09/2026 · 8 / 10 realizados
 
- ✓ Supino               80 kg
- ✓ Supino inclinado     70 kg
- ○ Fly                  não realizado
- ✓ Tríceps corda        40 kg
- ✓ Tríceps francês      30 kg
- ✓ Tríceps testa        25 kg
+ ✓ Supino reto           80 kg
+   4 × 8
+ ✓ Crucifixo reto        20 kg
+   3 × 12
+ ○ Voador                não realizado
+   3 × até a falha
                               [ EDITAR ]
 ```
 
-Feito = ✓ + texto do peso; não realizado = ○ + o texto "não realizado" (nunca só
-cinza). Sem peso informado mostra "sem carga".
+Feito = ✓ + peso; não realizado = ○ + o texto "não realizado"; sem peso mostra
+"sem carga". A prescrição aparece abaixo do nome como registro do programa.
 
 ## 6.2 Edição
 
-Mesmo layout com linhas editáveis: alternar feito/não feito e editar carga
-(WeightInput). Botões **Salvar** (primário, altura 56) e **Cancelar**; cancelar
-com alterações pendentes pede confirmação. Não permite trocar o dia do treino.
-Salvar é transacional e não muda a sequência atual.
+Linhas editáveis: alternar feito/não feito e editar carga (WeightInput).
+**Salvar** (primário) e **Cancelar** (confirma se houver alterações). Não permite
+trocar programa nem treino da sessão. Salvar não altera a sequência atual.
 
 ------------------------------------------------------------------------
 
 # 7. Estatísticas
 
-**Objetivo:** mostrar frequência e cadência (só isso) do período escolhido.
+**Objetivo:** frequência e cadência (só isso) do período e do programa escolhidos.
 
 ```text
 ┌───────────────────────────────┐
-│ ESTATÍSTICAS                  │
-│ [Semana][Mês][Trim.][Sem.][Ano]│  SegmentedControl rolável, ativo =
-│ ‹  SETEMBRO 2026  ›           │  preenchido + rótulo em negrito
-│                               │
+│ ESTATÍSTICAS       [ Todos ▼ ]│  filtro: Todos / Treino Padrão / Treino Monstro
+│ [Semana][Mês][Trim.][Sem.][Ano]│
+│ ‹  SETEMBRO 2026  ›           │
 │ ┌───────────────────────────┐ │
-│ │ TREINOS NO PERÍODO        │ │
-│ │ 17                        │ │  display
+│ │ TREINOS NO PERÍODO   17   │ │
 │ └───────────────────────────┘ │
 │ ┌────────────┐ ┌────────────┐ │
 │ │ POR SEMANA │ │ INTERVALO  │ │
 │ │ 3,4        │ │ 2,0 dias   │ │
 │ └────────────┘ └────────────┘ │
-│                               │
-│ CALENDÁRIO (mês) / DIAS (semana)
-│  S  T  Q  Q  S  S  D          │
-│  ●     ●        ●             │  pontos nos dias com treino
+│ DIAS COM TREINO (calendário)  │
 └───────────────────────────────┘
 ```
 
-- Setas `‹ ›` navegam períodos anteriores; o próximo é desabilitado no período
-  atual.
-- **Semana:** mostra treinos e a distribuição por dia (SEG…DOM) com ponto e
-  texto ("3 treinos"). **Mês/Trim./Sem./Ano:** mesmas métricas agregadas; o
-  calendário de pontos aparece no mês (P1, BL-075).
-- Dias com treino: ponto + `accessibilityLabel` ("dia 16, com treino").
-- Intervalo médio com menos de 2 treinos: mostrar "—" com nota "precisa de ao
-  menos 2 treinos".
-- *Sem dados:* "Complete seu primeiro treino para começar a acompanhar sua
-  frequência." + **Ir para o treino**.
-- Contam só sessões finalizadas; nunca mostrar carga, peso corporal ou
-  recomendação.
+- Setas `‹ ›` navegam períodos; o próximo é desabilitado no período atual.
+- **Semana:** distribuição por dia (SEG…DOM) com ponto e texto. **Demais
+  períodos:** mesmas métricas agregadas; calendário de pontos no mês (P1).
+- Filtro por programa recalcula tudo; o filtro escolhido fica visível ao lado do
+  título e aparece na leitura por leitor de tela.
+- Intervalo médio com menos de 2 treinos: "—" + "precisa de ao menos 2 treinos".
+- *Sem dados (ou nenhum treino do programa filtrado):* "Complete seu primeiro
+  treino para começar a acompanhar sua frequência." + **Ir para o treino**.
+- Só sessões finalizadas; nunca carga, peso corporal ou recomendação.
 
 ------------------------------------------------------------------------
 
@@ -344,22 +428,73 @@ Salvar é transacional e não muda a sequência atual.
 ```text
 CONFIGURAÇÕES
 
+PROGRAMA
+ Programa de treino            Treino Padrão  ›
+ Tipo de sequência             Sequência contínua  ›
+ Agenda semanal                ›      (só com "Dias da semana")
+
 DESCANSO
  Cronômetro de descanso        [ Switch ]
- Tempo de descanso             01:30  ›     (desabilitado se cronômetro off;
-                                             texto: "Ative o cronômetro")
-TREINOS
- Gerenciar treinos             ›   (P2, marcado "Em breve")
- Gerenciar exercícios          ›   (P2, marcado "Em breve")
+ Tempo de descanso             01:30  ›     (desabilitado se cronômetro off)
 
 SEQUÊNCIA
- Reiniciar sequência           ›   (abre a mesma sheet da Home)
+ Reiniciar sequência           ›      (só com "Sequência contínua")
 ```
 
-- Linhas de 56 dp com rótulo à esquerda e controle à direita; switch com texto
-  "Ligado/Desligado" acessível.
-- Tempo de descanso: seletor de minutos:segundos em sheet, passo de 5 s.
-- Itens não implementados ficam visíveis porém desabilitados com "Em breve".
+Linhas de 56 dp; rótulo à esquerda, valor atual + `›` à direita. "Gerenciar
+treinos/exercícios" ficam fora do MVP e não aparecem.
+
+## 8.1 Seleção de programa
+
+```text
+TIPO DE TREINO
+
+(●) Treino Padrão
+    5 treinos em sequência
+( ) Treino Monstro
+    A/B/C/D · programação semanal
+```
+
+RadioCards. A descrição é informativa: **não** vincula o programa a uma sequência
+(as duas configurações são independentes). Aviso fixo: "Trocar de programa não
+apaga seu histórico."
+
+Com **treino em andamento**, a seleção fica desabilitada com o motivo: "Finalize
+ou descarte o treino em andamento para trocar de programa." (**proposta**, ver
+seção 12).
+
+## 8.2 Seleção de tipo de sequência
+
+```text
+TIPO DE SEQUÊNCIA
+
+(●) Sequência contínua
+    O próximo treino é definido pelo último treino finalizado.
+( ) Dias da semana
+    O próximo treino é definido pela agenda do programa.
+```
+
+Ao escolher "Dias da semana" num programa sem agenda, levar direto à agenda do
+programa (seção 8.3). Trocar de tipo não altera o histórico.
+
+## 8.3 Agenda semanal
+
+Aparece com "Dias da semana"; é **por programa** (título mostra o programa).
+
+```text
+AGENDA · TREINO MONSTRO
+
+Segunda      Treino A   ›
+Terça        Treino B   ›
+Quarta       Descanso
+Quinta       Treino C   ›
+Sexta        Treino D   ›
+Sábado       Opcional   ›
+Domingo      Descanso
+```
+
+Toque na linha abre sheet com as opções: os treinos do programa, "Descanso" e
+"Opcional". Alteração salva na hora (sem botão). Ordem SEG→DOM.
 
 ------------------------------------------------------------------------
 
@@ -367,10 +502,10 @@ SEQUÊNCIA
 
 - Abas inferiores (Expo Router `(tabs)`): `index` (Treino/Home), `history`,
   `statistics`, `settings`.
-- `workout` e o detalhe/edição do histórico são telas empilhadas **sem abas**
-  para maximizar espaço e evitar saída acidental; voltar do treino não descarta
-  a sessão (ela fica em andamento).
-- Deep link/relançamento: se há sessão em andamento, Home oferece continuar.
+- `workout`, o detalhe/edição do histórico e as telas de seleção/agenda das
+  configurações são telas empilhadas **sem abas**. Voltar do treino não descarta a
+  sessão (fica em andamento).
+- Se há sessão em andamento ao abrir o app, a Home oferece continuar.
 
 ------------------------------------------------------------------------
 
@@ -393,11 +528,31 @@ SEQUÊNCIA
 
 ------------------------------------------------------------------------
 
-# 11. Decisões e pontos em aberto
+# 11. Decisões de design
 
-- **Chip "Usar última carga":** adotado como atalho de digitação; o campo nunca
-  vem pré-preenchido. Se o PRD for lido de forma mais estrita ("apenas
-  referência"), remover o chip.
+- **Chip "Usar última carga":** atalho de digitação; o campo nunca vem
+  pré-preenchido. Se o PRD for lido de forma mais estrita ("apenas referência"),
+  remover o chip.
 - **Passo de 2,5 kg nos botões −/+:** ajuda de entrada, sem sugestão de carga.
-- **Só tema escuro no MVP**; tema claro fica no backlog futuro.
+- **Só tema escuro no MVP**; tema claro no backlog futuro.
 - **Fontes:** Barlow / Barlow Condensed (empacotadas para funcionar offline).
+- **Programa e sequência são independentes na UI:** nenhuma tela associa
+  "Monstro" a "semanal" além de texto informativo.
+- **Ajuda (`?`/`ⓘ`) sempre em bottom sheet**, nunca inline, para manter a tela de
+  treino limpa.
+
+# 12. Propostas de UI para pontos ainda em aberto na documentação
+
+Estas propostas preenchem lacunas do PRD/arquitetura para que as telas façam
+sentido; confirmar antes de implementar.
+
+1. **Dia de descanso/opcional na Home:** mostrar o estado e oferecer **Ver
+   treinos do programa** para treinar mesmo assim (sem criar sessão automática).
+2. **Sábado "Opcional":** sem treino sugerido, pois a agenda tem `workout_id`
+   nulo nesse dia; a Home só indica que é opcional.
+3. **`WEEKLY` num programa sem agenda:** Home mostra "Sem agenda configurada" e
+   leva à configuração da agenda.
+4. **Troca de programa com sessão em andamento:** bloqueada com explicação
+   (opção "impedir" da arquitetura), em vez de finalizar automaticamente.
+5. **Agenda editável:** o usuário escolhe, para cada dia, um treino do programa,
+   "Descanso" ou "Opcional".
