@@ -164,7 +164,7 @@
   <div role="group" aria-label="Estado"><span>Estado</span>
     <button data-e="normal" aria-pressed="true">Normal</button><button data-e="progress" aria-pressed="false">Em andamento</button><button data-e="empty" aria-pressed="false">Primeiro uso</button></div>
 </div>
-<p class="note">Protótipo navegável com dados fictícios. Os exercícios do Treino Monstro são ilustrativos: a ficha completa ainda não está na documentação. O ⓘ está preenchido em todos os exercícios de todos os programas. Os controles acima simulam o que as Configurações e o calendário definem.</p>
+<p class="note">Protótipo navegável com dados fictícios. O Treino Monstro foi transcrito da ficha em docs/treino monstro/. Os textos do ⓘ (músculos e descrições) foram escritos por mim e precisam de revisão. O ⓘ está preenchido em todos os exercícios de todos os programas. Os controles acima simulam o que as Configurações e o calendário definem.</p>
 
 <div class="phone">
   <main style="flex:1;display:flex;flex-direction:column;min-height:0">
@@ -213,27 +213,48 @@ const PROGRAMS = {
     {code:'4', name:'Ombro Isolado', ex:['Crucifixo inverso','Elevação frontal','Elevação lateral','Desenvolvimento']},
     {code:'5', name:'Bíceps e Tríceps', ex:['Tríceps corda','Tríceps francês','Tríceps testa','Rosca direta','Rosca martelo','Rosca Scott']},
   ].map(w => ({...w, ex:w.ex.map(n => E(n,'3 × 10–12','','',null))})), agenda:null },
-  monstro: { name:'Treino Monstro', kind:'Treino', pos:2, workouts:[
+  monstro: { name:'Treino Monstro', kind:'Treino', pos:2, optNote:'Abdominais supra/infra e oblíquos', workouts:[
     {code:'A', name:'Ombros completos', ex:[
-      E('Desenvolvimento','4 × 8','BI-SET','Aquecimento antes',null),
-      E('Elevação lateral','3 × 6/8/10','DROP-SET','Pirâmide decrescente',null),
-      E('Crucifixo invertido','3 × 12','','Execução concêntrica lenta',null)]},
+      E('Bi-set: elevação lateral alternada e frontal','3 × 8/8','BI-SET','Halteres, peso leve para aquecer',null),
+      E('Elevação unilateral no cross','3 × 10/10','','Cada braço, sem descanso',null),
+      E('Elevação unilateral no banco inclinado','3 × 10/10','','Com halter, cada braço, sem descanso',null),
+      E('Elevação lateral','3 × 6/8/10','DROP-SET','Pirâmide decrescente (descer carga)',null),
+      E('Elevação frontal unilateral','3 × 8/8','','Com halter',null),
+      E('Elevação frontal sentado com barra','2 × 10','','Barra reta em supinação, segurar excêntrica',null),
+      E('Desenvolvimento frontal no Smith','3 × 10','','Concêntrica lenta',null),
+      E('Encolhimento no Smith','3 × 20','','Trapézio',null),
+      E('Crucifixo invertido no cross','3 × 10','','Pegada cruzada',null),
+      E('Voador invertido','3 × 12','','Na máquina',null)]},
     {code:'B', name:'Costas e bíceps', ex:[
-      E('Serrote unilateral','3 × 10','','',null),
-      E('Remada articulada','4 × 8','BI-SET','Puxada em sequência',null),
-      E('Rosca martelo','3 × 12','','',null)]},
+      E('Serrote unilateral','3 × 10/10','','Cada braço, sem descanso',null),
+      E('Bi-set: remada cavalinho pronada e neutra','3 × 8/8','BI-SET','Pegada pronada / neutra',null),
+      E('Puxada na polia alta com corda','3 × 16','','No cross, corda de tríceps, sentado no step',null),
+      E('Remada articulada','3 × 10','','Excêntrica lenta (volta)',null),
+      E('Remada baixa unilateral','3 × 10','','Com rotação de punho, cada braço, sem descanso',null),
+      E('Bi-set: puxada alta pronada e supinada','3 × 8/8','BI-SET','Pegada pronada / supinada',null),
+      E('Puxada alta fechada na barra V','3 × 12','','Jogar o tronco para trás',null),
+      E('Rosca martelo sentado','3 × 10','','Com halter, cada braço',null)]},
     {code:'C', name:'Pernas completas', ex:[
-      E('Agachamento livre / Smith','3 × 12/10/8','','Progressão de carga',100,'Quadríceps','Glúteos · Posteriores','Exercício de empurrar que enfatiza coxas e glúteos.'),
-      E('Cadeira extensora','3 × 10/10/10','DROP-SET','Pirâmide crescente',60,'Quadríceps','—','Extensão de joelho isolando o quadríceps.'),
-      E('Leg Press','4 × 10','','',180),
-      E('Afundo unilateral','3 × 10','','Cada perna',null),
-      E('Adutora','3 × 12','','',45),
-      E('Panturrilha','4 × 15','BI-SET','',null)]},
+      E('Avanço unilateral','3 × 8/8','','Cada perna',null),
+      E('Passada unilateral','3 × 20/30/40 passos','','',null),
+      E('Agachamento livre ou no Smith','3 × 12/10/8','PROGRESSÃO DE CARGA','',100),
+      E('Leg press 45°','3 × 10/20','','Pés normais (completo) combinado com pés juntos (movimento curto)',180),
+      E('Cadeira extensora','3 × 10/10/10','DROP-SET','Pirâmide crescente',60),
+      E('Afundo unilateral','3 × 10/10','','Livre, com halter',null),
+      E('Mesa flexora','3 × 8/8/8','DROP-SET','Pirâmide decrescente',null),
+      E('Adutora','3 × 20','','Movimento rápido',45),
+      E('Bi-set: panturrilha sentado e em pé','3 × 15/15','BI-SET','',null)]},
     {code:'D', name:'Peito e tríceps', ex:[
-      E('Supino reto','4 × 8','','Progressão de carga',80,'Peitoral maior','Tríceps · Deltoide anterior','Exercício de empurrar que enfatiza a musculatura do peito, com participação do tríceps e da parte anterior dos ombros.'),
-      E('Crucifixo reto','3 × 12','','',20),
-      E('Voador','3 × até a falha','','',null),
-      E('Tríceps coice','3 × 12','','',null)]},
+      E('Apoio no chão','3 × 10/15/20','','',null),
+      E('Bi-set: crucifixo com halter pronada e neutra','3 × 8/8','BI-SET','Pegada pronada combinada com neutra',null),
+      E('Supino reto','4 × 8','PROGRESSÃO DE CARGA','Aumentar a carga a cada série',80),
+      E('Crucifixo reto no cross','3 × 12','','Segurar excêntrica (volta)',null),
+      E('Supino inclinado','3 × 8','','Ponto 0 na fase baixa do movimento (contar 5 s para subir e descer)',null),
+      E('Crucifixo inclinado com halter','3 × 8','','Subida lenta, descida normal',null),
+      E('Voador','3 × até a falha','FALHA','Na máquina',null),
+      E('Tríceps testa unilateral no cross','3 × 10','','Polia alta, cada braço, sem parar',null),
+      E('Bi-set: tríceps na barra W e barra reta invertida','3 × 10/10','BI-SET','No cross: barra W pegada normal combinada com barra reta pegada invertida',null),
+      E('Tríceps coice','3 × 10/10','','Com halter, cada braço, sem parar',null)]},
   ], agenda:{1:'A',2:'B',3:null,4:'C',5:'D',6:'opt',7:null} },
 };
 // exercícios do Padrão: última carga fictícia
@@ -241,6 +262,32 @@ PROGRAMS.padrao.workouts.forEach(w => w.ex.forEach((x,i) => { x.last = 40 + i*10
 // Informações do exercício (ⓘ): preenchidas para TODO exercício de TODO programa.
 // O mesmo exercício (mesmo nome) é uma só entidade e tem as mesmas informações em qualquer treino.
 const INFO = {
+  'Bi-set: elevação lateral alternada e frontal':['Deltoide lateral · Deltoide anterior','Trapézio superior','Duas elevações em sequência com halteres: uma para o lado e outra à frente do corpo.'],
+  'Elevação unilateral no cross':['Deltoide lateral','Trapézio · Supraespinhal','Elevação lateral de um braço por vez na polia, com tensão constante.'],
+  'Elevação unilateral no banco inclinado':['Deltoide lateral','Trapézio · Supraespinhal','Elevação lateral de um braço por vez apoiado em banco inclinado.'],
+  'Elevação frontal unilateral':['Deltoide anterior','Peitoral superior · Serrátil','Elevação do halter à frente do corpo, um braço por vez.'],
+  'Elevação frontal sentado com barra':['Deltoide anterior','Peitoral superior · Serrátil','Elevação da barra reta à frente do corpo sentado, com pegada em supinação.'],
+  'Desenvolvimento frontal no Smith':['Deltoide anterior · Deltoide lateral','Tríceps · Trapézio','Empurrar a barra acima da cabeça, guiada pelo Smith, à frente do corpo.'],
+  'Encolhimento no Smith':['Trapézio superior','Levantador da escápula · Antebraço','Elevação dos ombros em direção às orelhas segurando a barra.'],
+  'Crucifixo invertido no cross':['Deltoide posterior','Romboides · Trapézio','Abertura dos braços nas polias com pegada cruzada, trabalhando a parte de trás do ombro.'],
+  'Voador invertido':['Deltoide posterior','Romboides · Trapézio médio','Abertura dos braços para trás em máquina, trabalhando a parte de trás do ombro.'],
+  'Bi-set: remada cavalinho pronada e neutra':['Grande dorsal · Romboides','Bíceps · Trapézio · Deltoide posterior','Duas remadas em sequência na máquina cavalinho, com pegada pronada e neutra.'],
+  'Puxada na polia alta com corda':['Grande dorsal','Redondo maior · Tríceps (cabeça longa)','Puxada da corda a partir da polia alta, trabalhando a musculatura das costas.'],
+  'Remada baixa unilateral':['Grande dorsal · Romboides','Bíceps · Antebraço · Deltoide posterior','Remada na polia baixa de um braço por vez, com rotação do punho.'],
+  'Bi-set: puxada alta pronada e supinada':['Grande dorsal','Bíceps · Redondo maior · Trapézio','Duas puxadas em sequência na polia alta, com pegada pronada e supinada.'],
+  'Puxada alta fechada na barra V':['Grande dorsal','Bíceps · Redondo maior','Puxada com barra V e pegada fechada, com o tronco levemente inclinado para trás.'],
+  'Rosca martelo sentado':['Braquial · Braquiorradial','Bíceps braquial','Flexão dos cotovelos sentado com halteres e pegada neutra.'],
+  'Avanço unilateral':['Quadríceps · Glúteos','Posteriores de coxa · Core','Passo à frente com flexão do joelho, trabalhando uma perna por vez.'],
+  'Passada unilateral':['Quadríceps · Glúteos','Posteriores de coxa · Panturrilha · Core','Caminhada em passos longos, alternando as pernas.'],
+  'Agachamento livre ou no Smith':['Quadríceps · Glúteos','Posteriores de coxa · Lombar · Core','Agachamento com barra livre ou no Smith, envolvendo coxas e glúteos.'],
+  'Leg press 45°':['Quadríceps · Glúteos','Posteriores de coxa · Adutores','Empurrar a plataforma a 45°, com pés afastados (completo) ou juntos (movimento curto).'],
+  'Bi-set: panturrilha sentado e em pé':['Gastrocnêmio · Sóleo','Não há músculos secundários relevantes','Duas elevações de calcanhar em sequência: sentado (sóleo) e em pé (gastrocnêmio).'],
+  'Apoio no chão':['Peitoral maior','Tríceps · Deltoide anterior · Core','Flexão de braços no solo com o peso do próprio corpo.'],
+  'Bi-set: crucifixo com halter pronada e neutra':['Peitoral maior','Deltoide anterior','Dois crucifixos em sequência com halteres, variando a pegada.'],
+  'Crucifixo reto no cross':['Peitoral maior','Deltoide anterior','Abertura dos braços nas polias em banco reto, com tensão constante.'],
+  'Crucifixo inclinado com halter':['Peitoral maior (porção clavicular)','Deltoide anterior','Abertura dos braços com halteres em banco inclinado.'],
+  'Tríceps testa unilateral no cross':['Tríceps braquial','Ancôneo','Extensão do cotovelo de um braço por vez na polia alta.'],
+  'Bi-set: tríceps na barra W e barra reta invertida':['Tríceps braquial','Ancôneo · Antebraço','Duas extensões de cotovelo em sequência no cross: barra W e barra reta com pegada invertida.'],
   'Supino':['Peitoral maior','Tríceps · Deltoide anterior','Exercício de empurrar na horizontal que enfatiza o peito, com participação do tríceps e da parte anterior dos ombros.'],
   'Supino reto':['Peitoral maior','Tríceps · Deltoide anterior','Exercício de empurrar na horizontal que enfatiza o peito, com participação do tríceps e da parte anterior dos ombros.'],
   'Supino inclinado':['Peitoral maior (porção clavicular)','Deltoide anterior · Tríceps','Empurrar em banco inclinado, com ênfase na parte superior do peito.'],
@@ -260,7 +307,7 @@ const INFO = {
   'Rosca martelo':['Braquial · Braquiorradial','Bíceps braquial','Flexão dos cotovelos com pegada neutra, com maior ênfase no antebraço e no braquial.'],
   'Rosca direta':['Bíceps braquial','Braquial · Antebraço','Flexão dos cotovelos com barra, com pegada supinada.'],
   'Agachamento Hack':['Quadríceps','Glúteos · Posteriores de coxa','Agachamento em máquina guiada, com foco na parte da frente da coxa.'],
-  'Agachamento livre / Smith':['Quadríceps · Glúteos','Posteriores de coxa · Lombar · Core','Agachamento com barra livre ou no Smith, envolvendo coxas e glúteos.'],
+  'Agachamento livre ou no Smith_old':['Quadríceps · Glúteos','Posteriores de coxa · Lombar · Core','Agachamento com barra livre ou no Smith, envolvendo coxas e glúteos.'],
   'Cadeira extensora':['Quadríceps','Não há músculos secundários relevantes','Extensão dos joelhos sentado, isolando a parte da frente da coxa.'],
   'Adutora':['Adutores da coxa','Glúteos','Aproximação das pernas em máquina, trabalhando a parte interna da coxa.'],
   'Mesa flexora':['Posteriores de coxa','Panturrilha · Glúteos','Flexão dos joelhos deitado, trabalhando a parte de trás da coxa.'],
@@ -353,7 +400,7 @@ function rHome(){
   } else if ((r.type === 'rest' || r.type === 'optional') && !inProg){
     main = `<span class="label">${DAYNAMES[S.day-1]}-feira · ${r.type==='rest'?'Descanso':'Opcional'}</span>
       <div class="display">${r.type==='rest'?'Descanso':'Opcional'}</div>
-      <span class="muted">${r.type==='rest'?'Não há treino programado para hoje.':'Treino opcional hoje.'}</span>
+      <span class="muted">${r.type==='rest'?'Não há treino programado para hoje.':(pr.optNote ? 'Opcional: ' + pr.optNote.toLowerCase() + '.' : 'Treino opcional hoje.')}</span>
       <button class="btn" data-act="pickWorkout">Ver treinos do programa</button>`;
   } else {
     const label = inProg ? 'Treino em andamento' : S.seq==='WEEKLY' ? `${DAYNAMES[S.day-1]}-feira` : 'Próximo treino';

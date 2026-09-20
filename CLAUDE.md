@@ -8,6 +8,7 @@ App pessoal de controle de treinos (Android + iOS). Registra treinos de academia
 - `docs/arquitetura.md` — stack, estratégias de sequência, camadas, estrutura de diretórios
 - `docs/modelo-dados.md` — entidades, schema SQL, regras de integridade
 - `docs/telas.md` — telas, fluxos, estados de UI
+- `docs/fichas-treino.md` — transcrição das fichas (imagens em `docs/treino monstro/` e `docs/treino padrao/`): exercícios, prescrições, técnicas e agenda do Treino Monstro. Base do seed
 - `docs/backlog.md` — épicos BL-xxx com prioridade P0/P1/P2 e roadmap por sprint
 - `docs/design-telas.md` e `docs/prototipo-telas.html` — direção visual "Placar de academia" (tema escuro), definição detalhada das telas e protótipo navegável. Cobrem programas, tipo de sequência, agenda semanal, filtros, `?` e `ⓘ`. A seção 12 do design lista propostas de UI para as lacunas abaixo (a confirmar).
 
@@ -74,8 +75,11 @@ Regras de camada:
 
 ## Pontos em aberto na documentação (confirmar antes de implementar)
 
-- **Conteúdo do Treino Monstro**: o PRD lista só as técnicas de cada treino, não os exercícios/prescrições da "ficha original". O seed (BL-021/022) depende dessa ficha.
-- **Sábado "Opcional"**: `weekly_schedule` tem `optional` mas `workout_id` nulo no exemplo — não está definido qual treino é sugerido nesse dia nem o que a Home mostra.
+- **Bi-set = um item ou dois?** A ficha do Monstro escreve cada bi-set em uma linha (ex.: "bi-set de panturrilha sentado e em pé"). Hoje ele é modelado como **um** item marcável com `technique = BI-SET` e **uma** carga; se você quiser carga separada por exercício do bi-set, ele precisa virar dois itens.
+- **Variações de exercício**: exercícios com variação na ficha (ex.: "tríceps testa unilateral no cross" vs "Tríceps testa" do Padrão) foram tratados como exercícios distintos; só há reuso quando o nome é o mesmo (ex.: Supino inclinado, Elevação lateral). Confirmar.
+- **"Aquecimento" na ficha do Monstro**: cada treino traz o rótulo "Aquecimento:" antes da lista; foi entendido como marcando só o primeiro item. Não há campo próprio para aquecimento (fica em `notes`).
+- **Sábado/quarta "Opcional"**: a ficha define como **abdominais supra/infra e oblíquos**, não um treino A–D. `weekly_schedule.optional` com `workout_id` nulo não guarda esse texto: falta decidir onde ele mora (ex.: campo de nota na agenda) e se o app registra o abdominal como sessão.
+- **Cardio da ficha**: "360 horas semanais de caminhada" provavelmente é 360 **minutos**; o app não registra cardio (fora do escopo). Confirmar e ignorar.
 - **`sequence_type` global**: fica em `app_settings` (único), mas o estado contínuo é por programa. Definir o que acontece ao escolher `WEEKLY` num programa sem agenda (ex.: Treino Padrão) e o que a Home exibe.
 - **Troca de programa com sessão em andamento**: a arquitetura diz "finalizar/impedir"; escolher um comportamento.
 - **Agenda semanal editável**: BL-042 a configura, mas não está definido se o usuário pode alterar a agenda ou só escolher entre treinos existentes.

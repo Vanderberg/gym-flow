@@ -198,9 +198,9 @@ treino; a sessão começa no toque em COMEÇAR.
   sem botão primário; ação secundária **Ver treinos do programa**.
   **Proposta (a confirmar):** essa ação abre uma lista para o usuário iniciar
   qualquer treino do programa mesmo assim, sem alterar a agenda.
-- *Dia opcional* (sábado do Monstro): cartão "SÁBADO · OPCIONAL" com o texto "Treino
-  opcional" e **Ver treinos do programa** (mesma ação). Não há treino sugerido,
-  porque a documentação ainda não define qual (ver seção 12).
+- *Dia opcional* (sábado do Monstro): cartão "SÁBADO · OPCIONAL" com o texto da
+  ficha, "Opcional: abdominais supra/infra e oblíquos", e **Ver treinos do
+  programa** (mesma ação). Não é um treino A–D e não gera sessão.
 - *Programa sem agenda* (ex.: Treino Padrão com "Dias da semana"): cartão
   "Sem agenda configurada para este programa" + botão **Configurar agenda**
   (leva às Configurações). Nunca mostrar tela vazia.
@@ -548,8 +548,9 @@ sentido; confirmar antes de implementar.
 
 1. **Dia de descanso/opcional na Home:** mostrar o estado e oferecer **Ver
    treinos do programa** para treinar mesmo assim (sem criar sessão automática).
-2. **Sábado "Opcional":** sem treino sugerido, pois a agenda tem `workout_id`
-   nulo nesse dia; a Home só indica que é opcional.
+2. **Sábado "Opcional":** segundo a ficha, é abdominal (supra/infra e oblíquos),
+   não um treino A–D. A Home mostra esse texto e nada é registrado. Falta decidir
+   onde o texto é guardado (ex.: nota na agenda).
 3. **`WEEKLY` num programa sem agenda:** Home mostra "Sem agenda configurada" e
    leva à configuração da agenda.
 4. **Troca de programa com sessão em andamento:** bloqueada com explicação
