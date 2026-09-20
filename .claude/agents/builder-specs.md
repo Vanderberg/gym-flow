@@ -96,14 +96,13 @@ Antes de disparar qualquer sub-agente, atualize `specs/INDEX.md` marcando
 uma só vez. Nunca marque uma spec que já esteja em `desenvolvendo` ou `concluída` — isso indicaria
 outro processo já trabalhando nela ou trabalho já concluído.
 
+Use `sed` via Bash (este agente não tem Edit/Write), uma vez por spec elegível:
+
 ```bash
-SPEC_NAME="<nome-da-spec>"
-
-WORKTREE_PATH="../worktrees/$SPEC_NAME"
-
-
-git worktree add "$WORKTREE_PATH" -b "spec/$SPEC_NAME"
+sed -i "s/| <SPEC_NAME> | aprovada |/| <SPEC_NAME> | desenvolvendo |/" specs/INDEX.md
 ```
+
+Os worktrees (`.worktrees/<SPEC_NAME>`) são criados pelos sub-agentes no Passo 4, não aqui.
 
 ## Passo 4 — Disparar sub-agentes em paralelo
 
