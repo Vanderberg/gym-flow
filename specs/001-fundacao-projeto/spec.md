@@ -18,7 +18,7 @@
 
 ### User Story 1 - App abre em Android e iOS (Priority: P1)
 
-Como dono do app, quero um aplicativo que inicia nos dois sistemas com quatro abas de navegação (Treino/Home, Histórico, Estatísticas, Configurações) e a tela de treino aberta como tela empilhada, sem abas, para ter a base sobre a qual as demais funções serão construídas.
+Como dono do app, quero um aplicativo que inicia nos dois sistemas com quatro abas de navegação (Treino/Home, Histórico, Estatísticas, Config) e a tela de treino aberta como tela empilhada, sem abas, para ter a base sobre a qual as demais funções serão construídas.
 
 **Why this priority**: Nada mais pode ser entregue ou validado sem um app que rode.
 
@@ -71,13 +71,13 @@ Como desenvolvedor, quero verificações automáticas de tipos, estilo e testes,
 ### Functional Requirements
 
 - **FR-001**: O app MUST executar em Android e iOS a partir do mesmo código.
-- **FR-002**: O app MUST oferecer navegação por quatro abas (Treino/Home, Histórico, Estatísticas, Configurações) e tela de treino empilhada sem abas.
+- **FR-002**: O app MUST oferecer navegação por quatro abas (Treino/Home, Histórico, Estatísticas, Config) e tela de treino empilhada sem abas.
 - **FR-003**: O app MUST persistir dados apenas localmente, sem login, backend ou sincronização.
 - **FR-004**: A estrutura de armazenamento MUST ser versionada e atualizada de forma incremental e transacional.
-- **FR-008**: Se uma migração falhar, o app MUST reverter a migração, preservar os dados anteriores e bloquear o uso com mensagem de erro e ação "Tentar novamente".
 - **FR-005**: O projeto MUST ter verificação de tipos estrita, estilo e testes executáveis por comando único.
 - **FR-006**: O app MUST NOT solicitar permissões desnecessárias.
 - **FR-007**: Todos os textos de interface MUST estar em português (pt-BR).
+- **FR-008**: Se uma migração falhar, o app MUST reverter a migração, preservar os dados anteriores e bloquear o uso com mensagem de erro e ação "Tentar novamente".
 
 ### Key Entities
 
@@ -85,8 +85,8 @@ Como desenvolvedor, quero verificações automáticas de tipos, estilo e testes,
 
 ## Success Criteria *(mandatory)*
 
-- **SC-001**: O app inicia e exibe a Home em até 3 segundos no aparelho de referência (Moto G84, Android 15).
-- **SC-002**: 100% das abas e telas empilhadas são alcançáveis em ambos os sistemas.
+- **SC-001**: Em partida a frio (app fechado), do toque no ícone até a Home visível leva até 3 segundos no aparelho de referência (Moto G84, Android 15), medido por cronômetro em 3 tentativas (vale a pior).
+- **SC-002**: 100% das abas e telas empilhadas são alcançáveis no Android (obrigatório) e no iOS (validado assim que houver aparelho ou simulador disponível; até lá, pendência registrada).
 - **SC-003**: Atualizar de qualquer versão anterior do armazenamento preserva 100% dos dados de teste.
 - **SC-004**: Todas as verificações automáticas passam no projeto recém-criado.
 
