@@ -206,7 +206,7 @@ aparece em programas que não a definem.
   sem botão primário; ação secundária **Ver treinos do programa**.
   **Proposta (a confirmar):** essa ação abre uma lista para o usuário iniciar
   qualquer treino do programa mesmo assim, sem alterar a agenda.
-- *Dia opcional* (sábado do Monstro): cartão "SÁBADO · OPCIONAL" com o texto da
+- *Dia opcional* (sábado e domingo do Monstro): cartão "SÁBADO · OPCIONAL" (ou "DOMINGO · OPCIONAL") com o texto da
   ficha, "Opcional: abdominais supra/infra e oblíquos", e **Ver treinos do
   programa** (mesma ação). Não é um treino A–D e não gera sessão.
 - *Programa sem agenda* (ex.: Treino Padrão com "Dias da semana"): cartão
@@ -266,8 +266,8 @@ sempre visível; complementar (legenda, músculos, descrição) só sob demanda.
 
 **Aquecimento e bi-sets:**
 
-- **Aquecimento é livre:** a nota do treino (`warmup_note`, ex.: "Aquecimento livre.
-  Sugestão: manguito rotador.") aparece como texto sob o cabeçalho. Não é cartão,
+- **Aquecimento é livre:** a nota do treino (`warmup_note`: "Aquecimento de manguito rotador + aquecimento livre",
+  igual em todos os treinos) aparece como texto sob o cabeçalho. Não é cartão,
   não é marcável e não entra em "X / Y realizados".
 - **Bi-set = dois cartões vizinhos:** cada exercício do par tem seu cartão, carga e
   marcação; ambos mostram o chip BI-SET e a observação "Bi-set com ...". Uma barra
@@ -508,7 +508,7 @@ Quarta       Descanso
 Quinta       Treino C   ›
 Sexta        Treino D   ›
 Sábado       Opcional   ›
-Domingo      Descanso
+Domingo      Opcional   ›
 ```
 
 Toque na linha abre sheet com as opções: os treinos do programa, "Descanso" e
@@ -566,7 +566,7 @@ sentido; confirmar antes de implementar.
 
 1. **Dia de descanso/opcional na Home:** mostrar o estado e oferecer **Ver
    treinos do programa** para treinar mesmo assim (sem criar sessão automática).
-2. **Sábado "Opcional":** segundo a ficha, é abdominal (supra/infra e oblíquos),
+2. **Sábado e domingo "Opcional":** segundo a ficha e o dono do app, é abdominal (supra/infra e oblíquos),
    não um treino A–D. A Home mostra esse texto e nada é registrado. Falta decidir
    onde o texto é guardado (ex.: nota na agenda).
 3. **`WEEKLY` num programa sem agenda:** Home mostra "Sem agenda configurada" e

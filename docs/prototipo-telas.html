@@ -212,10 +212,10 @@ const PROGRAMS = {
     {code:'3', name:'Perna Completo', ex:['Agachamento Hack','Cadeira extensora','Adutora','Mesa flexora','Cadeira flexora','Leg Press']},
     {code:'4', name:'Ombro Isolado', ex:['Crucifixo inverso','Elevação frontal','Elevação lateral','Desenvolvimento']},
     {code:'5', name:'Bíceps e Tríceps', ex:['Tríceps corda','Tríceps francês','Tríceps testa','Rosca direta','Rosca martelo','Rosca Scott']},
-  ].map(w => ({...w, ex:w.ex.map(n => E(n,'3 × 10–12','','',null))})), agenda:null },
+  ].map(w => ({...w, warm:'Aquecimento de manguito rotador + aquecimento livre.', ex:w.ex.map(n => E(n,'3 × 10–12','','',null))})), agenda:null },
   monstro: { name:'Treino Monstro', kind:'Treino', pos:2, optNote:'Abdominais supra/infra e oblíquos',
     tip:'Caminhada ligeira, sem correr: 30 min de manhã e 30 min à noite, ou 1 h, longe do treino resistido.', workouts:[
-    {code:'A', name:'Ombros completos', warm:'Aquecimento livre. Sugestão: manguito rotador.', ex:[
+    {code:'A', name:'Ombros completos', warm:'Aquecimento de manguito rotador + aquecimento livre.', ex:[
       E('Elevação lateral alternada','3 × 8','BI-SET','Bi-set com elevação frontal. Halteres, peso leve para aquecer',null),
       E('Elevação frontal','3 × 8','BI-SET','Bi-set com elevação lateral alternada. Halteres, peso leve',null),
       E('Elevação unilateral no cross','3 × 10/10','','Cada braço, sem descanso',null),
@@ -227,7 +227,7 @@ const PROGRAMS = {
       E('Encolhimento no Smith','3 × 20','','Trapézio',null),
       E('Crucifixo invertido no cross','3 × 10','','Pegada cruzada',null),
       E('Voador invertido','3 × 12','','Na máquina',null)]},
-    {code:'B', name:'Costas e bíceps', warm:'Aquecimento livre.', ex:[
+    {code:'B', name:'Costas e bíceps', warm:'Aquecimento de manguito rotador + aquecimento livre.', ex:[
       E('Serrote unilateral','3 × 10/10','','Cada braço, sem descanso',null),
       E('Remada cavalinho pegada pronada','3 × 8','BI-SET','Bi-set com remada cavalinho pegada neutra',null),
       E('Remada cavalinho pegada neutra','3 × 8','BI-SET','Bi-set com remada cavalinho pegada pronada',null),
@@ -238,7 +238,7 @@ const PROGRAMS = {
       E('Puxada alta pegada supinada','3 × 8','BI-SET','Bi-set com puxada alta pegada pronada',null),
       E('Puxada alta fechada na barra V','3 × 12','','Jogar o tronco para trás',null),
       E('Rosca martelo sentado','3 × 10','','Com halter, cada braço',null)]},
-    {code:'C', name:'Pernas completas', warm:'Aquecimento livre.', ex:[
+    {code:'C', name:'Pernas completas', warm:'Aquecimento de manguito rotador + aquecimento livre.', ex:[
       E('Avanço unilateral','3 × 8/8','','Cada perna',null),
       E('Passada unilateral','3 × 20/30/40 passos','','',null),
       E('Agachamento livre ou no Smith','3 × 12/10/8','PROGRESSÃO DE CARGA','',100),
@@ -249,7 +249,7 @@ const PROGRAMS = {
       E('Adutora','3 × 20','','Movimento rápido',45),
       E('Panturrilha sentado','3 × 15','BI-SET','Bi-set com panturrilha em pé',null),
       E('Panturrilha em pé','3 × 15','BI-SET','Bi-set com panturrilha sentado',null)]},
-    {code:'D', name:'Peito e tríceps', warm:'Aquecimento livre.', ex:[
+    {code:'D', name:'Peito e tríceps', warm:'Aquecimento de manguito rotador + aquecimento livre.', ex:[
       E('Apoio no chão','3 × 10/15/20','','',null),
       E('Crucifixo com halter pegada pronada','3 × 8','BI-SET','Bi-set com crucifixo com halter pegada neutra',null),
       E('Crucifixo com halter pegada neutra','3 × 8','BI-SET','Bi-set com crucifixo com halter pegada pronada',null),
@@ -262,7 +262,7 @@ const PROGRAMS = {
       E('Tríceps no cross com barra W','3 × 10','BI-SET','Pegada normal. Bi-set com barra reta pegada invertida',null),
       E('Tríceps no cross com barra reta invertida','3 × 10','BI-SET','Pegada invertida. Bi-set com barra W pegada normal',null),
       E('Tríceps coice','3 × 10/10','','Com halter, cada braço, sem parar',null)]},
-  ], agenda:{1:'A',2:'B',3:null,4:'C',5:'D',6:'opt',7:null} },
+  ], agenda:{1:'A',2:'B',3:null,4:'C',5:'D',6:'opt',7:'opt'} },
 };
 // exercícios do Padrão: última carga fictícia
 PROGRAMS.padrao.workouts.forEach(w => w.ex.forEach((x,i) => { x.last = 40 + i*10; }));
@@ -410,7 +410,7 @@ function rHome(){
     main = `<span class="label">Agenda</span><div class="title">Sem agenda configurada para este programa</div>
       <button class="btn primary" data-act="toAgenda">Configurar agenda</button>`;
   } else if ((r.type === 'rest' || r.type === 'optional') && !inProg){
-    main = `<span class="label">${DAYNAMES[S.day-1]}-feira · ${r.type==='rest'?'Descanso':'Opcional'}</span>
+    main = `<span class="label">${DAYNAMES[S.day-1]}${S.day<=5?'-feira':''} · ${r.type==='rest'?'Descanso':'Opcional'}</span>
       <div class="display">${r.type==='rest'?'Descanso':'Opcional'}</div>
       <span class="muted">${r.type==='rest'?'Não há treino programado para hoje.':(pr.optNote ? 'Opcional: ' + pr.optNote.toLowerCase() + '.' : 'Treino opcional hoje.')}</span>
       <button class="btn" data-act="pickWorkout">Ver treinos do programa</button>`;

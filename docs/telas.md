@@ -121,7 +121,7 @@ Sábado
 Opcional                         ›
 
 Domingo
-Descanso
+Opcional                         ›
 ```
 
 A configuração deve ser por programa.

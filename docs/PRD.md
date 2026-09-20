@@ -139,7 +139,7 @@ Quarta  → Descanso
 Quinta  → C
 Sexta   → D
 Sábado  → Opcional
-Domingo → Descanso
+Domingo → Opcional
 ```
 
 O programa deve possuir sua própria configuração de agenda.
@@ -246,6 +246,7 @@ Quarta — Descanso
 Quinta — Treino C
 Sexta — Treino D
 Sábado — Opcional
+Domingo — Opcional
 ```
 
 ## Treino A --- Ombros completos
@@ -643,12 +644,13 @@ Contagem resultante: Treino A = 11, B = 10, C = 10, D = 12.
 ## 22.2 Aquecimento é livre
 
 O rótulo "Aquecimento:" da ficha não é um exercício registrado. O treino pode
-exibir uma nota de aquecimento livre; no Treino A a nota sugere aquecimento de
-manguito rotador. Nada é marcado nem contabilizado.
+exibir uma nota de aquecimento livre; todos os treinos, dos dois programas, levam
+a mesma nota: "Aquecimento de manguito rotador + aquecimento livre". Nada é marcado nem contabilizado.
 
 ## 22.3 Dia opcional
 
-Quarta e sábado "Opcional" significam abdominais supra/infra e oblíquos. Não é um
+Sábado e domingo "Opcional" significam abdominais supra/infra e oblíquos; a quarta é
+descanso puro, sem texto. Não é um
 treino A–D: a Home mostra esse texto e nenhuma sessão é criada.
 
 ## 22.4 Sugestão de cardio na Home
