@@ -162,11 +162,6 @@ O cartão principal é o mesmo nas duas sequências; muda só o indicador acima 
 │ │ 6 exercícios              │ │
 │ │ [   COMEÇAR TREINO   ]    │ │
 │ └───────────────────────────┘ │
-│ ┌────────────┐ ┌────────────┐ │
-│ │ ÚLTIMO     │ │ ESTE MÊS   │ │
-│ │ Dia 2·16/09│ │ 8 treinos  │ │
-│ └────────────┘ └────────────┘ │
-│   Reiniciar sequência         │  ghost; SÓ na sequência contínua
 └───────────────────────────────┘
 ```
 
@@ -187,7 +182,6 @@ O cartão principal é o mesmo nas duas sequências; muda só o indicador acima 
 │ │ 9 exercícios              │ │
 │ │ [   COMEÇAR TREINO   ]    │ │
 │ └───────────────────────────┘ │
-│ (ÚLTIMO / ESTE MÊS iguais)    │
 └───────────────────────────────┘
 ```
 
@@ -197,23 +191,27 @@ treino; a sessão começa no toque em COMEÇAR.
 ## 4.2.1 Sugestão do programa
 
 Se o programa define `home_suggestion` (Treino Monstro: cardio), a Home mostra um
-cartão discreto "SUGESTÃO DA FICHA" abaixo dos cartões de ÚLTIMO / ESTE MÊS, com o
+cartão discreto "SUGESTÃO DA FICHA" abaixo do cartão principal, com o
 texto da ficha (caminhada ligeira, sem correr; 30 min de manhã e 30 min à noite,
 ou 1 h, longe do treino). É só texto, não tem botão, não registra nada e não
 aparece em programas que não a definem.
+
+> Componentes da Home (spec 006): `NextWorkoutCard`, `SuggestionCard`,
+> `ProgramWorkoutsSheet` e `HomeSkeleton` em `src/components/home/`; `SequenceRail`,
+> `WeekStrip` e `ProgramBadge` em `src/components/common/`.
 
 ## 4.3 Estados
 
 - *Dia de descanso* (`null` na agenda): o cartão vira "QUARTA-FEIRA · DESCANSO",
   sem botão primário; ação secundária **Ver treinos do programa**.
-  **Proposta (a confirmar):** essa ação abre uma lista para o usuário iniciar
+  **Decidido (spec 006):** essa ação abre `ProgramWorkoutsSheet` para iniciar
   qualquer treino do programa mesmo assim, sem alterar a agenda.
 - *Dia opcional* (sábado e domingo do Monstro): cartão "SÁBADO · OPCIONAL" (ou "DOMINGO · OPCIONAL") com o texto da
   ficha, "Opcional: abdominais supra/infra e oblíquos", e **Ver treinos do
   programa** (mesma ação). Não é um treino A–D e não gera sessão.
 - *Programa sem agenda* (ex.: Treino Padrão com "Dias da semana"): cartão
-  "Sem agenda configurada para este programa" + botão **Configurar agenda**
-  (leva às Configurações). Nunca mostrar tela vazia.
+  "Sem agenda configurada para este programa" + botão **Voltar para sequência contínua**
+  (chama `SelectSequenceStrategy('CONTINUOUS')`; não há botão de iniciar). Nunca mostrar tela vazia.
 - *Carregando* (leitura do SQLite): esqueleto do cartão principal com a mesma
   altura, sem salto de layout.
 - *Treino em andamento:* o cartão troca o rótulo para "TREINO EM ANDAMENTO",
@@ -221,12 +219,10 @@ aparece em programas que não a definem.
   abrir o app com sessão pendente, diálogo "Você possui um treino em andamento"
   com o nome do treino, **Continuar** (primário) e **Descartar** (danger, com
   segunda confirmação). Descartar não altera a sequência.
-- *Primeiro uso / sem histórico:* "ÚLTIMO" mostra "Ainda não há treinos" e
-  "ESTE MÊS" mostra 0.
+- *Concluído hoje* (só semanal): o cartão do treino do dia mostra "✓ Concluído hoje";
+  o botão continua ativo.
 - *Erro de banco:* cartão "Não foi possível carregar seus treinos" + **Tentar de novo**.
-- *Reiniciar sequência* (só contínua): sheet "O próximo treino será: Dia 1 —
-  Peito e Tríceps (ou A — Ombros completos). O histórico não será apagado."
-  → **Cancelar** / **Reiniciar**. O texto do primeiro treino vem do programa ativo.
+- A Home não tem cartões ÚLTIMO / ESTE MÊS nem "Reiniciar sequência" (o reinício fica em Configurações).
 - Nome de treino longo: até 2 linhas, sem cortar o botão.
 
 ------------------------------------------------------------------------
@@ -569,13 +565,13 @@ Sem `›` e sem sheet de edição (edição da agenda é item futuro). Ordem SEG
 Estas propostas preenchem lacunas do PRD/arquitetura para que as telas façam
 sentido; confirmar antes de implementar.
 
-1. **Dia de descanso/opcional na Home:** mostrar o estado e oferecer **Ver
+1. (decidido, spec 006) **Dia de descanso/opcional na Home:** mostrar o estado e oferecer **Ver
    treinos do programa** para treinar mesmo assim (sem criar sessão automática).
 2. **Sábado e domingo "Opcional":** segundo a ficha e o dono do app, é abdominal (supra/infra e oblíquos),
    não um treino A–D. A Home mostra esse texto e nada é registrado. Falta decidir
    onde o texto é guardado (ex.: nota na agenda).
-3. (decidido, spec 005) **`WEEKLY` num programa sem agenda:** Home mostra "Sem agenda configurada" e
-   leva à configuração da agenda.
+3. (decidido, specs 005/006) **`WEEKLY` num programa sem agenda:** Home mostra "Sem agenda configurada" e
+   oferece **Voltar para sequência contínua**.
 4. (decidido, spec 005) **Troca de programa com sessão em andamento:** bloqueada com explicação
    (opção "impedir" da arquitetura), em vez de finalizar automaticamente.
 5. (adiado; spec 005 só exibe a agenda) **Agenda editável:** o usuário escolhe, para cada dia, um treino do programa,
