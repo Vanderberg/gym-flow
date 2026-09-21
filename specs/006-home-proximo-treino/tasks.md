@@ -104,7 +104,7 @@ description: "Task list for Home e Próximo Treino"
 ### Implementation
 
 - [ ] T031 [US3] Completar `src/domain/home/buildHomeView.ts` com a precedência `IN_PROGRESS` (lida por `GetHomeState`) e estender `src/application/GetHomeState.ts` para carregar `SessionRepository.getInProgress()` e calcular `done`/`total` das linhas de exercício — faz T028 e o caso de recuperação de T029 passarem
-- [ ] T032 [P] [US3] Criar `src/application/DiscardInProgressSession.ts` se ainda não existir (a tarefa T009 da spec 005 já o cria; nesse caso só conferir o contrato) conforme `contracts/use-cases.md` (`getInProgress()` → `discardSession(id)`; sem sessão = no-op; sem tocar sequência ou estatísticas) — faz T029 passar
+- [ ] T032 [P] [US3] Criar `src/application/DiscardInProgressSession.ts` se ainda não existir (a tarefa T013 da spec 005 já o cria; nesse caso só conferir o contrato) conforme `contracts/use-cases.md` (`getInProgress()` → `discardSession(id)`; sem sessão = no-op; sem tocar sequência ou estatísticas) — faz T029 passar
 - [ ] T033 [US3] Estender `src/components/home/NextWorkoutCard.tsx` com o estado `IN_PROGRESS` (rótulo, treino, progresso "N / M realizados", **CONTINUAR TREINO**); em `src/hooks/useHome.ts` acrescentar `continueWorkout()` (navega para `/workout`) e `discard()` (chama `DiscardInProgressSession` e recarrega); em `src/app/(tabs)/index.tsx` mostrar o diálogo de sessão pendente (uma vez por abertura, controlado por `pendingDialogShown` do `homeStore`) sobre `ConfirmDialog`, com segunda confirmação para **Descartar** — faz T030 passar
 
 **Checkpoint**: todas as histórias independentes do ponto de vista de teste.
@@ -126,7 +126,7 @@ description: "Task list for Home e Próximo Treino"
 - Phase 1 → Phase 2 → histórias → Polish. Na Phase 2, T003–T009 e T011 são paralelizáveis; T010 depende de T009; T012 depende de T009 e T011. A fase termina verde.
 - **US1** depende só da Phase 2 e entrega o núcleo (`buildHomeView`, `GetHomeState`, `StartWorkout`, `useHome`, `NextWorkoutCard`, tela). **US2** e **US3** dependem do núcleo da US1 (mesmos arquivos estendidos); entre si, são independentes e podem ser feitas em qualquer ordem, mas T025/T031 editam `buildHomeView.ts`, T027/T033 editam `NextWorkoutCard.tsx` e `useHome.ts`, e T022/T028 (e T023/T029, T024/T030) editam os mesmos arquivos de teste: não fazer em paralelo.
 - T017 mapeia todos os resultados de `GetNextWorkout` (o MVP não quebra em dias sem treino; a tela mostra o cartão neutro até a T027); T025 completa `suggestion` e `browsableWorkouts`; T031 acrescenta a precedência `IN_PROGRESS`.
-- `DiscardInProgressSession` é criado pela spec 005 (T009) e reutilizado aqui; T032 só o cria se a 005 ainda não o tiver feito.
+- `DiscardInProgressSession` é criado pela spec 005 (T013) e reutilizado aqui; T032 só o cria se a 005 ainda não o tiver feito.
 - Polish só depois das histórias desejadas; T037 depois de todas as telas.
 
 ### Parallel examples

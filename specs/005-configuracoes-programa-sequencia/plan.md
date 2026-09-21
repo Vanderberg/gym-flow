@@ -4,6 +4,7 @@
 
 **Input**: Feature specification from `/specs/005-configuracoes-programa-sequencia/spec.md`
 **Backlog**: BL-033 (exibição da agenda), BL-040, BL-041, BL-042 (só exibição), BL-102, BL-103
+**Requisitos de produto**: RF-02, RF-03, RF-13, RF-14
 **Depende de**: 002 (repositórios, `SettingsRepository`, `SessionRepository`), 003 (seed), 004 (`ResetSequence`, `GetNextWorkout`)
 
 ## Summary
@@ -77,7 +78,9 @@ src/
 ├── domain/sequence/
 │   └── agendaView.ts               # buildAgendaView(schedule, workouts) → AgendaView (puro)
 ├── application/
-│   ├── SelectProgram.ts            # bloqueia com sessão em andamento; SessionInProgressError
+│   ├── errors.ts                   # SessionInProgressError
+│   ├── SelectProgram.ts            # bloqueia com sessão em andamento (lança SessionInProgressError)
+│   ├── DiscardInProgressSession.ts # descarta a sessão em andamento (também usado pela Home, spec 006)
 │   ├── SelectSequenceStrategy.ts   # sem bloqueio; não toca em posições
 │   └── GetProgramAgenda.ts         # carrega agenda + treinos e devolve AgendaView
 ├── store/
@@ -85,13 +88,13 @@ src/
 ├── hooks/
 │   └── useSettings.ts              # expõe ações e estado para as telas
 ├── app/
-│   ├── (tabs)/settings.tsx         # lista: programa, tipo, agenda (só WEEKLY), reiniciar (só CONTINUOUS)
+│   ├── (tabs)/settings.tsx         # lista: programa, tipo, agenda (sempre), reiniciar (só CONTINUOUS)
 │   └── settings/
 │       ├── program.tsx             # RadioCards de programa
 │       ├── sequence.tsx            # RadioCards de tipo
 │       └── schedule.tsx            # agenda somente leitura / estado vazio
 └── components/
-    ├── common/                     # reutilizados de docs/design-telas.md §3 (RadioCard, Sheet, ConfirmDialog, EmptyState, Button, Card)
+    ├── common/                     # reutilizados de docs/design-telas.md §3 (RadioCard, Sheet, ConfirmDialog, EmptyState, Button)
     └── settings/
         ├── SettingsRow.tsx         # linha 56 dp: rótulo + valor + ›  (extensão explícita, ver "Direção visual")
         └── InProgressBlockSheet.tsx  # Continuar / Descartar, sobre Sheet + ConfirmDialog
@@ -109,7 +112,7 @@ empilhadas sem abas). Regras em `domain/` e `application/`, apresentação sem r
 Direção existente: **"Placar de academia"** (tema escuro), com tokens e componentes base já especificados em
 `docs/design-telas.md` §2–3. Esta spec **não define nova direção**: reutiliza os tokens de cor, tipografia, espaçamento
 e forma (`bg`, `surface`, `surfaceRaised`, `border`, `text`, `textSecondary`, `accent`, `danger`, `focus`) e os
-componentes `RadioCard`, `Sheet`/`ConfirmDialog`, `EmptyState`, `Button` (`primary`/`danger`/`ghost`) e `Card`.
+componentes `RadioCard`, `Sheet`/`ConfirmDialog`, `EmptyState`, e `Button` (`primary`/`danger`/`ghost`).
 
 - **Estado do código**: ainda não existe `src/` (a fundação 001 não foi implementada), então os tokens não estão em
   código. Regra para as tarefas: os tokens vivem em um único módulo `src/constants/theme.ts` e os componentes comuns
@@ -119,7 +122,7 @@ componentes `RadioCard`, `Sheet`/`ConfirmDialog`, `EmptyState`, `Button` (`prima
 - **Extensão deliberada e visível**: `SettingsRow` (linha de configuração de 56 dp com rótulo à esquerda e valor + `›`
   à direita, previsto em `docs/design-telas.md` §8, mas ainda não listado em §3). Deve ser adicionado a §3.
 - **Estados cobertos**: agenda vazia (`EmptyState`), opção bloqueada por sessão em andamento (sheet com motivo),
-  confirmação destrutiva (descartar) e de reinício; carregamento das configurações usa o esqueleto padrão da 001.
+  confirmação destrutiva (descartar) e de reinício; as configurações carregam do SQLite localmente, sem estado de carregamento visível.
 - **Auditoria de consistência**: tarefa final compara as telas com os tokens/componentes e corrige desvios.
 
 ## Divergências de documentação a corrigir no mesmo trabalho

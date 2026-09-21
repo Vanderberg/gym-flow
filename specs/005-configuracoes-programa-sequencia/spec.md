@@ -3,7 +3,8 @@
 **Feature Branch**: `005-configuracoes-programa-sequencia`
 **Created**: 2026-09-19
 **Status**: Draft
-**Backlog**: BL-033, BL-040, BL-041, BL-042, BL-102, BL-103 (Sprint 3)
+**Backlog**: BL-033, BL-034, BL-040, BL-041, BL-042, BL-102, BL-103 (Sprint 3)
+**Requisitos de produto**: RF-02, RF-03, RF-13, RF-14
 **Depende de**: 002, 003, 004
 **Input**: User description: "Permitir escolher o programa ativo, o tipo de sequência, ver/configurar a agenda semanal e reiniciar a sequência."
 
@@ -63,10 +64,10 @@ Como usuário, quero ver a agenda semanal do programa (somente leitura) e reinic
 
 **Acceptance Scenarios**:
 
-1. **Given** Treino Monstro, **When** abro a agenda, **Then** vejo cada dia da semana com seu treino, descanso ou dia opcional.
+1. **Given** Treino Monstro ativo (em qualquer tipo de sequência), **When** abro a agenda, **Then** vejo cada dia da semana com seu treino, descanso ou dia opcional.
 2. **Given** sequência contínua, **When** confirmo "Reiniciar" (a confirmação cita o nome do programa ativo), **Then** o próximo do programa ativo volta ao primeiro treino, com histórico preservado e outros programas intactos.
 3. **Given** modo semanal, **When** vejo Configurações, **Then** "Reiniciar" não aparece.
-4. **Given** programa sem agenda (ex.: Treino Padrão), **When** abro a agenda, **Then** vejo o estado vazio "Este programa não tem agenda semanal", sem lista de dias.
+4. **Given** programa ativo sem agenda (ex.: Treino Padrão, em qualquer tipo de sequência), **When** abro a agenda, **Then** vejo o estado vazio "Este programa não tem agenda semanal", sem lista de dias.
 
 ### Edge Cases
 
@@ -78,10 +79,10 @@ Como usuário, quero ver a agenda semanal do programa (somente leitura) e reinic
 ### Functional Requirements
 
 - **FR-001**: O usuário MUST poder selecionar o programa ativo e o tipo de sequência, com persistência.
-- **FR-002**: Trocar programa ou sequência MUST NOT alterar ou apagar sessões nem estados de sequência.
-- **FR-003**: O app MUST exibir a agenda semanal do programa selecionado, somente leitura (sem edição nesta spec).
+- **FR-002**: Trocar programa ou sequência MUST NOT alterar ou apagar sessões finalizadas nem estados de sequência. A única exceção é o descarte explícito e confirmado da sessão em andamento (FR-005).
+- **FR-003**: O app MUST exibir a agenda semanal do programa ativo, somente leitura (sem edição nesta spec), acessível em Configurações em qualquer tipo de sequência.
 - **FR-004**: O app MUST oferecer "Reiniciar sequência" apenas no modo contínuo, com confirmação, e reiniciar somente o programa ativo.
-- **FR-005**: Com sessão em andamento, o app MUST bloquear a troca de programa e oferecer Continuar ou Descartar; descartar libera a troca sem alterar sequência nem estatísticas.
+- **FR-005**: Com sessão em andamento, o app MUST bloquear a troca de programa e oferecer Continuar ou Descartar; descartar libera a troca sem alterar sequência nem estatísticas; depois de descartar, o usuário toca novamente no programa desejado (a troca não é aplicada automaticamente).
 - **FR-006**: Testes MUST cobrir troca de programa e de sequência preservando histórico (BL-102, BL-103).
 
 ### Key Entities
@@ -91,7 +92,7 @@ Como usuário, quero ver a agenda semanal do programa (somente leitura) e reinic
 ## Success Criteria *(mandatory)*
 
 - **SC-001**: Trocar programa ou sequência leva no máximo 2 toques a partir de Configurações.
-- **SC-002**: 100% das sessões e posições permanecem idênticas após qualquer troca.
+- **SC-002**: 100% das sessões finalizadas e das posições permanecem idênticas após qualquer troca de programa ou de tipo de sequência.
 - **SC-003**: A escolha sobrevive ao fechar e reabrir o app.
 
 ## Assumptions
