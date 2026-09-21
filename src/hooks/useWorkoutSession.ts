@@ -9,6 +9,7 @@ import { useDatabase } from '@/data/database/DatabaseProvider';
 import { createRepositories } from '@/data/repositories';
 import { ConflictError } from '@/data/repositories/errors';
 import { formatWeight, parseWeightInput } from '@/domain/workout/weight';
+import { useHelpStore } from '@/store/helpStore';
 import { useWorkoutStore } from '@/store/workoutStore';
 
 export const WEIGHT_STEP = 2.5;
@@ -49,6 +50,11 @@ export function useWorkoutSession() {
 
   const saveWeight = useCallback(
     async (exerciseId: number, textOverride?: string) => {
+      if (textOverride === undefined) {
+        // Perda de foco (BL-116/FR-004a): adia um tick e não grava se a ajuda está abrindo.
+        await new Promise<void>((resolve) => setTimeout(resolve, 0));
+        if (useHelpStore.getState().opening) return;
+      }
       const st = useWorkoutStore.getState();
       const text = textOverride ?? st.drafts[exerciseId];
       if (text === undefined || !st.view) return;

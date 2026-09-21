@@ -11,19 +11,24 @@ import {
 } from 'react-native';
 import { ConfirmDialog } from '@/components/common/ConfirmDialog';
 import { EmptyState } from '@/components/common/EmptyState';
+import { HelpIcon } from '@/components/common/HelpIcon';
 import { ProgramBadge } from '@/components/common/ProgramBadge';
 import { SegmentedProgress } from '@/components/common/SegmentedProgress';
+import { ExerciseInfoSheet } from '@/components/help/ExerciseInfoSheet';
+import { LegendSheet } from '@/components/help/LegendSheet';
 import { ExerciseCard } from '@/components/workout/ExerciseCard';
 import { FinishBar } from '@/components/workout/FinishBar';
 import { WarmupNote } from '@/components/workout/WarmupNote';
 import { colors, sizes, spacing, typography } from '@/constants/theme';
 import { formatWeight } from '@/domain/workout/weight';
+import { useHelp } from '@/hooks/useHelp';
 import { useWorkoutSession } from '@/hooks/useWorkoutSession';
 
 const FINISH_ERROR = 'Não foi possível finalizar. Nada foi alterado.';
 
 export default function WorkoutScreen() {
   const w = useWorkoutSession();
+  const help = useHelp();
   const { view, status } = w;
   const [confirming, setConfirming] = useState(false);
   const [finishError, setFinishError] = useState<string | null>(null);
@@ -80,6 +85,12 @@ export default function WorkoutScreen() {
             accessibilityRole="header"
             style={styles.title}
           >{`TREINO ${view.workout.code}`}</Text>
+          <View style={styles.spacer} />
+          <HelpIcon
+            onPressIn={() => help.onTriggerPressIn(null)}
+            onPressOut={help.onTriggerPressOut}
+            onPress={() => help.openLegend()}
+          />
         </View>
         <Text style={styles.workoutName}>{view.workout.name}</Text>
         <ProgramBadge name={view.program.name} />
@@ -108,10 +119,28 @@ export default function WorkoutScreen() {
               onWeightCommit={() => void w.saveWeight(item.exerciseId)}
               onAdjust={(d) => void w.adjustWeight(item.exerciseId, d)}
               onUseLast={() => void w.applyLastWeight(item.exerciseId)}
+              onInfo={() => help.openExercise(item.exerciseId)}
+              onInfoPressIn={() => help.onTriggerPressIn(item.exerciseId)}
+              onInfoPressOut={help.onTriggerPressOut}
+              onTechniqueHelp={(t) => help.openLegend(t)}
+              onTechniquePressIn={() => help.onTriggerPressIn(item.exerciseId)}
+              onTechniquePressOut={help.onTriggerPressOut}
+              restoreFocus={help.restoreFocusExerciseId === item.exerciseId}
+              onFocusRestored={help.consumeRestoreFocus}
             />
           ))
         )}
       </ScrollView>
+      <LegendSheet
+        visible={help.sheet.kind === 'LEGEND'}
+        {...(help.sheet.kind === 'LEGEND' && help.sheet.term
+          ? { initialTerm: help.sheet.term }
+          : {})}
+        onClose={help.close}
+      />
+      {help.sheet.kind === 'EXERCISE' ? (
+        <ExerciseInfoSheet exerciseId={help.sheet.exerciseId} onClose={help.close} />
+      ) : null}
       <FinishBar onPress={() => setConfirming(true)} />
       <ConfirmDialog
         visible={confirming}
@@ -129,6 +158,7 @@ const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.bg },
   content: { padding: spacing.lg, gap: spacing.md },
   headerRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
+  spacer: { flex: 1 },
   back: {
     minWidth: sizes.touch,
     minHeight: sizes.touch,
