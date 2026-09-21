@@ -3,33 +3,29 @@ import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-nati
 import type { Database } from './Database';
 import { DatabaseProvider } from './DatabaseProvider';
 import { openDatabase } from './openDatabase';
-import { migrations as defaultMigrations } from '../migrations';
-import { runMigrations } from '../migrations/runner';
-import type { Migration, MigrationResult } from '../migrations/types';
+import { bootstrapDatabase, type BootstrapResult } from '../bootstrap';
 
 type State = { status: 'migrating' } | { status: 'error' } | { status: 'ready'; db: Database };
 
 interface Props {
   children: ReactNode;
   open?: () => Promise<Database>;
-  migrations?: Migration[];
-  run?: (db: Database, migrations: Migration[]) => Promise<MigrationResult>;
+  bootstrap?: (db: Database) => Promise<BootstrapResult>;
 }
 
 export function DatabaseGate({
   children,
   open = openDatabase,
-  migrations = defaultMigrations,
-  run = runMigrations,
+  bootstrap = bootstrapDatabase,
 }: Props) {
-  const deps = useRef({ open, migrations, run });
+  const deps = useRef({ open, bootstrap });
   const [state, setState] = useState<State>({ status: 'migrating' });
 
   const start = useCallback(async () => {
     try {
-      const { open: doOpen, migrations: list, run: doRun } = deps.current;
+      const { open: doOpen, bootstrap: doBootstrap } = deps.current;
       const db = await doOpen();
-      const result = await doRun(db, list);
+      const result = await doBootstrap(db);
       setState(result.status === 'ready' ? { status: 'ready', db } : { status: 'error' });
     } catch {
       setState({ status: 'error' });
@@ -42,7 +38,7 @@ export function DatabaseGate({
   }, [start]);
 
   useEffect(() => {
-    deps.current = { open, migrations, run };
+    deps.current = { open, bootstrap };
   });
 
   useEffect(() => {
