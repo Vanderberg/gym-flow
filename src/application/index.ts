@@ -6,3 +6,5 @@ export { GetProgramAgenda } from './GetProgramAgenda';
 export { DiscardInProgressSession } from './DiscardInProgressSession';
 export { SessionInProgressError } from './errors';
 export { createSequenceResolver } from './composition';
+export { GetHomeState } from './GetHomeState';
+export { StartWorkout } from './StartWorkout';

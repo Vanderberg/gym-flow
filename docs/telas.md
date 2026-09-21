@@ -40,6 +40,11 @@ Dia 3 — Perna Completo
 [ COMEÇAR TREINO ]
 ```
 
+Estados do cartão principal: descanso ("QUARTA-FEIRA · DESCANSO"), dia opcional (texto
+da agenda), sem agenda ("Voltar para sequência contínua"), "Concluído hoje" (semanal) e
+treino em andamento (Continuar / Descartar). A Home não mostra ÚLTIMO / ESTE MÊS nem
+"Reiniciar sequência" (Configurações).
+
 ------------------------------------------------------------------------
 
 # 3. Configurações
