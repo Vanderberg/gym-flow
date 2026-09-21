@@ -103,5 +103,5 @@ Unitários (domínio): sequência contínua (primeiro, meio, último→primeiro,
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan:
-`specs/006-home-proximo-treino/plan.md` (spec ativa; bases: `specs/005-configuracoes-programa-sequencia/plan.md`, `specs/004-estrategias-sequencia/plan.md`, `specs/003-programas-seed/plan.md`, `specs/002-modelo-dados/plan.md`, `specs/001-fundacao-projeto/plan.md`)
+`specs/007-execucao-treino/plan.md` (spec ativa; bases: `specs/006-home-proximo-treino/plan.md`, `specs/005-configuracoes-programa-sequencia/plan.md`, `specs/004-estrategias-sequencia/plan.md`, `specs/003-programas-seed/plan.md`, `specs/002-modelo-dados/plan.md`, `specs/001-fundacao-projeto/plan.md`)
 <!-- SPECKIT END -->
