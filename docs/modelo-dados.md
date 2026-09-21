@@ -270,11 +270,13 @@ CREATE TABLE workout (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     program_id INTEGER NOT NULL,
     code TEXT NOT NULL,
-    name TEXT NOT NULL,
+    position INTEGER NOT NULL CHECK (position >= 1),
+    warmup_note TEXT,
     position INTEGER NOT NULL,
     active INTEGER NOT NULL DEFAULT 1,
     FOREIGN KEY (program_id) REFERENCES training_program(id),
-    UNIQUE(program_id, code)
+    UNIQUE(program_id, code),
+    UNIQUE(program_id, position)
 );
 
 CREATE TABLE exercise (
@@ -301,7 +303,7 @@ CREATE TABLE workout_exercise (
 CREATE TABLE weekly_schedule (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     program_id INTEGER NOT NULL,
-    weekday INTEGER NOT NULL,
+    weekday INTEGER NOT NULL CHECK (weekday BETWEEN 1 AND 7),
     workout_id INTEGER,
     optional INTEGER NOT NULL DEFAULT 0,
     FOREIGN KEY (program_id) REFERENCES training_program(id),
@@ -312,7 +314,7 @@ CREATE TABLE weekly_schedule (
 CREATE TABLE program_sequence_state (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     program_id INTEGER NOT NULL UNIQUE,
-    current_position INTEGER NOT NULL,
+    current_position INTEGER NOT NULL CHECK (current_position >= 1),
     updated_at TEXT NOT NULL,
     FOREIGN KEY (program_id) REFERENCES training_program(id)
 );
@@ -323,9 +325,10 @@ CREATE TABLE workout_session (
     workout_id INTEGER NOT NULL,
     started_at TEXT NOT NULL,
     finished_at TEXT,
-    completed INTEGER NOT NULL DEFAULT 0,
+    completed INTEGER NOT NULL DEFAULT 0 CHECK (completed IN (0,1)),
     created_at TEXT NOT NULL,
     updated_at TEXT NOT NULL,
+    CHECK (completed = 0 OR finished_at IS NOT NULL),
     FOREIGN KEY (program_id) REFERENCES training_program(id),
     FOREIGN KEY (workout_id) REFERENCES workout(id)
 );
@@ -334,8 +337,8 @@ CREATE TABLE workout_session_exercise (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     session_id INTEGER NOT NULL,
     exercise_id INTEGER NOT NULL,
-    completed INTEGER NOT NULL DEFAULT 0,
-    weight REAL,
+    completed INTEGER NOT NULL DEFAULT 0 CHECK (completed IN (0,1)),
+    weight REAL CHECK (weight IS NULL OR weight >= 0),
     updated_at TEXT NOT NULL,
     FOREIGN KEY (session_id) REFERENCES workout_session(id),
     FOREIGN KEY (exercise_id) REFERENCES exercise(id),
@@ -345,7 +348,7 @@ CREATE TABLE workout_session_exercise (
 CREATE TABLE app_settings (
     id INTEGER PRIMARY KEY CHECK (id = 1),
     active_program_id INTEGER NOT NULL,
-    sequence_type TEXT NOT NULL,
+    sequence_type TEXT NOT NULL CHECK (sequence_type IN ('CONTINUOUS','WEEKLY')),
     rest_timer_enabled INTEGER NOT NULL DEFAULT 0,
     rest_timer_seconds INTEGER NOT NULL DEFAULT 90,
     updated_at TEXT NOT NULL,
@@ -354,7 +357,7 @@ CREATE TABLE app_settings (
 
 -- no máximo uma sessão em andamento
 CREATE UNIQUE INDEX ux_workout_session_in_progress
-    ON workout_session ((1)) WHERE completed = 0 AND finished_at IS NULL;
+    ON workout_session ((1)) WHERE finished_at IS NULL;
 ```
 
 # 14. Conteúdo educativo do exercício
@@ -457,5 +460,5 @@ cronologicamente enquanto o deslocamento for o mesmo; para ordem estrita, compar
 ## Uma sessão em andamento
 
 O índice único parcial `ux_workout_session_in_progress` (seção 13) garante no schema que só
-existe uma sessão com `completed = 0` e `finished_at IS NULL`. Sessão descartada é removida
+existe uma sessão com `finished_at IS NULL`. Sessão descartada é removida
 (não finalizada), portanto não conta como histórico.

@@ -20,10 +20,10 @@ const v2: Migration = {
 };
 
 describe('runMigrations', () => {
-  it('banco novo fica ready na versão 1 com as migrations reais', async () => {
+  it('banco novo fica ready na versão 2 com as migrations reais', async () => {
     const db = createBetterSqliteDatabase();
-    expect(await runMigrations(db, migrations)).toEqual({ status: 'ready', version: 1 });
-    expect(version(db)).toBe(1);
+    expect(await runMigrations(db, migrations)).toEqual({ status: 'ready', version: 2 });
+    expect(version(db)).toBe(2);
   });
 
   it('aplica só as pendentes preservando dados', async () => {
