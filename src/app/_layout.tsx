@@ -6,10 +6,8 @@ export default function RootLayout() {
     <DatabaseGate>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(tabs)" />
-        <Stack.Screen
-          name="workout"
-          options={{ headerShown: true, title: 'Treino em andamento' }}
-        />
+        <Stack.Screen name="workout/index" />
+        <Stack.Screen name="workout/summary" />
         <Stack.Screen
           name="settings/program"
           options={{ headerShown: true, title: 'Programa de treino' }}

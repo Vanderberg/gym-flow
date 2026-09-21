@@ -426,3 +426,5 @@ No MVP, a legenda global é suficiente. Como evolução P1, uma técnica individ
 ## Regra de UI
 
 Informação essencial fica visível. Informação complementar fica escondida até ser solicitada.
+
+Nota (spec 007): na tela de treino não há descartar (fica na Home) e o resumo final não mostra "Próximo".
