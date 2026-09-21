@@ -8,3 +8,8 @@ export { SessionInProgressError } from './errors';
 export { createSequenceResolver } from './composition';
 export { GetHomeState } from './GetHomeState';
 export { StartWorkout } from './StartWorkout';
+export { GetWorkoutSession } from './GetWorkoutSession';
+export { SetExerciseCompleted } from './SetExerciseCompleted';
+export { SetExerciseWeight } from './SetExerciseWeight';
+export { FinishWorkout } from './FinishWorkout';
+export { GetFinishSummary } from './GetFinishSummary';

@@ -296,13 +296,12 @@ Finalizar treino?
 [ CANCELAR ]   [ FINALIZAR ]
 ```
 
-Depois, resumo: treino concluído, "7 de 9 exercícios realizados", duração e
-**Próximo**:
+Depois, resumo: treino concluído, "7 de 9 exercícios realizados" e duração, com o botão
+**Voltar ao início** (sem linha "Próximo", que fica na Home). Sem confete.
 
-- contínua: "Próximo: Treino D" (o seguinte na sequência do programa);
-- semanal: "Próximo: SEXTA — Treino D" (próximo dia com treino na agenda).
-
-Botão **Voltar ao início**. Sem confete.
+Spec 007 (tela de treino): sem ação de descartar (fica na Home); `?` e `ⓘ` só com a spec 008 e ⏱ só
+com a spec 011; bi-set sem barra lateral, cada exercício é um cartão independente com chip BI-SET e
+observação do parceiro. Padrões: `ExerciseCard`, `WarmupNote`, `FinishBar` e `FinishSummaryView`.
 
 ## 5.2 Ajuda contextual (somente leitura)
 
