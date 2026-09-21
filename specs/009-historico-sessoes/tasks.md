@@ -109,10 +109,10 @@ description: "Task list for Histórico de Sessões"
 
 ## Phase 6: Polish & cross-cutting
 
-- [ ] T030 [P] Atualizar `docs/design-telas.md` §6 (edição em lote: EDITAR → Salvar/Cancelar numa transação; prescrição atual da ficha só quando o exercício ainda está no treino; filtro só em memória; itens com "N / M" e duração) e §3 (acrescentar `SessionListItem`, `MonthHeader`, `SessionDetailRow` e `EditActionBar`; conferir `FilterSelect`)
-- [ ] T031 [P] Atualizar `docs/telas.md` (histórico, detalhe e edição), `docs/arquitetura.md` (leituras agregadas `listFinishedSummaries` e `getFinishedDetail` em `SessionRepository`), `docs/prototipo-telas.html` se divergir, e conferir `docs/backlog.md` (BL-070..074)
-- [ ] T032 Auditoria de consistência visual: comparar `src/app/(tabs)/history.tsx`, `src/app/history/[sessionId].tsx`, `src/components/history/*` e `FilterSelect` com `theme.ts` e `docs/design-telas.md` §2–3 e §6 (nenhum valor literal de cor/tamanho, alvos ≥ 48 dp, item de lista ≥ 72 dp, feito/não realizado sem depender só de cor, ação destrutiva nunca primária) e corrigir qualquer desvio
-- [ ] T033 Rodar `npm run check` (lint, tipos e testes) e os passos do `quickstart.md` (incluindo a validação manual em Android e iOS: editar, salvar, fechar o app à força e reabrir); marcar a spec como `concluída` em `specs/INDEX.md`
+- [X] T030 [P] Atualizar `docs/design-telas.md` §6 (edição em lote: EDITAR → Salvar/Cancelar numa transação; prescrição atual da ficha só quando o exercício ainda está no treino; filtro só em memória; itens com "N / M" e duração) e §3 (acrescentar `SessionListItem`, `MonthHeader`, `SessionDetailRow` e `EditActionBar`; conferir `FilterSelect`)
+- [X] T031 [P] Atualizar `docs/telas.md` (histórico, detalhe e edição), `docs/arquitetura.md` (leituras agregadas `listFinishedSummaries` e `getFinishedDetail` em `SessionRepository`), `docs/prototipo-telas.html` se divergir, e conferir `docs/backlog.md` (BL-070..074)
+- [X] T032 Auditoria de consistência visual: comparar `src/app/(tabs)/history.tsx`, `src/app/history/[sessionId].tsx`, `src/components/history/*` e `FilterSelect` com `theme.ts` e `docs/design-telas.md` §2–3 e §6 (nenhum valor literal de cor/tamanho, alvos ≥ 48 dp, item de lista ≥ 72 dp, feito/não realizado sem depender só de cor, ação destrutiva nunca primária) e corrigir qualquer desvio
+- [ ] T033 Rodar `npm run check` (lint, tipos e testes) e os passos do `quickstart.md` (incluindo a validação manual em Android e iOS: editar, salvar, fechar o app à força e reabrir); marcar a spec como `concluída` em `specs/INDEX.md` (pendente: validação manual em Android/iOS)
 
 ---
 

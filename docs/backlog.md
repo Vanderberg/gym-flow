@@ -157,6 +157,8 @@ P0
 
 P1
 
+Nota: o teste "abrir a ajuda com o cronômetro ativo não o pausa nem reinicia" pertence à spec 011 (a ajuda da spec 008 é coberta por teste de pureza: não importa cronômetro).
+
 ------------------------------------------------------------------------
 
 # 7. Épico --- Home
@@ -272,6 +274,8 @@ P0
 ## BL-087 --- Filtro por programa
 
 P1
+
+Nota (spec 010): entregue só o período em curso; navegação entre períodos e calendário de dias com treino ficam como itens futuros.
 
 ------------------------------------------------------------------------
 

@@ -34,6 +34,6 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   label: { ...typography.label, color: colors.textSecondary },
-  value: { ...typography.title, fontSize: 40, lineHeight: 44, color: colors.text },
+  value: { ...typography.display, color: colors.text },
   hint: { ...typography.label, textTransform: 'none', color: colors.textMuted },
 });

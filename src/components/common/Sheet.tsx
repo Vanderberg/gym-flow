@@ -23,7 +23,7 @@ export function Sheet({ visible, onClose, children }: Props) {
 }
 
 const styles = StyleSheet.create({
-  backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)' },
+  backdrop: { flex: 1, backgroundColor: colors.scrim },
   sheet: {
     backgroundColor: colors.surfaceRaised,
     borderTopLeftRadius: radius.lg,

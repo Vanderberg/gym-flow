@@ -11,6 +11,7 @@ export const colors = {
   onAccent: '#0E0F0C',
   danger: '#FF6B5E',
   focus: '#F2F4EA',
+  scrim: 'rgba(0,0,0,0.5)',
 } as const;
 
 export const spacing = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 32 } as const;
@@ -21,6 +22,7 @@ export const sizes = { toggle: 44, touch: 48, row: 56, button: 56, maxContent: 6
 
 export const typography = {
   title: { fontSize: 28, lineHeight: 32, fontWeight: '700' as const },
+  display: { fontSize: 40, lineHeight: 44, fontWeight: '700' as const },
   body: { fontSize: 16, lineHeight: 22, fontWeight: '500' as const },
   label: {
     fontSize: 12,

@@ -271,6 +271,13 @@ Dia 2 — Costas e Bíceps
 6/6 exercícios
 ```
 
+Regras implementadas (spec 009): sessões finalizadas, mais recentes primeiro,
+agrupadas por mês; cada item é um botão que mostra dia, "CÓDIGO — treino",
+"N / M realizados" (com ✓ quando completo) e duração; o nome do programa só
+aparece com o filtro em "Todos". Vazio: "Ainda não existem treinos registrados."
+(**Ir para o treino**); vazio com filtro: "Nenhum treino deste programa."
+(**Limpar filtro**).
+
 ------------------------------------------------------------------------
 
 # 12. Filtro de histórico
@@ -308,6 +315,12 @@ PEITO E TRÍCEPS
 [ EDITAR ]
 ```
 
+Feito = ✓ + peso ("sem carga" quando nulo); não realizado = ○ + "não realizado".
+A prescrição mostrada é a atual da ficha, só se o exercício ainda pertence ao
+treino. **EDITAR** libera marcar/desmarcar e alterar peso; **Salvar** grava tudo
+numa transação, **Cancelar** (ou voltar) pede confirmação se houver alterações.
+Programa e treino da sessão nunca mudam; a sequência não é alterada.
+
 ------------------------------------------------------------------------
 
 # 14. Estatísticas
@@ -334,6 +347,10 @@ DIAS ENTRE TREINOS
 
 [ Todos ▼ ]
 ```
+
+Só o período em curso (sem setas de navegação nem calendário; ficam como itens
+futuros). Três números: treinos, média por semana (semanas de calendário já
+tocadas) e intervalo médio; sessão com 0 exercícios conta.
 
 Filtro:
 
@@ -388,7 +405,8 @@ TREINO C — PERNAS COMPLETAS
 0 / 9 realizados                         [?]
 ```
 
-O `?` abre a legenda.
+O `?` abre a legenda. Abrir/fechar não altera exercício, peso (nem o rascunho
+digitado), sequência, cronômetro ou sessão, e o foco volta ao gatilho ao fechar.
 
 ## Card
 
@@ -421,7 +439,7 @@ O `?` abre um bottom sheet com:
 - CONCÊNTRICA;
 - outros termos usados pelo programa.
 
-No MVP, a legenda global é suficiente. Como evolução P1, uma técnica individual poderá ter seu próprio `?` para abrir diretamente sua explicação.
+A lista é a constante estática do app e cobre todo valor de `technique` do seed. O `?` ao lado do chip da técnica (P1, BL-115) só aparece quando o valor exato de `technique` tem entrada na legenda e abre a folha com o termo destacado (▶, não só cor).
 
 ## Regra de UI
 

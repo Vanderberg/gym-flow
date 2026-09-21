@@ -516,20 +516,17 @@ function rDetail(){
 function rStats(){
   const v = S.filter==='all' ? [17,'3,4','2,0'] : S.filter==='padrao' ? [9,'1,8','3,1'] : [8,'1,6','3,4'];
   const P = ['Semana','Mês','Trimestre','Semestre','Ano'];
-  const hit = [1,3,5,7,9,11,14,16,19,21,23,25,28];
   $('#stats').innerHTML = `
     <div class="spread"><h1>Estatísticas</h1>
       <select id="fStat" aria-label="Filtrar por programa"><option value="all">Todos</option><option value="padrao">Treino Padrão</option><option value="monstro">Treino Monstro</option></select></div>
     <div class="stack" style="margin-top:16px">
       <div class="segctl" role="group" aria-label="Período">${P.map((p,i)=>`<button data-period="${i}" aria-pressed="${i===S.period}">${p}</button>`).join('')}</div>
-      <div class="label" style="text-align:center">‹ &nbsp; Setembro 2026 &nbsp; ›</div>
+      <div class="label" style="text-align:center">Setembro 2026</div>
       <div class="card"><span class="label">Treinos no período</span><div class="display">${v[0]}</div></div>
       <div class="row">
         <div class="card"><span class="label">Por semana</span><div class="num">${v[1]}</div></div>
         <div class="card"><span class="label">Intervalo médio</span><div class="num">${v[2]} <span class="muted" style="font-size:18px">dias</span></div></div>
       </div>
-      <div class="card stack"><span class="label">Dias com treino</span>
-        <div class="cal">${DAYS.map(d=>`<span class="hd">${d[0]}</span>`).join('')}<span></span>${Array.from({length:30},(_,i)=>`<span class="${hit.includes(i+1)?'on':''}" ${hit.includes(i+1)?`aria-label="dia ${i+1}, com treino"`:''}>${i+1}</span>`).join('')}</div></div>
     </div>`;
   $('#fStat').value = S.filter;
 }

@@ -1,9 +1,10 @@
 import { Tabs } from 'expo-router';
+import { sizes } from '@/constants/theme';
 
 const tabOptions = (title: string) => ({
   title,
   tabBarAccessibilityLabel: title,
-  tabBarItemStyle: { minHeight: 48 },
+  tabBarItemStyle: { minHeight: sizes.touch },
 });
 
 export default function TabsLayout() {

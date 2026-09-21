@@ -116,12 +116,22 @@ Conjunto mínimo em `src/components/common/` (não criar variações paralelas):
   "3 × 6/8/10"), `technique` como **TechniqueChip** (contorno `accent`, caixa alta,
   ex. DROP-SET) e `notes` em `body` secundário. Só exibição: nunca interpreta o
   texto. Aceita texto longo com quebra de linha.
-- **HelpIcon (`?`) / InfoIcon (`ⓘ`)** — botões de 44 dp (ícone 20 dp) com
-  `accessibilityLabel` "Legenda das técnicas" e "Informações do exercício".
-- **LegendSheet / MuscleInfoSheet** — bottom sheets somente leitura (seção 5.2).
+- **HelpIcon (`?`) / InfoIcon (`ⓘ`)** — botões com alvo mínimo de 48 dp
+  (`sizes.touch`), glifo em `title` / `textSecondary`, `accessibilityLabel`
+  "Legenda das técnicas" e "Informações do exercício". Estados: default e pressed;
+  o `onPressIn` registra o gatilho para devolver o foco ao fechar a folha.
+- **TechniqueChip** — chip da técnica (contorno `accent`, caixa alta). Com
+  `onHelp`, ganha um `?` de 48 dp ao lado (`accessibilityLabel` "Explicação de
+  <técnica>"); sem `onHelp`, é só o chip.
+- **LegendSheet / MuscleInfoSheet** — bottom sheets somente leitura (seção 5.2),
+  sobre `Sheet` (`accessibilityViewIsModal`). LegendSheet: título de seção, lista
+  rolável e termo destacado com `▶` + `accessibilityState.selected` (não só cor).
+  MuscleInfoSheet: estados carregando ("Carregando…"), erro ("Não foi possível
+  carregar") e preenchido; botão **Fechar** (ghost) em ambos.
 - **WeightInput** — campo numérico grande com teclado decimal, sufixo "kg",
   botões `−` / `+` de 2,5 kg (apenas ajuda de digitação, não sugestão).
-- **StatCard** — número em `display`, rótulo em `label`, sem gradiente.
+- **StatCard** — número em `display` (token 40/44), rótulo em `label`, dica
+  opcional; lido como um bloco ("Rótulo: valor"); sem gradiente.
 - **BottomTabs** — 4 abas: Treino, Histórico, Estatísticas, Config. Aba ativa:
   ícone preenchido + rótulo em `text` + indicador superior de 3 dp em `accent`;
   inativas: ícone contornado + rótulo `textSecondary`. Altura 64 + safe area.
@@ -130,7 +140,22 @@ Conjunto mínimo em `src/components/common/` (não criar variações paralelas):
 - **RadioCard** — opção única em cartão (círculo ● / ○ + título + descrição), usado
   nas seleções de programa e de tipo de sequência. Selecionado = borda `accent` +
   ● preenchido (não só cor).
-- **FilterSelect** — botão "Todos ▼" que abre sheet com a lista (Todos + programas).
+- **FilterSelect** — botão "Todos ▼" (mín. 48 dp) que abre sheet com a lista
+  (Todos + programas); a opção atual leva ✓ e `accessibilityState.selected`.
+- **SessionListItem** — item do histórico: botão de 72 dp com dia (`title`,
+  `accent`), "CÓDIGO — nome" e linha `programa · N / M realizados [✓] · duração`
+  (programa só com filtro "Todos").
+- **MonthHeader** — cabeçalho de mês (`label`, `textSecondary`, 40 dp,
+  `accessibilityRole="header"`).
+- **SessionDetailRow** — linha do detalhe/edição: marca ✓/○, nome, prescrição
+  atual da ficha (só se o exercício ainda está no treino) e peso ou "não
+  realizado"/"sem carga"; na edição vira botão de alternar + WeightInput.
+- **EditActionBar** — leitura: **EDITAR** (ghost); edição: **Salvar** (primário,
+  desabilitado com peso inválido) e **Cancelar** (ghost).
+- **PeriodSelector** — cinco abas (Semana, Mês, Trim., Sem., Ano; rótulo
+  acessível completo) de 48 dp; selecionada = fundo `accent` + `accessibilityState.selected`.
+- **PeriodHeader** — rótulo do período em curso (`label`, `textSecondary`,
+  `accessibilityRole="header"`).
 - **Sheet / ConfirmDialog** — sheet inferior (raio `lg`); ação destrutiva nunca é
   a primária padrão.
 - **EmptyState** — ícone simples, título curto, uma frase, uma ação útil.
@@ -306,13 +331,19 @@ observação do parceiro. Padrões: `ExerciseCard`, `WarmupNote`, `FinishBar` e 
 ## 5.2 Ajuda contextual (somente leitura)
 
 Abrir ou fechar qualquer sheet **não** altera exercício, peso, sequência,
-cronômetro nem sessão; o estado do cartão (expandido, valor digitado) é mantido.
+cronômetro nem sessão; o estado do cartão (expandido, valor digitado, inclusive o
+rascunho de peso ainda não confirmado) é mantido, e o foco volta ao gatilho
+(`?` ou `ⓘ` do exercício) ao fechar. O estado da ajuda vive só em `helpStore`
+(UI); domínio, store e hook da ajuda não importam dados nem cronômetro (teste de
+pureza).
 
 **LegendSheet (`?`)** — lista rolável de termos, cada um com título em `title` e
 descrição em `body`: BI-SET, DROP-SET, PIRÂMIDE CRESCENTE, PIRÂMIDE DECRESCENTE,
-FALHA, EXCÊNTRICA, CONCÊNTRICA, PROGRESSÃO DE CARGA e outros usados pelo programa.
-Conteúdo estático do app. *P1 (BL-115):* um `?` ao lado de cada TechniqueChip abre
-o sheet já rolado até aquele termo.
+FALHA, EXCÊNTRICA, CONCÊNTRICA, PROGRESSÃO DE CARGA. A lista é exatamente a
+constante estática `TECHNIQUE_LEGEND` e cobre todo valor de `technique` do seed.
+*P1 (BL-115):* o `?` ao lado do TechniqueChip só aparece quando existe entrada
+cujo título é igual ao valor exato de `technique` (nunca lê prescrição ou
+observações); ele abre o sheet com o termo destacado.
 
 **MuscleInfoSheet (`ⓘ`)**:
 
@@ -379,7 +410,9 @@ DESCANSO): switch e "Tempo de descanso" (00:05–60:00, entrada mm:ss). Componen
 └───────────────────────────────┘
 ```
 
-- Item inteiro é um botão (altura mínima 72). 6/6 mostra ✓ + contagem.
+- Item inteiro é um botão (altura 72) com "N / M realizados" e a duração; 6/6
+  mostra ✓ + contagem. Meses agrupados por `MonthHeader`.
+- O filtro fica só em memória (`historyStore`, não persistido); a lista é relida do SQLite com o programa escolhido (`listFinishedSummaries`) a cada foco da tela.
 - Programa e treino sempre visíveis no item (a sessão os registra). Com filtro por
   programa ativo, o nome do programa pode sair do item.
 - *Vazio:* "Ainda não existem treinos registrados." + **Ir para o treino**.
@@ -403,13 +436,17 @@ DESCANSO): switch e "Tempo de descanso" (00:05–60:00, entrada mm:ss). Componen
 ```
 
 Feito = ✓ + peso; não realizado = ○ + o texto "não realizado"; sem peso mostra
-"sem carga". A prescrição aparece abaixo do nome como registro do programa.
+"sem carga". A prescrição atual da ficha aparece abaixo do nome, só quando o
+exercício ainda pertence ao treino (senão fica omitida).
 
 ## 6.2 Edição
 
 Linhas editáveis: alternar feito/não feito e editar carga (WeightInput).
-**Salvar** (primário) e **Cancelar** (confirma se houver alterações). Não permite
-trocar programa nem treino da sessão. Salvar não altera a sequência atual.
+**EDITAR** entra no modo de edição; **Salvar** (primário) grava todas as
+alterações numa única transação e **Cancelar** (confirma "Descartar as
+alterações?" se houver mudanças; a confirmação também vale para voltar) descarta
+o rascunho. Valor de peso inválido desabilita Salvar. Não permite trocar programa
+nem treino da sessão. Salvar não altera a sequência atual.
 
 ------------------------------------------------------------------------
 
@@ -421,7 +458,7 @@ trocar programa nem treino da sessão. Salvar não altera a sequência atual.
 ┌───────────────────────────────┐
 │ ESTATÍSTICAS       [ Todos ▼ ]│  filtro: Todos / Treino Padrão / Treino Monstro
 │ [Semana][Mês][Trim.][Sem.][Ano]│
-│ ‹  SETEMBRO 2026  ›           │
+│ SETEMBRO 2026                 │
 │ ┌───────────────────────────┐ │
 │ │ TREINOS NO PERÍODO   17   │ │
 │ └───────────────────────────┘ │
@@ -429,13 +466,15 @@ trocar programa nem treino da sessão. Salvar não altera a sequência atual.
 │ │ POR SEMANA │ │ INTERVALO  │ │
 │ │ 3,4        │ │ 2,0 dias   │ │
 │ └────────────┘ └────────────┘ │
-│ DIAS COM TREINO (calendário)  │
 └───────────────────────────────┘
 ```
 
-- Setas `‹ ›` navegam períodos; o próximo é desabilitado no período atual.
-- **Semana:** distribuição por dia (SEG…DOM) com ponto e texto. **Demais
-  períodos:** mesmas métricas agregadas; calendário de pontos no mês (P1).
+- Só o período em curso (semana seg–dom, mês, trimestre, semestre ou ano do
+  calendário); sem setas `‹ ›`. Navegar entre períodos fica como item futuro.
+- Só três números, iguais em todos os períodos: treinos no período, média por
+  semana e intervalo médio. Sem distribuição por dia nem calendário (futuro).
+- Média por semana = treinos ÷ semanas de calendário (seg–dom) que o período já
+  tocou até hoje (mínimo 1). Sessão finalizada com 0 exercícios conta.
 - Filtro por programa recalcula tudo; o filtro escolhido fica visível ao lado do
   título e aparece na leitura por leitor de tela.
 - Intervalo médio com menos de 2 treinos: "—" + "precisa de ao menos 2 treinos".

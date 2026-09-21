@@ -380,4 +380,5 @@ ALTER TABLE exercise ADD COLUMN secondary_muscles TEXT;
 ALTER TABLE exercise ADD COLUMN description TEXT;
 ```
 
-- Estatísticas (spec 010): `SessionRepository.listFinishedDates` e `listProgramsWithFinished` (leitura); cálculo em `domain/statistics` via `application/GetStatistics`.
+- Histórico (spec 009): `SessionRepository.listFinishedSummaries` (itens agregados: programa, treino, feitos/total, duração) e `getFinishedDetail` (linhas da sessão + prescrição atual da ficha quando o exercício ainda está no treino); edição em lote por `SaveSessionEdits` numa única transação; `listProgramsWithFinished` alimenta o filtro.
+- Estatísticas (spec 010): `SessionRepository.listFinishedDates` e `listProgramsWithFinished` (leitura; esta última também é usada pelo histórico, spec 009); cálculo em `domain/statistics` via `application/GetStatistics`.
