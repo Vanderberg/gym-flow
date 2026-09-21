@@ -9,5 +9,7 @@ export interface SessionRepository {
   setExerciseWeight(sessionId: number, exerciseId: number, weight: number | null): Promise<void>;
   finishSession(sessionId: number, finishedAt?: string): Promise<void>;
   discardSession(sessionId: number): Promise<void>;
+  listFinishedDates(opts: { from: string; to: string; programId?: number }): Promise<string[]>;
+  listProgramsWithFinished(): Promise<{ id: number; name: string }[]>;
   getLastWeight(programId: number, exerciseId: number): Promise<number | null>;
 }

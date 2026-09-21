@@ -37,7 +37,12 @@ describe('navegação', () => {
     }
     for (const label of ['Histórico', 'Estatísticas', 'Config']) {
       await fireEvent.press(view.getByLabelText(label));
-      const title = label === 'Config' ? 'CONFIGURAÇÕES' : label;
+      const title =
+        label === 'Config'
+          ? 'CONFIGURAÇÕES'
+          : label === 'Estatísticas'
+            ? 'Estatísticas, filtro: Todos'
+            : label;
       await waitFor(() => expect(view.getByRole('header', { name: title })).toBeTruthy());
     }
   });
