@@ -20,3 +20,9 @@
 2. **US2**: instalação limpa ⇒ `user_version = 1`. Simular banco em versão anterior ⇒ atualiza sem perder dados. Forçar erro numa migration de teste ⇒ tela de erro + "Tentar novamente"; dados antigos intactos. Modo avião ⇒ tudo funciona.
 3. **US3**: introduzir um erro de tipo/estilo ⇒ `npm run check` falha; corrigir ⇒ passa.
 4. Conferir que o app não solicita nenhuma permissão.
+
+## Registro de validação
+
+- Sem rede/permissões: `app.json` declara `permissions: []`; o app não usa rede (offline-first).
+- Automatizado: `npm run check` verde; cenário negativo confirmado (erro de tipo/estilo faz o check falhar).
+- Pendente (manual, requer aparelho): Home em ≤ 3 s no Moto G84 (SC-001) e validação em iOS (research R10).

@@ -4,6 +4,7 @@ Todas as incógnitas do Technical Context resolvidas. Nada permanece como NEEDS 
 
 ## R1 — Versões mínimas de Android/iOS
 - **Decision**: adotar os mínimos do Expo SDK escolhido (não fixar valores próprios); validar em Moto G84/Android 15. Registrar os valores reais em `app.json`/`quickstart.md` ao criar o projeto.
+- **Registro**: Expo SDK 57 (React Native 0.86); usar os mínimos de Android/iOS desse SDK. Validação em aparelho (Moto G84) e iOS ficam pendentes de execução manual.
 - **Rationale**: app pessoal; fixar mínimos mais altos que o SDK não traz benefício.
 - **Alternatives**: Android 10+/iOS 15+ (arbitrário); só Android 15 (cortaria o iOS exigido pelo MVP).
 
