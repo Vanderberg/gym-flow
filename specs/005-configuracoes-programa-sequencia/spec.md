@@ -7,6 +7,16 @@
 **Depende de**: 002, 003, 004
 **Input**: User description: "Permitir escolher o programa ativo, o tipo de sequência, ver/configurar a agenda semanal e reiniciar a sequência."
 
+## Clarifications
+
+### Session 2026-09-21
+
+- Q: Trocar o programa ativo com sessão em andamento? → A: Bloqueia a troca e oferece Continuar a sessão ou Descartar (descartar e então trocar).
+- Q: Trocar o tipo de sequência com sessão em andamento? → A: Permitida sem restrição; a sessão em andamento não é afetada e o novo tipo vale para o próximo treino.
+- Q: A agenda semanal é somente leitura ou editável nesta spec? → A: Somente leitura (agenda vinda do seed); edição fica para uma spec futura.
+- Q: O que a tela de agenda mostra para programa sem agenda? → A: Estado vazio "Este programa não tem agenda semanal", sem lista de dias.
+- Q: "Reiniciar sequência" reinicia qual programa? → A: Só o programa ativo; a confirmação cita o nome do programa.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Escolher programa ativo (Priority: P1)
@@ -22,7 +32,7 @@ Como usuário, quero alternar entre Treino Padrão e Treino Monstro, para treina
 1. **Given** Treino Padrão ativo, **When** seleciono Treino Monstro, **Then** ele passa a ser o ativo e persiste ao reabrir o app.
 2. **Given** sessões antigas, **When** troco de programa, **Then** nenhuma é alterada ou apagada.
 3. **Given** troca e retorno, **When** volto ao programa anterior, **Then** ele retoma sua própria posição.
-4. **Given** sessão em andamento de outro programa, **When** tento trocar, **Then** o app aplica o comportamento definido (ver Assumptions) sem perder dados.
+4. **Given** sessão em andamento de outro programa, **When** tento trocar, **Then** a troca é bloqueada e o app oferece Continuar a sessão ou Descartar; descartar libera a troca e nada é perdido sem confirmação.
 
 ---
 
@@ -38,13 +48,14 @@ Como usuário, quero escolher entre contínua e dias da semana, independente do 
 
 1. **Given** contínua, **When** escolho semanal, **Then** a escolha persiste e a Home passa a usar a agenda.
 2. **Given** troca de tipo, **When** verifico posições e sessões, **Then** nada muda.
-3. **Given** semanal em programa sem agenda, **When** escolho, **Then** o app orienta que não há agenda (sem falha).
+3. **Given** sessão em andamento, **When** troco o tipo de sequência, **Then** a troca é permitida e a sessão em andamento continua intacta.
+4. **Given** semanal em programa sem agenda, **When** escolho, **Then** a escolha é permitida e o app orienta que não há agenda, com atalho para voltar à contínua (sem falha; ver spec 004).
 
 ---
 
-### User Story 3 - Ver e ajustar agenda semanal e reiniciar (Priority: P2)
+### User Story 3 - Ver agenda semanal e reiniciar (Priority: P2)
 
-Como usuário, quero ver a agenda semanal do programa e reiniciar a sequência contínua quando quiser.
+Como usuário, quero ver a agenda semanal do programa (somente leitura) e reiniciar a sequência contínua quando quiser.
 
 **Why this priority**: Complementa; o essencial funciona com a agenda do seed.
 
@@ -53,8 +64,9 @@ Como usuário, quero ver a agenda semanal do programa e reiniciar a sequência c
 **Acceptance Scenarios**:
 
 1. **Given** Treino Monstro, **When** abro a agenda, **Then** vejo cada dia da semana com seu treino, descanso ou dia opcional.
-2. **Given** sequência contínua, **When** confirmo "Reiniciar", **Then** o próximo volta ao primeiro treino, com histórico preservado.
+2. **Given** sequência contínua, **When** confirmo "Reiniciar" (a confirmação cita o nome do programa ativo), **Then** o próximo do programa ativo volta ao primeiro treino, com histórico preservado e outros programas intactos.
 3. **Given** modo semanal, **When** vejo Configurações, **Then** "Reiniciar" não aparece.
+4. **Given** programa sem agenda (ex.: Treino Padrão), **When** abro a agenda, **Then** vejo o estado vazio "Este programa não tem agenda semanal", sem lista de dias.
 
 ### Edge Cases
 
@@ -67,9 +79,9 @@ Como usuário, quero ver a agenda semanal do programa e reiniciar a sequência c
 
 - **FR-001**: O usuário MUST poder selecionar o programa ativo e o tipo de sequência, com persistência.
 - **FR-002**: Trocar programa ou sequência MUST NOT alterar ou apagar sessões nem estados de sequência.
-- **FR-003**: O app MUST exibir a agenda semanal do programa selecionado.
-- **FR-004**: O app MUST oferecer "Reiniciar sequência" apenas no modo contínuo, com confirmação.
-- **FR-005**: O app MUST tratar troca com sessão em andamento sem perda de dados.
+- **FR-003**: O app MUST exibir a agenda semanal do programa selecionado, somente leitura (sem edição nesta spec).
+- **FR-004**: O app MUST oferecer "Reiniciar sequência" apenas no modo contínuo, com confirmação, e reiniciar somente o programa ativo.
+- **FR-005**: Com sessão em andamento, o app MUST bloquear a troca de programa e oferecer Continuar ou Descartar; descartar libera a troca sem alterar sequência nem estatísticas.
 - **FR-006**: Testes MUST cobrir troca de programa e de sequência preservando histórico (BL-102, BL-103).
 
 ### Key Entities
@@ -84,6 +96,5 @@ Como usuário, quero ver a agenda semanal do programa e reiniciar a sequência c
 
 ## Assumptions
 
-- Troca com sessão em andamento: assumido **impedir a troca e oferecer continuar/descartar** a sessão (confirmar).
-- Agenda semanal nesta etapa é **somente leitura**, usando a do seed; edição pelo usuário fica como decisão futura (confirmar; BL-042).
+- Agenda semanal nesta etapa é **somente leitura**, usando a do seed; a edição pelo usuário é uma spec futura (BL-042 é atendido aqui só na exibição).
 - Escolha do tipo de sequência é global (registro único de configurações).
