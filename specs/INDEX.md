@@ -2,6 +2,7 @@
 
 Fonte de verdade de status para `builder-specs`. Status: `planejando` → `aprovada` → `desenvolvendo` → `concluída`.
 `Depende de`: códigos numéricos das specs (ex.: `002,003`); vazio = sem dependência.
+
 | Spec | Status | Depende de |
 |------|--------|------------|
 | 001-fundacao-projeto | concluída | |
