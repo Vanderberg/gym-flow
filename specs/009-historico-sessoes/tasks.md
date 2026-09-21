@@ -101,7 +101,7 @@ description: "Task list for Histórico de Sessões"
 ### Implementation
 
 - [ ] T028 [P] [US3] Criar `src/components/common/FilterSelect.tsx` conforme `docs/design-telas.md` §3 (botão "Todos ▼" que abre `Sheet` com a lista; alvos ≥ 48 dp; estado selecionado com ✓ além da cor), reutilizável pela spec 010 — faz T027 (parte do componente) passar
-- [ ] T029 [US3] Ligar o filtro em `src/hooks/useHistoryList.ts` (`programFilter` do `historyStore` repassado a `ListHistory`, lista de programas com sessões para o `FilterSelect`) e em `src/app/(tabs)/history.tsx` (`FilterSelect` no cabeçalho, `showProgram = false` quando há filtro, estado vazio com filtro e **Limpar filtro**) — faz T026 e T027 passarem
+- [ ] T029 [US3] Ligar o filtro em `src/hooks/useHistoryList.ts` (`programFilter` do `historyStore` repassado a `ListHistory`, lista de programas com sessões para o `FilterSelect` vinda de `SessionRepository.listProgramsWithFinished()`, leitura descrita em `specs/010-estatisticas-frequencia/contracts/use-cases.md`; criá-la em `src/domain/session/SessionRepository.ts` e `src/data/repositories/SqliteSessionRepository.ts` se ainda não existir, com teste em `tests/integration/data/sessionHistoryQueries.test.ts`) e em `src/app/(tabs)/history.tsx` (`FilterSelect` no cabeçalho, `showProgram = false` quando há filtro, estado vazio com filtro e **Limpar filtro**) — faz T026 e T027 passarem
 
 **Checkpoint**: todas as histórias independentes do ponto de vista de teste.
 

@@ -4,8 +4,18 @@
 **Created**: 2026-09-19
 **Status**: Draft
 **Backlog**: BL-080..BL-087, BL-105 (Sprint 6)
+**Requisitos de produto**: RF-17, RF-18
 **Depende de**: 007
 **Input**: User description: "Estatísticas de frequência e cadência por semana, mês, trimestre, semestre e ano, com filtro por programa."
+
+## Clarifications
+
+### Session 2026-09-21
+
+- Q: Estatísticas só do período atual ou também dos anteriores? → A: Só o período atual: o usuário escolhe a granularidade (semana, mês, trimestre, semestre, ano) e vê o período em curso; sem setas de navegação entre períodos.
+- Q: Como a média por semana é calculada no período em curso? → A: Semanas de calendário (segunda a domingo) que o período já tocou até hoje, contando a semana atual inteira; média = treinos ÷ esse número inteiro. Para o período "Semana", o divisor é 1.
+- Q: Quais visões extras do design entram (distribuição por dia, calendário)? → A: Nenhuma: só os três números (treinos no período, média por semana, intervalo médio); sem distribuição por dia nem calendário de pontos.
+- Q: Sessão finalizada sem nenhum exercício marcado entra nas estatísticas? → A: Sim: toda sessão finalizada conta, independentemente de quantos exercícios foram marcados.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -19,9 +29,10 @@ Como usuário, quero ver quantos treinos fiz na semana, mês, trimestre, semestr
 
 **Acceptance Scenarios**:
 
-1. **Given** sessões finalizadas, **When** escolho um período, **Then** vejo a quantidade de treinos nele.
+1. **Given** sessões finalizadas, **When** escolho um período (semana, mês, trimestre, semestre ou ano), **Then** vejo a quantidade de treinos no período em curso; não há navegação para períodos anteriores.
 2. **Given** sessão em andamento ou descartada, **When** calculo, **Then** ela não entra.
 3. **Given** sem sessões no período, **When** consulto, **Then** vejo zero e mensagem vazia.
+4. **Given** sessão finalizada com 0 exercícios marcados, **When** calculo, **Then** ela conta como um treino (toda sessão finalizada entra).
 
 ---
 
@@ -35,9 +46,11 @@ Como usuário, quero a média de treinos por semana e o intervalo médio entre t
 
 **Acceptance Scenarios**:
 
-1. **Given** 8 treinos em 4 semanas, **When** vejo a média, **Then** mostra 2 por semana.
+1. **Given** 8 treinos em 4 semanas de calendário já tocadas pelo período, **When** vejo a média, **Then** mostra 2 por semana.
 2. **Given** treinos em 1, 3 e 7 do mês, **When** vejo intervalo médio, **Then** mostra 3 dias.
 3. **Given** menos de 2 treinos, **When** vejo intervalo médio, **Then** mostra "—".
+4. **Given** o período "Semana", **When** vejo a média por semana, **Then** o divisor é 1 (a média é igual à quantidade).
+5. **Given** um mês em curso que já tocou 5 semanas de calendário e 17 treinos, **When** vejo a média, **Then** mostra 3,4 por semana (a semana atual conta inteira).
 
 ---
 
@@ -57,15 +70,19 @@ Como usuário, quero filtrar as estatísticas por programa.
 
 - Semana atual incompleta na média: definida em Assumptions.
 - Dois treinos no mesmo dia contam como dois; intervalo 0 dia.
+- Sessão finalizada com 0 exercícios marcados conta como treino; editar marcações no histórico não altera as estatísticas.
+- O intervalo médio usa só as sessões dentro do período e do filtro, pela data local de finalização (diferença em dias corridos entre treinos consecutivos).
 - Limites de período no dia local (virada de mês/ano).
 
 ## Requirements *(mandatory)*
 
 ### Functional Requirements
 
-- **FR-001**: O app MUST calcular quantidade, média por semana e intervalo médio para semana, mês, trimestre, semestre e ano.
-- **FR-002**: O cálculo MUST usar apenas sessões finalizadas, em serviço único e centralizado.
+- **FR-001a**: O app MUST exibir apenas o período em curso da granularidade escolhida, sem navegação para períodos anteriores nesta spec.
+- **FR-001**: O app MUST calcular quantidade, média por semana e intervalo médio para semana, mês, trimestre, semestre e ano. A média por semana MUST ser treinos ÷ semanas de calendário (segunda a domingo) já tocadas pelo período até hoje, contando a semana atual inteira; no período "Semana" o divisor é 1.
+- **FR-002**: O cálculo MUST usar apenas sessões finalizadas (todas contam, mesmo com 0 exercícios marcados), em serviço único e centralizado sobre `workout_session`, pela data local de finalização.
 - **FR-003**: O app MUST oferecer filtro por programa (Todos / cada programa).
+- **FR-004a**: A tela MUST exibir apenas os três números (treinos no período, média por semana e intervalo médio); a distribuição por dia (SEG…DOM) e o calendário de pontos do design ficam fora desta spec.
 - **FR-004**: O app MUST exibir somente frequência e cadência; MUST NOT exibir volume, carga total, peso corporal ou recomendações.
 - **FR-005**: Datas MUST usar o dia local.
 
@@ -81,5 +98,5 @@ Como usuário, quero filtrar as estatísticas por programa.
 
 ## Assumptions
 
-- Média semanal = treinos no período ÷ semanas do período até hoje (semana corrente proporcional), confirmar na clarificação.
-- Períodos são calendário atual (semana seg–dom, mês, trimestre, semestre, ano).
+- Média por semana = treinos no período ÷ número de semanas de calendário (segunda a domingo) que o período já tocou até hoje, contando a semana atual inteira (divisor inteiro ≥ 1); resultado com uma casa decimal.
+- Períodos são o calendário atual (semana seg–dom, mês, trimestre, semestre, ano) e só o período em curso é exibido; a navegação entre períodos (setas `‹ ›` do design) fica fora desta spec.
