@@ -149,6 +149,8 @@ P0
 
 ## BL-042 --- Configurar agenda semanal
 
+Nota: na spec 005 só a exibição (somente leitura); a edição da agenda é item futuro.
+
 P0
 
 ## BL-043 --- Configurar cronômetro

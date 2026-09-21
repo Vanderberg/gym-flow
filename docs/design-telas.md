@@ -125,6 +125,8 @@ Conjunto mínimo em `src/components/common/` (não criar variações paralelas):
 - **BottomTabs** — 4 abas: Treino, Histórico, Estatísticas, Config. Aba ativa:
   ícone preenchido + rótulo em `text` + indicador superior de 3 dp em `accent`;
   inativas: ícone contornado + rótulo `textSecondary`. Altura 64 + safe area.
+- **SettingsRow** — linha de 56 dp: rótulo, valor atual e `›`; sem `onPress` vira
+  linha somente leitura (sem `›`).
 - **RadioCard** — opção única em cartão (círculo ● / ○ + título + descrição), usado
   nas seleções de programa e de tipo de sequência. Selecionado = borda `accent` +
   ● preenchido (não só cor).
@@ -477,9 +479,10 @@ RadioCards. A descrição é informativa: **não** vincula o programa a uma sequ
 (as duas configurações são independentes). Aviso fixo: "Trocar de programa não
 apaga seu histórico."
 
-Com **treino em andamento**, a seleção fica desabilitada com o motivo: "Finalize
-ou descarte o treino em andamento para trocar de programa." (**proposta**, ver
-seção 12).
+Com **treino em andamento**, tocar em outro programa abre um sheet: "Há um treino
+em andamento. Continue ou descarte para trocar de programa." com **Continuar** e
+**Descartar** (confirmação; não altera sequência nem estatísticas). Nada muda
+até o usuário escolher de novo (decidido na spec 005).
 
 ## 8.2 Seleção de tipo de sequência
 
@@ -492,27 +495,29 @@ TIPO DE SEQUÊNCIA
     O próximo treino é definido pela agenda do programa.
 ```
 
-Ao escolher "Dias da semana" num programa sem agenda, levar direto à agenda do
-programa (seção 8.3). Trocar de tipo não altera o histórico.
+Escolher "Dias da semana" num programa sem agenda é permitido: a tela mostra
+"Este programa não tem agenda semanal" com o atalho "Voltar para sequência
+contínua". A linha "Agenda semanal" de Configurações é visível em qualquer tipo
+de sequência. Trocar de tipo não altera o histórico.
 
 ## 8.3 Agenda semanal
 
-Aparece com "Dias da semana"; é **por programa** (título mostra o programa).
+Somente leitura nesta etapa; é **por programa** (título mostra o programa).
+Programa sem agenda mostra estado vazio.
 
 ```text
 AGENDA · TREINO MONSTRO
 
-Segunda      Treino A   ›
-Terça        Treino B   ›
+Segunda      Treino A
+Terça        Treino B
 Quarta       Descanso
-Quinta       Treino C   ›
-Sexta        Treino D   ›
-Sábado       Opcional   ›
-Domingo      Opcional   ›
+Quinta       Treino C
+Sexta        Treino D
+Sábado       Opcional
+Domingo      Opcional
 ```
 
-Toque na linha abre sheet com as opções: os treinos do programa, "Descanso" e
-"Opcional". Alteração salva na hora (sem botão). Ordem SEG→DOM.
+Sem `›` e sem sheet de edição (edição da agenda é item futuro). Ordem SEG→DOM.
 
 ------------------------------------------------------------------------
 
@@ -569,9 +574,9 @@ sentido; confirmar antes de implementar.
 2. **Sábado e domingo "Opcional":** segundo a ficha e o dono do app, é abdominal (supra/infra e oblíquos),
    não um treino A–D. A Home mostra esse texto e nada é registrado. Falta decidir
    onde o texto é guardado (ex.: nota na agenda).
-3. **`WEEKLY` num programa sem agenda:** Home mostra "Sem agenda configurada" e
+3. (decidido, spec 005) **`WEEKLY` num programa sem agenda:** Home mostra "Sem agenda configurada" e
    leva à configuração da agenda.
-4. **Troca de programa com sessão em andamento:** bloqueada com explicação
+4. (decidido, spec 005) **Troca de programa com sessão em andamento:** bloqueada com explicação
    (opção "impedir" da arquitetura), em vez de finalizar automaticamente.
-5. **Agenda editável:** o usuário escolhe, para cada dia, um treino do programa,
+5. (adiado; spec 005 só exibe a agenda) **Agenda editável:** o usuário escolhe, para cada dia, um treino do programa,
    "Descanso" ou "Opcional".
