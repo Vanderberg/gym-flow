@@ -73,7 +73,7 @@ Criar uma abstração:
 interface SequenceStrategy {
   getNextWorkout(
     context: SequenceContext
-  ): Promise<WorkoutReference | null>;
+  ): NextWorkoutResult; // pura: o contexto é carregado na camada application
 }
 ```
 
