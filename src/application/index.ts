@@ -13,3 +13,5 @@ export { SetExerciseCompleted } from './SetExerciseCompleted';
 export { SetExerciseWeight } from './SetExerciseWeight';
 export { FinishWorkout } from './FinishWorkout';
 export { GetFinishSummary } from './GetFinishSummary';
+export { SetRestTimerEnabled } from './SetRestTimerEnabled';
+export { SetRestTimerDuration } from './SetRestTimerDuration';

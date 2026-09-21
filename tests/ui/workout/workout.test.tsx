@@ -5,6 +5,9 @@ import type { WorkoutScreenItem, WorkoutScreenView } from '@/domain/workout/type
 
 const mockHook = jest.fn();
 jest.mock('@/hooks/useWorkoutSession', () => ({ useWorkoutSession: () => mockHook() }));
+jest.mock('@/hooks/useSettings', () => ({
+  useSettings: () => ({ setRestTimerEnabled: jest.fn().mockResolvedValue(undefined) }),
+}));
 jest.mock('expo-router', () => ({ router: { replace: jest.fn(), back: jest.fn() } }));
 jest.setTimeout(30000);
 

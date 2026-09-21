@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo } from 'react';
 import { DiscardInProgressSession } from '@/application/DiscardInProgressSession';
 import { ResetSequence } from '@/application/ResetSequence';
 import { SelectProgram } from '@/application/SelectProgram';
+import { SetRestTimerDuration } from '@/application/SetRestTimerDuration';
+import { SetRestTimerEnabled } from '@/application/SetRestTimerEnabled';
 import { SelectSequenceStrategy } from '@/application/SelectSequenceStrategy';
 import { createRepositories } from '@/data/repositories';
 import { useDatabase } from '@/data/database/DatabaseProvider';
@@ -50,6 +52,20 @@ export function useSettings() {
     await new ResetSequence(repos).execute(current.activeProgramId);
     await reload();
   }, [repos, reload]);
+  const setRestTimerEnabled = useCallback(
+    async (enabled: boolean) => {
+      await new SetRestTimerEnabled(repos).execute(enabled);
+      await reload();
+    },
+    [repos, reload],
+  );
+  const setRestTimerDuration = useCallback(
+    async (seconds: number) => {
+      await new SetRestTimerDuration(repos).execute(seconds);
+      await reload();
+    },
+    [repos, reload],
+  );
   const discardInProgress = useCallback(async () => {
     await new DiscardInProgressSession(repos).execute();
     await reload();
@@ -65,5 +81,7 @@ export function useSettings() {
     selectSequenceStrategy,
     resetSequence,
     discardInProgress,
+    setRestTimerEnabled,
+    setRestTimerDuration,
   };
 }

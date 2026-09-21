@@ -14,17 +14,25 @@ import { EmptyState } from '@/components/common/EmptyState';
 import { ProgramBadge } from '@/components/common/ProgramBadge';
 import { SegmentedProgress } from '@/components/common/SegmentedProgress';
 import { ExerciseCard } from '@/components/workout/ExerciseCard';
+import { RestTimerBar } from '@/components/workout/RestTimerBar';
+import { RestTimerToggle } from '@/components/workout/RestTimerToggle';
 import { FinishBar } from '@/components/workout/FinishBar';
 import { WarmupNote } from '@/components/workout/WarmupNote';
 import { colors, sizes, spacing, typography } from '@/constants/theme';
 import { formatWeight } from '@/domain/workout/weight';
+import { useRestTimer } from '@/hooks/useRestTimer';
+import { useSettings } from '@/hooks/useSettings';
 import { useWorkoutSession } from '@/hooks/useWorkoutSession';
+import { useWorkoutStore } from '@/store/workoutStore';
 
 const FINISH_ERROR = 'Não foi possível finalizar. Nada foi alterado.';
 
 export default function WorkoutScreen() {
   const w = useWorkoutSession();
   const { view, status } = w;
+  const timer = useRestTimer();
+  const { setRestTimerEnabled } = useSettings();
+  const { reset: resetTimer } = timer;
   const [confirming, setConfirming] = useState(false);
   const [finishError, setFinishError] = useState<string | null>(null);
   const { load } = w;
@@ -33,13 +41,22 @@ export default function WorkoutScreen() {
     void load();
   }, [load]);
   useEffect(() => {
-    if (status === 'noSession') router.replace('/');
-  }, [status]);
+    if (status === 'noSession') {
+      resetTimer();
+      router.replace('/');
+    }
+  }, [status, resetTimer]);
 
   const confirmFinish = async () => {
     setConfirming(false);
     const ok = await w.finish();
+    if (ok) resetTimer();
     setFinishError(ok ? null : FINISH_ERROR);
+  };
+
+  const markCompleted = async (exerciseId: number, completed: boolean) => {
+    await w.setCompleted(exerciseId, completed);
+    if (!useWorkoutStore.getState().cardErrors[exerciseId]) timer.onExerciseMarked(completed);
   };
 
   if (status === 'error' && !view) {
@@ -80,6 +97,10 @@ export default function WorkoutScreen() {
             accessibilityRole="header"
             style={styles.title}
           >{`TREINO ${view.workout.code}`}</Text>
+          <RestTimerToggle
+            enabled={timer.enabled}
+            onPress={() => void setRestTimerEnabled(!timer.enabled).catch(() => undefined)}
+          />
         </View>
         <Text style={styles.workoutName}>{view.workout.name}</Text>
         <ProgramBadge name={view.program.name} />
@@ -103,7 +124,7 @@ export default function WorkoutScreen() {
               onToggle={() =>
                 w.toggleExpanded(item.exerciseId, w.expanded[item.exerciseId] ?? !item.completed)
               }
-              onSetCompleted={(c) => void w.setCompleted(item.exerciseId, c)}
+              onSetCompleted={(c) => void markCompleted(item.exerciseId, c)}
               onWeightChange={(t) => w.setDraft(item.exerciseId, t)}
               onWeightCommit={() => void w.saveWeight(item.exerciseId)}
               onAdjust={(d) => void w.adjustWeight(item.exerciseId, d)}
@@ -112,6 +133,17 @@ export default function WorkoutScreen() {
           ))
         )}
       </ScrollView>
+      {timer.enabled ? (
+        <RestTimerBar
+          state={timer.state}
+          remainingMs={timer.remainingMs}
+          onStart={timer.start}
+          onPause={timer.pause}
+          onResume={timer.resume}
+          onStop={timer.stop}
+          onDismiss={timer.dismiss}
+        />
+      ) : null}
       <FinishBar onPress={() => setConfirming(true)} />
       <ConfirmDialog
         visible={confirming}
