@@ -19,7 +19,8 @@ describe('navegação', () => {
     }
     for (const label of ['Histórico', 'Estatísticas', 'Config']) {
       await fireEvent.press(view.getByLabelText(label));
-      await waitFor(() => expect(view.getByRole('header', { name: label })).toBeTruthy());
+      const title = label === 'Config' ? 'CONFIGURAÇÕES' : label;
+      await waitFor(() => expect(view.getByRole('header', { name: title })).toBeTruthy());
     }
   });
 

@@ -36,6 +36,13 @@ export interface SequenceContext {
 
 export type NoneReason = 'REST' | 'OPTIONAL_DAY' | 'NO_SCHEDULE' | 'NO_WORKOUTS';
 
+export type AgendaDay =
+  | { weekday: number; kind: 'WORKOUT'; workoutName: string }
+  | { weekday: number; kind: 'REST' }
+  | { weekday: number; kind: 'OPTIONAL'; note: string | null };
+
+export type AgendaView = { kind: 'NO_SCHEDULE' } | { kind: 'DAYS'; days: AgendaDay[] };
+
 export type NextWorkoutResult =
   | { kind: 'WORKOUT'; workout: WorkoutRef }
   | { kind: 'NONE'; reason: NoneReason; note: string | null };

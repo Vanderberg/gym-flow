@@ -1,16 +1,66 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { router } from 'expo-router';
+import { useState } from 'react';
+import { ScrollView, StyleSheet, Text } from 'react-native';
+import { ConfirmDialog } from '@/components/common/ConfirmDialog';
+import { SettingsRow } from '@/components/settings/SettingsRow';
+import { colors, sizes, spacing, typography } from '@/constants/theme';
+import { useSettings } from '@/hooks/useSettings';
 
 export default function SettingsScreen() {
+  const { settings, programs, resetSequence } = useSettings();
+  const [confirmingReset, setConfirmingReset] = useState(false);
+  const program = programs.find((p) => p.id === settings?.activeProgramId);
+  const continuous = settings?.sequenceType === 'CONTINUOUS';
+
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
       <Text accessibilityRole="header" style={styles.title}>
-        Config
+        CONFIGURAÇÕES
       </Text>
-    </View>
+      <SettingsRow
+        label="Programa de treino"
+        value={program?.name}
+        onPress={() => router.push('/settings/program')}
+      />
+      <SettingsRow
+        label="Tipo de sequência"
+        value={
+          settings
+            ? settings.sequenceType === 'CONTINUOUS'
+              ? 'Sequência contínua'
+              : 'Dias da semana'
+            : undefined
+        }
+        onPress={() => router.push('/settings/sequence')}
+      />
+      <SettingsRow label="Agenda semanal" onPress={() => router.push('/settings/schedule')} />
+      {continuous ? (
+        <SettingsRow label="Reiniciar sequência" onPress={() => setConfirmingReset(true)} />
+      ) : null}
+      <ConfirmDialog
+        visible={confirmingReset}
+        title="Reiniciar sequência"
+        message={`Reiniciar a sequência do ${program?.name ?? 'programa'}? O próximo treino volta ao primeiro. Seu histórico não é apagado.`}
+        confirmLabel="Reiniciar"
+        destructive
+        onCancel={() => setConfirmingReset(false)}
+        onConfirm={() => {
+          setConfirmingReset(false);
+          void resetSequence().catch(() => undefined);
+        }}
+      />
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  title: { fontSize: 24, fontWeight: '600' },
+  screen: { flex: 1, backgroundColor: colors.bg },
+  content: {
+    padding: spacing.lg,
+    gap: spacing.sm,
+    maxWidth: sizes.maxContent,
+    width: '100%',
+    alignSelf: 'center',
+  },
+  title: { ...typography.title, color: colors.text, marginBottom: spacing.sm },
 });

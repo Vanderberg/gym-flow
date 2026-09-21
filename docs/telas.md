@@ -97,7 +97,8 @@ TIPO DE SEQUÊNCIA
 
 # 6. Agenda semanal
 
-Aparece quando o tipo de sequência é "Dias da semana".
+Somente leitura (spec 005); visível em qualquer tipo de sequência. Programa sem
+agenda mostra estado vazio.
 
 ``` text
 AGENDA
