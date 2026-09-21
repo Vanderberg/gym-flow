@@ -8,6 +8,7 @@ export default function RootLayout() {
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="workout/index" />
         <Stack.Screen name="workout/summary" />
+        <Stack.Screen name="history/[sessionId]" />
         <Stack.Screen
           name="settings/program"
           options={{ headerShown: true, title: 'Programa de treino' }}

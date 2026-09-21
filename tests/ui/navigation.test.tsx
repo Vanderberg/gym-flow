@@ -9,6 +9,17 @@ jest.mock('@/data/bootstrap', () => ({
   bootstrapDatabase: async () => ({ status: 'ready' }),
 }));
 
+jest.mock('@/hooks/useHistoryList', () => ({
+  useHistoryList: () => ({
+    items: [],
+    sections: [],
+    programs: [],
+    status: 'ready',
+    reload: jest.fn(),
+    programFilter: null,
+  }),
+}));
+
 jest.mock('@/hooks/useWorkoutSession', () => ({
   useWorkoutSession: () => ({
     view: {
@@ -42,7 +53,9 @@ describe('navegação', () => {
           ? 'CONFIGURAÇÕES'
           : label === 'Estatísticas'
             ? 'Estatísticas, filtro: Todos'
-            : label;
+            : label === 'Histórico'
+              ? 'HISTÓRICO'
+              : label;
       await waitFor(() => expect(view.getByRole('header', { name: title })).toBeTruthy());
     }
   });

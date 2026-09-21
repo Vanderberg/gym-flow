@@ -1,3 +1,4 @@
+import type { FinishedSessionDetail, SessionSummary } from '../history/types';
 import type { WorkoutSession, WorkoutSessionDetail } from './types';
 
 export interface SessionRepository {
@@ -10,6 +11,8 @@ export interface SessionRepository {
   finishSession(sessionId: number, finishedAt?: string): Promise<void>;
   discardSession(sessionId: number): Promise<void>;
   listFinishedDates(opts: { from: string; to: string; programId?: number }): Promise<string[]>;
+  listFinishedSummaries(opts?: { programId?: number }): Promise<SessionSummary[]>;
+  getFinishedDetail(sessionId: number): Promise<FinishedSessionDetail | null>;
   listProgramsWithFinished(): Promise<{ id: number; name: string }[]>;
   getLastWeight(programId: number, exerciseId: number): Promise<number | null>;
 }

@@ -14,3 +14,6 @@ export { SetExerciseWeight } from './SetExerciseWeight';
 export { FinishWorkout } from './FinishWorkout';
 export { GetFinishSummary } from './GetFinishSummary';
 export { GetExerciseInfo } from './GetExerciseInfo';
+export { ListHistory } from './ListHistory';
+export { GetSessionDetail } from './GetSessionDetail';
+export { SaveSessionEdits } from './SaveSessionEdits';
