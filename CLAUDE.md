@@ -103,5 +103,5 @@ Unitários (domínio): sequência contínua (primeiro, meio, último→primeiro,
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan:
-`specs/002-modelo-dados/plan.md` (spec ativa; base: `specs/001-fundacao-projeto/plan.md`)
+`specs/003-programas-seed/plan.md` (spec ativa; bases: `specs/002-modelo-dados/plan.md`, `specs/001-fundacao-projeto/plan.md`)
 <!-- SPECKIT END -->

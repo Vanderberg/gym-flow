@@ -3,7 +3,7 @@
 **Feature Branch**: `003-programas-seed`
 **Created**: 2026-09-19
 **Status**: Draft
-**Backlog**: BL-020, BL-021, BL-022, BL-023, BL-110 (dados), BL-120, BL-124 (Sprint 2)
+**Backlog**: BL-020, BL-021, BL-022, BL-023, BL-110 (dados), BL-120, BL-121, BL-122, BL-123 (dados), BL-124 (Sprint 2)
 **Depende de**: 002
 **Input**: User description: "Carregar Treino Padrão e Treino Monstro conforme docs/fichas-treino.md, de forma idempotente."
 
@@ -68,6 +68,7 @@ Como dono do app, quero que a carga inicial possa rodar várias vezes sem duplic
 
 - Interrupção no meio da carga: retomar sem duplicar.
 - Exercício com mesmo nome em programas distintos reutiliza a mesma entidade.
+- Conteúdo que sai do seed numa versão nova: treinos e exercícios ficam inativos (nunca excluídos), itens de treino saem, linhas de agenda de dia removido são limpas, programa removido fica inativo, e uma `current_position` maior que o novo número de treinos é preservada (o ajuste cabe à spec da sequência).
 
 ## Requirements *(mandatory)*
 
@@ -94,6 +95,6 @@ Como dono do app, quero que a carga inicial possa rodar várias vezes sem duplic
 ## Assumptions
 
 - Variação "tríceps testa unilateral no cross" tratada como exercício distinto do "Tríceps testa" (a confirmar, ver `CLAUDE.md`).
-- Texto exato do cardio será confirmado na fase de clarificação; a nota de aquecimento já está definida (ver Clarifications).
+- Texto do cardio fixado em `research.md` R8, pendente de revisão do dono do app em `content-review.md` (T026/T029); a nota de aquecimento já está definida (ver Clarifications).
 - A lista de exercícios do Treino Padrão vem do PRD (seção 7), pois `docs/fichas-treino.md` só a resume.
 - Músculos/descrições dos exercícios são conteúdo estático redigido para o app, não recomendação.
