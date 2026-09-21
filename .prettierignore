@@ -1,0 +1,9 @@
+docs/
+specs/
+.specify/
+.claude/
+.worktrees/
+node_modules/
+.expo/
+package-lock.json
+*.md

@@ -2,7 +2,7 @@
 
 App pessoal de controle de treinos (Android + iOS). Registra treinos de academia, permite alternar entre **programas de treino** (Treino Padrão, Treino Monstro) e entre **tipos de sequência** (contínua ou dias da semana), e acompanha frequência/cadência. Uso pessoal, sem comercialização.
 
-**Estado atual:** o repositório contém apenas documentação em `docs/` e a configuração do spec-kit (nenhum código ainda). A documentação é a fonte de verdade; consulte antes de implementar:
+**Estado atual:** projeto Expo criado (spec 001: 4 abas, banco SQLite com migrations e `npm run check`); demais funcionalidades vêm das specs seguintes. A documentação é a fonte de verdade; consulte antes de implementar:
 
 - `docs/PRD.md` (v1.1) — produto, programas, sequências, requisitos (RF-01..26), critérios de aceite
 - `docs/arquitetura.md` — stack, estratégias de sequência, camadas, estrutura de diretórios
@@ -98,7 +98,7 @@ Unitários (domínio): sequência contínua (primeiro, meio, último→primeiro,
 
 - Documentação e textos de UI em **português (pt-BR)**.
 - Prioridades: P0 obrigatório no MVP; P1 depois do fluxo principal (cronômetro, filtro de histórico/estatísticas por programa, ajuda por técnica); P2 futuro.
-- Comandos de build/test/lint: definir aqui assim que o projeto Expo for criado (BL-001..003).
+- Comandos: `npx expo start` (rodar; Android `a`), `npm run check` (typecheck + lint + format:check + testes), `npm run typecheck`, `npm run lint`, `npm run format`, `npm test`.
 
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
