@@ -4,6 +4,7 @@
 
 **Input**: Feature specification from `/specs/004-estrategias-sequencia/spec.md`
 **Backlog**: BL-030, BL-031, BL-032, BL-034, BL-035, BL-100, BL-101
+**Requisitos de produto**: RF-01, RF-11, RF-12, RF-13, RF-14, RF-29
 **Depende de**: 002 (tipos e repositórios `ScheduleRepository`, `SequenceStateRepository`, `ProgramRepository`, `SettingsRepository`, utilitário de data local)
 
 ## Summary
@@ -81,12 +82,17 @@ src/
 │   │   └── WeeklyScheduleSequenceStrategy.ts
 │   └── services/
 │       ├── NextWorkoutResolver.ts  # registro SequenceType → estratégia
-│       └── advancePosition.ts      # próxima posição após finalizar (1→…→N→1)
+│       └── advancePosition.ts      # próxima posição ativa após finalizar (última → primeira)
 ├── application/
+│   ├── composition.ts              # createSequenceResolver(): registra as estratégias
 │   ├── GetNextWorkout.ts           # carrega contexto (settings, treinos, estado, agenda, data local) e resolve
-│   └── ResetSequence.ts            # só contínua; upsert posição 1
+│   ├── ResetSequence.ts            # só contínua; upsert posição 1
+│   └── index.ts                    # exports públicos
+├── utils/
+│   └── weekday.ts                  # weekdayOfLocalDate('YYYY-MM-DD') → 1=seg..7=dom
 tests/
-├── unit/domain/sequence/           # continuous, weekly, resolver, advancePosition
+├── unit/domain/sequence/           # continuous, weekly, resolver, advancePosition, builders.ts, purity
+├── unit/utils/                     # weekday
 └── integration/application/        # getNextWorkout, resetSequence
 ```
 

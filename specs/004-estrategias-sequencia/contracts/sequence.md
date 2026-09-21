@@ -13,7 +13,7 @@ class NextWorkoutResolver {
   resolve(type: SequenceType, context: SequenceContext): NextWorkoutResult
 }
 
-advancePosition(currentPosition: number | null, totalWorkouts: number): number   // último → 1; inválida → 1 antes de avançar
+advancePosition(currentPosition: number | null, activePositions: number[]): number   // próxima posição ativa; última → primeira; ausente/sem correspondência conta como a primeira
 ```
 
 Tipo sem estratégia registrada: `resolve` lança `Error` (erro de programação; não ocorre com os tipos do enum).

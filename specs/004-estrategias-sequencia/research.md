@@ -11,7 +11,7 @@
 - **Alternatives**: `null` + campos avulsos (perde tipagem).
 
 ## D3 — Contínua: estado ausente ou inválido = posição 1 (clarificação)
-- **Decision**: posição ausente, < 1 ou > N → posição 1, sem gravar. Programa sem treinos ativos → `NONE/NO_WORKOUTS`.
+- **Decision**: posição ausente, < 1 ou sem treino ativo correspondente → primeiro treino, sem gravar. Programa sem treinos ativos → `NONE/NO_WORKOUTS`.
 - **Rationale**: autocorretivo; a posição só é gravada na finalização (FR-002, SC-002).
 
 ## D4 — Semanal: só agenda + data (clarificação)
@@ -24,7 +24,7 @@
 - **Rationale**: SC-003 (novo tipo sem alterar os existentes).
 
 ## D6 — Avanço e reinício
-- **Decision**: `advancePosition(current, total)` puro (posição inválida → 1 antes de avançar; último → 1). Reiniciar = `SequenceStateRepository.upsert(programId, 1)`; o caso de uso recusa (`ValidationError`) se o tipo ativo for `WEEKLY`; não toca sessões (inclusive em andamento) nem outros programas.
+- **Decision**: `advancePosition(current, activePositions)` puro (próxima posição ativa; último → primeiro; posição inválida vale como a primeira antes de avançar). A posição gravada é o valor `workout.position`, não um índice, para suportar treinos desativados pelo seed. Reiniciar = `SequenceStateRepository.upsert(programId, 1)`; o caso de uso recusa (`ValidationError`) se o tipo ativo for `WEEKLY`; não toca sessões (inclusive em andamento) nem outros programas.
 - **Rationale**: FR-005 e clarificação de reinício com sessão em andamento.
 
 ## D7 — Data local

@@ -26,7 +26,7 @@ type NextWorkoutResult =
 
 ## Regras
 
-- **Contínua**: `position = currentPosition` se `1 ≤ p ≤ workouts.length`, senão 1; retorna o treino do índice `position - 1`. Sem treinos → `NONE/NO_WORKOUTS`.
+- **Contínua**: `currentPosition` é comparada com `WorkoutRef.position` dos treinos ativos. Se existir treino ativo com essa posição, ele é o próximo; senão (ausente, < 1 ou sem correspondência), o primeiro da lista. Sem treinos → `NONE/NO_WORKOUTS`.
 - **Semanal**: `schedule` vazio → `NONE/NO_SCHEDULE`; entrada de `today.weekday` com `workoutId` → `WORKOUT` (o treino deve estar em `workouts`, senão `NONE/REST`); com `workoutId` nulo → `NONE/OPTIONAL_DAY` (se `optional`, com a `note` da linha) ou `NONE/REST`; sem linha para o dia → `NONE/REST`.
-- **advancePosition(current, total)**: posição inválida → 1 antes de avançar; resultado `current % total + 1` (último → 1). `total = 0` é erro de programação (o chamador não invoca).
+- **advancePosition(current, activePositions)**: devolve a menor posição ativa maior que `current`; se `current` for a última, devolve a primeira. Se `current` for ausente ou sem correspondência, o resolvedor mostrou o primeiro treino, então vale como a primeira posição e o resultado é a segunda (a primeira, se houver só uma). Lista vazia é erro de programação (o chamador não invoca).
 - **Reiniciar**: `current_position = 1`; só quando o tipo ativo é `CONTINUOUS`; nunca altera sessões nem outro programa.

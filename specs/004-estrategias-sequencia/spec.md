@@ -66,7 +66,7 @@ Como usuário, quero reiniciar a sequência de um programa para o primeiro trein
 **Acceptance Scenarios**:
 
 1. **Given** posição no meio, **When** reinicio, **Then** o próximo é o primeiro e o histórico permanece.
-2. **Given** modo semanal, **When** procuro reiniciar, **Then** a opção não existe.
+2. **Given** modo semanal, **When** procuro reiniciar, **Then** o caso de uso recusa a operação e nada muda (a opção some na UI, spec 005).
 3. **Given** dois programas, **When** reinicio um, **Then** o outro não muda.
 4. **Given** sessão em andamento do programa, **When** reinicio, **Then** só a posição volta ao primeiro treino e a sessão em andamento é mantida.
 
@@ -76,6 +76,9 @@ Como usuário, quero reiniciar a sequência de um programa para o primeiro trein
 - Troca de tipo de sequência não altera posições nem sessões.
 - Contínua com estado ausente ou posição inválida (fora do intervalo de treinos do programa): o resolvedor trata como primeiro treino (posição 1) e não grava nada até a próxima finalização.
 - Fuso/horário: usar sempre a data local, sem deslocar o dia.
+- Treino desativado no meio da sequência: a posição segue o valor `position` do treino; se nenhum treino ativo tiver a posição gravada, o próximo é o primeiro.
+- Semanal com treino da agenda desativado: resultado "sem treino" (descanso).
+- Programa sem treinos ativos: resultado "sem treinos", sem erro.
 
 ## Requirements *(mandatory)*
 
@@ -84,8 +87,8 @@ Como usuário, quero reiniciar a sequência de um programa para o primeiro trein
 - **FR-001**: O sistema MUST resolver o próximo treino a partir de programa ativo + tipo de sequência, sem lógica por nome de programa.
 - **FR-002**: Na contínua, a posição MUST avançar somente ao finalizar sessão e ser mantida por programa.
 - **FR-003**: Na semanal, o resultado MUST vir da agenda do programa para o dia da semana local, sem considerar sessões já finalizadas no dia (o resolvedor é puro: só agenda + data; indicar "já concluído" é responsabilidade da Home).
-- **FR-004**: O sistema MUST expor o motivo quando não há treino (descanso, dia opcional com texto, sem agenda).
-- **FR-005**: Reiniciar MUST existir apenas na contínua, voltar ao primeiro treino e nunca apagar histórico.
+- **FR-004**: O sistema MUST expor o motivo quando não há treino (descanso, dia opcional com texto, sem agenda, programa sem treinos ativos).
+- **FR-005**: Reiniciar MUST ser aceito apenas na contínua, voltar ao primeiro treino e nunca apagar histórico.
 - **FR-006**: Qualquer programa MUST poder usar qualquer tipo de sequência.
 
 ### Key Entities
@@ -101,3 +104,5 @@ Como usuário, quero reiniciar a sequência de um programa para o primeiro trein
 ## Assumptions
 
 - Semana considerada de segunda a domingo, dia local.
+- A persistência do avanço ao finalizar é do `FinishWorkout` (spec 007), dentro da transação de finalização. Esta spec entrega `advancePosition` e a resolução; os cenários 1 e 3 da US1 são verificados aqui no domínio e de ponta a ponta na 007.
+- Requisitos de produto de referência: RF-01, RF-11 (contínua), RF-12, RF-29 (semanal), RF-13 (reiniciar), RF-14 (histórico preservado).
