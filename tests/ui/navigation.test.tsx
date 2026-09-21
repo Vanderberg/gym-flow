@@ -9,6 +9,17 @@ jest.mock('@/data/bootstrap', () => ({
   bootstrapDatabase: async () => ({ status: 'ready' }),
 }));
 
+jest.mock('@/hooks/useHistoryList', () => ({
+  useHistoryList: () => ({
+    items: [],
+    sections: [],
+    programs: [],
+    status: 'ready',
+    reload: jest.fn(),
+    programFilter: null,
+  }),
+}));
+
 jest.mock('@/hooks/useWorkoutSession', () => ({
   useWorkoutSession: () => ({
     view: {
@@ -37,7 +48,7 @@ describe('navegação', () => {
     }
     for (const label of ['Histórico', 'Estatísticas', 'Config']) {
       await fireEvent.press(view.getByLabelText(label));
-      const title = label === 'Config' ? 'CONFIGURAÇÕES' : label;
+      const title = { Config: 'CONFIGURAÇÕES', Histórico: 'HISTÓRICO' }[label] ?? label;
       await waitFor(() => expect(view.getByRole('header', { name: title })).toBeTruthy());
     }
   });

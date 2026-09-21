@@ -1,4 +1,5 @@
 import type { Database } from '../database/Database';
+import type { FinishedSessionDetail, SessionSummary } from '../../domain/history/types';
 import type { SessionRepository } from '../../domain/session/SessionRepository';
 import type {
   WorkoutSession,
@@ -120,6 +121,114 @@ export class SqliteSessionRepository implements SessionRepository {
       filter ? [opts.programId as number] : [],
     );
     return rows.map(mapSession);
+  }
+
+  async listFinishedSummaries(opts?: { programId?: number }): Promise<SessionSummary[]> {
+    const filter = opts?.programId !== undefined;
+    const rows = await this.db.getAll<{
+      id: number;
+      program_id: number;
+      program_name: string;
+      code: string;
+      workout_name: string;
+      started_at: string;
+      finished_at: string;
+      done: number;
+      total: number;
+    }>(
+      `SELECT s.id, s.program_id, p.name AS program_name, w.code, w.name AS workout_name,
+              s.started_at, s.finished_at,
+              COALESCE(SUM(wse.completed), 0) AS done, COUNT(wse.id) AS total
+         FROM workout_session s
+         JOIN training_program p ON p.id = s.program_id
+         JOIN workout w ON w.id = s.workout_id
+         LEFT JOIN workout_session_exercise wse ON wse.session_id = s.id
+        WHERE s.finished_at IS NOT NULL ${filter ? 'AND s.program_id = ?' : ''}
+        GROUP BY s.id
+        ORDER BY s.finished_at DESC, s.id DESC`,
+      filter ? [opts.programId as number] : [],
+    );
+    return rows.map((r) => ({
+      sessionId: r.id,
+      programId: r.program_id,
+      programName: r.program_name,
+      workoutCode: r.code,
+      workoutName: r.workout_name,
+      startedAt: r.started_at,
+      finishedAt: r.finished_at,
+      done: r.done,
+      total: r.total,
+    }));
+  }
+
+  async getFinishedDetail(sessionId: number): Promise<FinishedSessionDetail | null> {
+    const s = await this.db.getFirst<{
+      id: number;
+      program_id: number;
+      program_name: string;
+      workout_id: number;
+      code: string;
+      workout_name: string;
+      started_at: string;
+      finished_at: string;
+    }>(
+      `SELECT s.id, s.program_id, p.name AS program_name, s.workout_id, w.code,
+              w.name AS workout_name, s.started_at, s.finished_at
+         FROM workout_session s
+         JOIN training_program p ON p.id = s.program_id
+         JOIN workout w ON w.id = s.workout_id
+        WHERE s.id = ? AND s.finished_at IS NOT NULL`,
+      [sessionId],
+    );
+    if (!s) return null;
+    const rows = await this.db.getAll<{
+      exercise_id: number;
+      name: string;
+      completed: number;
+      weight: number | null;
+      prescription: string | null;
+      technique: string | null;
+      notes: string | null;
+      display_order: number | null;
+      we_id: number | null;
+    }>(
+      `SELECT wse.exercise_id, e.name, wse.completed, wse.weight,
+              we.prescription, we.technique, we.notes, we.display_order, we.id AS we_id
+         FROM workout_session_exercise wse
+         JOIN exercise e ON e.id = wse.exercise_id
+         LEFT JOIN workout_exercise we ON we.workout_id = ? AND we.exercise_id = wse.exercise_id
+        WHERE wse.session_id = ?`,
+      [s.workout_id, s.id],
+    );
+    return {
+      sessionId: s.id,
+      programId: s.program_id,
+      programName: s.program_name,
+      workoutId: s.workout_id,
+      workoutCode: s.code,
+      workoutName: s.workout_name,
+      startedAt: s.started_at,
+      finishedAt: s.finished_at,
+      rows: rows.map((r) => ({
+        exerciseId: r.exercise_id,
+        name: r.name,
+        completed: toBoolean(r.completed),
+        weight: r.weight,
+        prescription: r.prescription,
+        technique: r.technique,
+        notes: r.notes,
+        displayOrder: r.display_order,
+        inWorkout: r.we_id !== null,
+      })),
+    };
+  }
+
+  listProgramsWithFinished(): Promise<{ id: number; name: string }[]> {
+    return this.db.getAll<{ id: number; name: string }>(
+      `SELECT DISTINCT p.id, p.name FROM training_program p
+         JOIN workout_session s ON s.program_id = p.id AND s.finished_at IS NOT NULL
+        ORDER BY p.name`,
+    );
   }
 
   private async updateLine(
