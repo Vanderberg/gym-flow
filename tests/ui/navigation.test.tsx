@@ -5,8 +5,8 @@ import path from 'path';
 jest.mock('@/data/database/openDatabase', () => ({
   openDatabase: async () => ({}),
 }));
-jest.mock('@/data/migrations/runner', () => ({
-  runMigrations: async () => ({ status: 'ready', version: 1 }),
+jest.mock('@/data/bootstrap', () => ({
+  bootstrapDatabase: async () => ({ status: 'ready' }),
 }));
 
 const appDir = path.resolve(__dirname, '../../src/app');
