@@ -6,7 +6,7 @@ Fonte de verdade de status para `builder-specs`. Status: `planejando` → `aprov
 | Spec | Status | Depende de |
 |------|--------|------------|
 | 001-fundacao-projeto | concluída | |
-| 002-modelo-dados | aprovada | 001 |
+| 002-modelo-dados | concluída | 001 |
 | 003-programas-seed | aprovada | 002 |
 | 004-estrategias-sequencia | aprovada | 002 |
 | 005-configuracoes-programa-sequencia | aprovada | 003,004 |
