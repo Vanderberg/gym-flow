@@ -287,6 +287,8 @@ P1
 
 ## BL-092 --- Iniciar/pausar/encerrar
 
+> Spec 011 entrega também o teste "abrir a ajuda com o cronômetro ativo não o pausa nem reinicia" (a contagem é independente da ajuda).
+
 P1
 
 ------------------------------------------------------------------------

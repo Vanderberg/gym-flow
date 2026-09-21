@@ -339,6 +339,13 @@ Ao marcar um exercício, barra de descanso acima do botão Finalizar: tempo em
 `numeric` (`01:30`), **Pausar** e **Encerrar**. Ignorável, não bloqueia nada. Pode
 ser ativado/desativado durante o treino pelo ícone ⏱ do cabeçalho.
 
+Implementação (spec 011): parado, a barra mostra **Iniciar descanso**; marcar um
+exercício inicia (ou reinicia) a contagem; ao terminar com o app aberto vibra 400 ms
+e mostra "Descanso terminado" + **OK**; em segundo plano não há alerta. O estado vive
+só em memória. O ⏱ altera a configuração persistida. Em Configurações (seção
+DESCANSO): switch e "Tempo de descanso" (00:05–60:00, entrada mm:ss). Componentes:
+`RestTimerBar`, `RestTimerToggle`, `Switch`, `SettingsSwitchRow`, `RestDurationSheet`.
+
 ## 5.4 Estados
 
 - *Sem exercícios no treino:* EmptyState "Este treino não tem exercícios"

@@ -17,3 +17,5 @@ export { GetExerciseInfo } from './GetExerciseInfo';
 export { ListHistory } from './ListHistory';
 export { GetSessionDetail } from './GetSessionDetail';
 export { SaveSessionEdits } from './SaveSessionEdits';
+export { SetRestTimerEnabled } from './SetRestTimerEnabled';
+export { SetRestTimerDuration } from './SetRestTimerDuration';

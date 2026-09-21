@@ -15,4 +15,4 @@ Fonte de verdade de status para `builder-specs`. Status: `planejando` → `aprov
 | 008-ajuda-contextual | concluída | 003,007 |
 | 009-historico-sessoes | concluída | 007 |
 | 010-estatisticas-frequencia | concluída | 007 |
-| 011-cronometro-descanso | aprovada | 007 |
+| 011-cronometro-descanso | concluída | 007 |
