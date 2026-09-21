@@ -379,3 +379,5 @@ ALTER TABLE exercise ADD COLUMN primary_muscle TEXT;
 ALTER TABLE exercise ADD COLUMN secondary_muscles TEXT;
 ALTER TABLE exercise ADD COLUMN description TEXT;
 ```
+
+- Estatísticas (spec 010): `SessionRepository.listFinishedDates` e `listProgramsWithFinished` (leitura); cálculo em `domain/statistics` via `application/GetStatistics`.

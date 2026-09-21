@@ -153,6 +153,31 @@ export class SqliteSessionRepository implements SessionRepository {
     await this.updateLine(sessionId, exerciseId, 'weight', weight);
   }
 
+  async listFinishedDates(opts: { from: string; to: string; programId?: number }) {
+    const params: (string | number)[] = [opts.from, opts.to];
+    let filter = '';
+    if (opts.programId !== undefined) {
+      filter = ' AND program_id = ?';
+      params.push(opts.programId);
+    }
+    const rows = await this.db.getAll<{ d: string }>(
+      `SELECT substr(finished_at, 1, 10) AS d FROM workout_session
+        WHERE finished_at IS NOT NULL AND substr(finished_at, 1, 10) BETWEEN ? AND ?${filter}
+        ORDER BY d`,
+      params,
+    );
+    return rows.map((r) => r.d);
+  }
+
+  async listProgramsWithFinished() {
+    return this.db.getAll<{ id: number; name: string }>(
+      `SELECT p.id, p.name FROM training_program p
+        WHERE EXISTS (SELECT 1 FROM workout_session s
+                       WHERE s.program_id = p.id AND s.finished_at IS NOT NULL)
+        ORDER BY p.name`,
+    );
+  }
+
   async finishSession(sessionId: number, finishedAt?: string) {
     const now = nowLocalIso(this.clock);
     await guard(() =>
