@@ -1,3 +1,4 @@
+import type { Ref } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { colors, radius, sizes, spacing, typography } from '@/constants/theme';
 
@@ -9,6 +10,7 @@ interface Props {
   onIncrement: () => void;
   error?: string | null;
   label?: string;
+  inputRef?: Ref<TextInput>;
 }
 
 export function WeightInput({
@@ -19,6 +21,7 @@ export function WeightInput({
   onIncrement,
   error,
   label = 'Peso',
+  inputRef,
 }: Props) {
   return (
     <View style={styles.container}>
@@ -32,6 +35,7 @@ export function WeightInput({
           <Text style={styles.stepText}>−</Text>
         </Pressable>
         <TextInput
+          ref={inputRef}
           accessibilityLabel={label}
           keyboardType="decimal-pad"
           value={value}

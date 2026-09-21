@@ -1,9 +1,12 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useRef } from 'react';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { InfoIcon } from '@/components/common/InfoIcon';
 import { Button } from '@/components/common/Button';
 import { PrescriptionBlock } from '@/components/common/PrescriptionBlock';
 import { WeightInput } from '@/components/common/WeightInput';
 import { colors, radius, sizes, spacing, typography } from '@/constants/theme';
 import type { WorkoutScreenItem } from '@/domain/workout/types';
+import { findLegendEntry } from '@/domain/help/legend';
 import { formatWeight } from '@/domain/workout/weight';
 
 interface Props {
@@ -18,7 +21,13 @@ interface Props {
   onAdjust: (delta: number) => void;
   onUseLast: () => void;
   onInfo?: () => void;
-  onHelp?: () => void;
+  onInfoPressIn?: () => void;
+  onInfoPressOut?: () => void;
+  onTechniqueHelp?: (technique: string) => void;
+  onTechniquePressIn?: () => void;
+  onTechniquePressOut?: () => void;
+  restoreFocus?: boolean;
+  onFocusRestored?: () => void;
 }
 
 const STEP = 2.5;
@@ -35,8 +44,21 @@ export function ExerciseCard({
   onAdjust,
   onUseLast,
   onInfo,
-  onHelp,
+  onInfoPressIn,
+  onInfoPressOut,
+  onTechniqueHelp,
+  onTechniquePressIn,
+  onTechniquePressOut,
+  restoreFocus,
+  onFocusRestored,
 }: Props) {
+  const inputRef = useRef<TextInput>(null);
+  useEffect(() => {
+    if (restoreFocus && expanded) {
+      inputRef.current?.focus();
+      onFocusRestored?.();
+    }
+  }, [restoreFocus, expanded, onFocusRestored]);
   const firstLine = item.prescription ? item.prescription.split('\n')[0] : null;
   const weightSummary = item.weight !== null ? `${formatWeight(item.weight)} kg` : null;
   return (
@@ -57,14 +79,7 @@ export function ExerciseCard({
           </Text>
         </Pressable>
         {onInfo ? (
-          <Pressable accessibilityRole="button" accessibilityLabel="Informações" onPress={onInfo}>
-            <Text style={styles.icon}>ⓘ</Text>
-          </Pressable>
-        ) : null}
-        {onHelp ? (
-          <Pressable accessibilityRole="button" accessibilityLabel="Ajuda" onPress={onHelp}>
-            <Text style={styles.icon}>?</Text>
-          </Pressable>
+          <InfoIcon onPress={onInfo} onPressIn={onInfoPressIn} onPressOut={onInfoPressOut} />
         ) : null}
       </View>
       {!expanded ? (
@@ -75,6 +90,15 @@ export function ExerciseCard({
             prescription={item.prescription}
             technique={item.technique}
             notes={item.notes}
+            techniqueHelp={
+              onTechniqueHelp && item.technique && findLegendEntry(item.technique)
+                ? {
+                    onPress: () => onTechniqueHelp(item.technique as string),
+                    ...(onTechniquePressIn ? { onPressIn: onTechniquePressIn } : {}),
+                    ...(onTechniquePressOut ? { onPressOut: onTechniquePressOut } : {}),
+                  }
+                : undefined
+            }
           />
           <Text style={styles.last}>
             {item.lastWeight !== null
@@ -89,6 +113,7 @@ export function ExerciseCard({
             onIncrement={() => onAdjust(STEP)}
             error={error}
             label={`Peso de ${item.name}`}
+            inputRef={inputRef}
           />
           {item.lastWeight !== null ? (
             <Button
