@@ -2,12 +2,14 @@ import { router } from 'expo-router';
 import { useMemo } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ContributionGridView } from '@/components/common/ContributionGridView';
 import { EmptyState } from '@/components/common/EmptyState';
 import { FilterSelect } from '@/components/common/FilterSelect';
 import { MONTH_HEADER_HEIGHT, MonthHeader } from '@/components/history/MonthHeader';
 import { SESSION_ITEM_HEIGHT, SessionListItem } from '@/components/history/SessionListItem';
 import { colors, radius, spacing, typography } from '@/constants/theme';
 import type { HistoryItem } from '@/domain/history/types';
+import { useContributionGrid } from '@/hooks/useContributionGrid';
 import { useHistoryList } from '@/hooks/useHistoryList';
 import { useHistoryStore } from '@/store/historyStore';
 
@@ -20,6 +22,7 @@ const heightOf = (r: Row) =>
 export default function HistoryScreen() {
   const { sections, programs, status, reload, programFilter } = useHistoryList();
   const insets = useSafeAreaInsets();
+  const contributionGrid = useContributionGrid(programFilter);
   const setFilter = useHistoryStore((s) => s.setProgramFilter);
   const rows = useMemo<Row[]>(
     () =>
@@ -100,6 +103,9 @@ export default function HistoryScreen() {
           value={programFilter}
           onChange={setFilter}
         />
+      ) : null}
+      {status === 'ready' && contributionGrid ? (
+        <ContributionGridView grid={contributionGrid} />
       ) : null}
       {body}
     </View>

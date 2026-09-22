@@ -3,11 +3,15 @@ import { router } from 'expo-router';
 import HistoryScreen from '@/app/(tabs)/history';
 import SessionDetailScreen from '@/app/history/[sessionId]';
 import { FilterSelect } from '@/components/common/FilterSelect';
+import { buildContributionGrid } from '@/domain/statistics/contributionGrid';
+import type { ContributionGrid } from '@/domain/statistics/contributionGrid';
 import { useHistoryStore } from '@/store/historyStore';
 import { useSessionEdit } from '@/hooks/useSessionEdit';
 
 const mockList = jest.fn();
+const mockGrid = jest.fn((): ContributionGrid | null => null);
 jest.mock('@/hooks/useHistoryList', () => ({ useHistoryList: () => mockList() }));
+jest.mock('@/hooks/useContributionGrid', () => ({ useContributionGrid: () => mockGrid() }));
 jest.mock('expo-router', () => ({
   router: { push: jest.fn(), navigate: jest.fn(), back: jest.fn() },
   useLocalSearchParams: () => ({ sessionId: '5' }),
@@ -33,6 +37,15 @@ const item = {
 const base = { programs: [], reload: jest.fn(), items: [], programFilter: null };
 
 describe('Histórico (lista)', () => {
+  afterEach(() => mockGrid.mockReturnValue(null));
+
+  it('mostra o gráfico de frequência quando disponível', async () => {
+    mockList.mockReturnValue({ ...base, status: 'ready', sections: [] });
+    mockGrid.mockReturnValue(buildContributionGrid(['2026-09-15'], '2026-09-19', 2));
+    await render(<HistoryScreen />);
+    expect(screen.getByText('FREQUÊNCIA (ÚLTIMAS 2 SEMANAS)')).toBeTruthy();
+  });
+
   it('mostra mês, item e navega ao detalhe', async () => {
     mockList.mockReturnValue({
       ...base,

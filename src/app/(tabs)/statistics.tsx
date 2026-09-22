@@ -2,18 +2,21 @@ import { router } from 'expo-router';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button } from '@/components/common/Button';
+import { ContributionGridView } from '@/components/common/ContributionGridView';
 import { EmptyState } from '@/components/common/EmptyState';
 import { FilterSelect } from '@/components/common/FilterSelect';
 import { StatCard } from '@/components/common/StatCard';
 import { PeriodHeader } from '@/components/statistics/PeriodHeader';
 import { PeriodSelector } from '@/components/statistics/PeriodSelector';
 import { colors, spacing, typography } from '@/constants/theme';
+import { useContributionGrid } from '@/hooks/useContributionGrid';
 import { useStatistics } from '@/hooks/useStatistics';
 import { formatDecimal } from '@/utils/formatDecimal';
 
 export default function StatisticsScreen() {
   const s = useStatistics();
   const insets = useSafeAreaInsets();
+  const contributionGrid = useContributionGrid(s.programFilter);
   const { view, status } = s;
   const options = [
     { id: null, label: 'Todos' },
@@ -78,6 +81,7 @@ export default function StatisticsScreen() {
               {view.count === 0 ? (
                 <Text style={styles.text}>Nenhum treino neste período.</Text>
               ) : null}
+              {contributionGrid ? <ContributionGridView grid={contributionGrid} /> : null}
             </>
           )}
         </>

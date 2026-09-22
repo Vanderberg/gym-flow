@@ -1,10 +1,14 @@
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import StatisticsScreen from '@/app/(tabs)/statistics';
+import { buildContributionGrid } from '@/domain/statistics/contributionGrid';
+import type { ContributionGrid } from '@/domain/statistics/contributionGrid';
 import type { StatisticsView } from '@/domain/statistics/types';
 
 const mockHook = jest.fn();
+const mockGrid = jest.fn((): ContributionGrid | null => null);
 const mockNavigate = jest.fn();
 jest.mock('@/hooks/useStatistics', () => ({ useStatistics: () => mockHook() }));
+jest.mock('@/hooks/useContributionGrid', () => ({ useContributionGrid: () => mockGrid() }));
 jest.mock('expo-router', () => ({ router: { navigate: (...a: unknown[]) => mockNavigate(...a) } }));
 jest.setTimeout(30000);
 
@@ -33,6 +37,15 @@ function state(view: Partial<StatisticsView> | null, over: Record<string, unknow
 }
 
 describe('Estatísticas', () => {
+  afterEach(() => mockGrid.mockReturnValue(null));
+
+  it('mostra o gráfico de frequência quando disponível', async () => {
+    mockHook.mockReturnValue(state({}));
+    mockGrid.mockReturnValue(buildContributionGrid(['2026-09-15'], '2026-09-19', 2));
+    await render(<StatisticsScreen />);
+    expect(screen.getByText('FREQUÊNCIA (ÚLTIMAS 2 SEMANAS)')).toBeTruthy();
+  });
+
   it('mostra período, três números e sem navegação/calendário', async () => {
     mockHook.mockReturnValue(state({}));
     await render(<StatisticsScreen />);
