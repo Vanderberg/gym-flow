@@ -9,6 +9,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ConfirmDialog } from '@/components/common/ConfirmDialog';
 import { EmptyState } from '@/components/common/EmptyState';
 import { HelpIcon } from '@/components/common/HelpIcon';
@@ -33,6 +34,7 @@ const FINISH_ERROR = 'Não foi possível finalizar. Nada foi alterado.';
 
 export default function WorkoutScreen() {
   const w = useWorkoutSession();
+  const insets = useSafeAreaInsets();
   const help = useHelp();
   const { view, status } = w;
   const timer = useRestTimer();
@@ -88,7 +90,10 @@ export default function WorkoutScreen() {
       style={styles.screen}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+      <ScrollView
+        contentContainerStyle={[styles.content, { paddingTop: insets.top + spacing.lg }]}
+        keyboardShouldPersistTaps="handled"
+      >
         <View style={styles.headerRow}>
           <Pressable
             accessibilityRole="button"

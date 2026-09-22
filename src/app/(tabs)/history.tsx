@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 import { useMemo } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { EmptyState } from '@/components/common/EmptyState';
 import { FilterSelect } from '@/components/common/FilterSelect';
 import { MONTH_HEADER_HEIGHT, MonthHeader } from '@/components/history/MonthHeader';
@@ -18,6 +19,7 @@ const heightOf = (r: Row) =>
 
 export default function HistoryScreen() {
   const { sections, programs, status, reload, programFilter } = useHistoryList();
+  const insets = useSafeAreaInsets();
   const setFilter = useHistoryStore((s) => s.setProgramFilter);
   const rows = useMemo<Row[]>(
     () =>
@@ -88,7 +90,7 @@ export default function HistoryScreen() {
   }
 
   return (
-    <View style={styles.screen}>
+    <View style={[styles.screen, { paddingTop: insets.top + spacing.lg }]}>
       <Text accessibilityRole="header" style={styles.title}>
         HISTÓRICO
       </Text>

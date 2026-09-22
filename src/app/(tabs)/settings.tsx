@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, Text } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ConfirmDialog } from '@/components/common/ConfirmDialog';
 import { RestDurationSheet } from '@/components/settings/RestDurationSheet';
 import { SettingsSwitchRow } from '@/components/settings/SettingsSwitchRow';
@@ -13,6 +14,7 @@ import { useSettings } from '@/hooks/useSettings';
 export default function SettingsScreen() {
   const { settings, programs, resetSequence, setRestTimerEnabled, setRestTimerDuration } =
     useSettings();
+  const insets = useSafeAreaInsets();
   const [editingRest, setEditingRest] = useState(false);
   const restEnabled = settings?.restTimerEnabled ?? false;
   const restSeconds = settings?.restTimerSeconds ?? DEFAULT_REST_SECONDS;
@@ -21,7 +23,10 @@ export default function SettingsScreen() {
   const continuous = settings?.sequenceType === 'CONTINUOUS';
 
   return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+    <ScrollView
+      style={styles.screen}
+      contentContainerStyle={[styles.content, { paddingTop: insets.top + spacing.lg }]}
+    >
       <Text accessibilityRole="header" style={styles.title}>
         CONFIGURAÇÕES
       </Text>

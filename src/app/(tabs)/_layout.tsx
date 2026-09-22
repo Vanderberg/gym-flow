@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { sizes } from '@/constants/theme';
+import { colors, sizes } from '@/constants/theme';
 
 const tabOptions = (title: string) => ({
   title,
@@ -9,7 +9,14 @@ const tabOptions = (title: string) => ({
 
 export default function TabsLayout() {
   return (
-    <Tabs screenOptions={{ headerShown: false }}>
+    <Tabs
+      screenOptions={{
+        headerShown: false,
+        tabBarStyle: { backgroundColor: colors.surface, borderTopColor: colors.border },
+        tabBarActiveTintColor: colors.accent,
+        tabBarInactiveTintColor: colors.textSecondary,
+      }}
+    >
       <Tabs.Screen name="index" options={tabOptions('Treino')} />
       <Tabs.Screen name="history" options={tabOptions('Histórico')} />
       <Tabs.Screen name="statistics" options={tabOptions('Estatísticas')} />

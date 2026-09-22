@@ -1,6 +1,7 @@
 import { router, useLocalSearchParams, useNavigation } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ConfirmDialog } from '@/components/common/ConfirmDialog';
 import { EmptyState } from '@/components/common/EmptyState';
 import { EditActionBar } from '@/components/history/EditActionBar';
@@ -18,6 +19,7 @@ interface RemoveEvent {
 export default function SessionDetailScreen() {
   const { sessionId } = useLocalSearchParams<{ sessionId: string }>();
   const s = useSessionEdit(Number(sessionId));
+  const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const [confirm, setConfirm] = useState(false);
   const pendingAction = useRef<unknown>(null);
@@ -52,7 +54,7 @@ export default function SessionDetailScreen() {
 
   const d = s.detail;
   return (
-    <View style={styles.screen}>
+    <View style={[styles.screen, { paddingTop: insets.top }]}>
       <Pressable
         accessibilityRole="button"
         accessibilityLabel="Voltar"

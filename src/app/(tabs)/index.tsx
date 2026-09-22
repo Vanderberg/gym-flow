@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button } from '@/components/common/Button';
 import { ConfirmDialog } from '@/components/common/ConfirmDialog';
 import { ProgramBadge } from '@/components/common/ProgramBadge';
@@ -17,6 +18,7 @@ const swallow = () => undefined;
 
 export default function HomeScreen() {
   const home = useHome();
+  const insets = useSafeAreaInsets();
   const { view, status } = home;
   const [browsing, setBrowsing] = useState(false);
   const [confirmingDiscard, setConfirmingDiscard] = useState(false);
@@ -31,7 +33,10 @@ export default function HomeScreen() {
   };
 
   return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+    <ScrollView
+      style={styles.screen}
+      contentContainerStyle={[styles.content, { paddingTop: insets.top + spacing.lg }]}
+    >
       <Text accessibilityRole="header" style={styles.title}>
         MEU TREINO
       </Text>

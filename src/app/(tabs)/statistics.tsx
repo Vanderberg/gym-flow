@@ -1,5 +1,6 @@
 import { router } from 'expo-router';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button } from '@/components/common/Button';
 import { EmptyState } from '@/components/common/EmptyState';
 import { FilterSelect } from '@/components/common/FilterSelect';
@@ -12,6 +13,7 @@ import { formatDecimal } from '@/utils/formatDecimal';
 
 export default function StatisticsScreen() {
   const s = useStatistics();
+  const insets = useSafeAreaInsets();
   const { view, status } = s;
   const options = [
     { id: null, label: 'Todos' },
@@ -20,7 +22,10 @@ export default function StatisticsScreen() {
   const filterName = options.find((o) => o.id === s.programFilter)?.label ?? 'Todos';
 
   return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+    <ScrollView
+      style={styles.screen}
+      contentContainerStyle={[styles.content, { paddingTop: insets.top + spacing.lg }]}
+    >
       <View style={styles.header}>
         <Text
           accessibilityRole="header"
