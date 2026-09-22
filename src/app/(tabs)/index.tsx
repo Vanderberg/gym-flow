@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button } from '@/components/common/Button';
 import { ConfirmDialog } from '@/components/common/ConfirmDialog';
@@ -37,9 +37,17 @@ export default function HomeScreen() {
       style={styles.screen}
       contentContainerStyle={[styles.content, { paddingTop: insets.top + spacing.lg }]}
     >
-      <Text accessibilityRole="header" style={styles.title}>
-        MEU TREINO
-      </Text>
+      <View style={styles.brandRow}>
+        <Image
+          source={require('../../../assets/images/android-icon-foreground.png')}
+          style={styles.logo}
+          accessible={false}
+          importantForAccessibility="no"
+        />
+        <Text accessibilityRole="header" style={styles.title}>
+          MEU TREINO
+        </Text>
+      </View>
       {status === 'error' && !view ? (
         <View style={styles.error}>
           <Text style={styles.errorText}>Não foi possível carregar seus treinos</Text>
@@ -114,6 +122,8 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.bg },
   content: { padding: spacing.lg, gap: spacing.lg },
+  brandRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  logo: { width: 32, height: 32 },
   title: { ...typography.title, color: colors.text },
   sequence: { ...typography.label, color: colors.textSecondary },
   notice: { ...typography.body, color: colors.danger },
