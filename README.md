@@ -13,6 +13,7 @@ App pessoal de controle de treinos de academia para **Android e iOS**, feito com
 - [Conceito central: programa + sequência](#conceito-central-programa--sequência)
 - [Stack](#stack)
 - [Como instalar e rodar](#como-instalar-e-rodar)
+- [Gerar um APK para instalar direto no aparelho](#gerar-um-apk-para-instalar-direto-no-aparelho)
 - [Scripts disponíveis](#scripts-disponíveis)
 - [Testes](#testes)
 - [Arquitetura](#arquitetura)
@@ -124,7 +125,7 @@ A regra do projeto é priorizar dependências pequenas e maduras.
 
 ```bash
 # 1. Clonar o repositório
-git clone <url-do-repositorio>
+git clone https://github.com/Vanderberg/gym-flow.git
 cd gym-flow
 
 # 2. Instalar as dependências
@@ -180,6 +181,20 @@ CI=1 npx expo start --port 8081
 ```
 
 Nesse modo o Metro roda sem recarga automática (mostra "Metro is running in CI mode, reloads are disabled") e sem imprimir QR code; use o endereço `exp://<ip-da-sua-máquina>:8081` manualmente no Expo Go, como descrito acima. Para o uso normal do dia a dia, prefira `npm start`.
+
+### Gerar um APK para instalar direto no aparelho
+
+Para gerar um `.apk` (fora da Play Store, para instalar direto num aparelho ou compartilhar com alguém), o projeto usa o [EAS Build](https://docs.expo.dev/build/introduction/), que compila na nuvem da Expo — não precisa de Android Studio local.
+
+```bash
+npm install -g eas-cli   # uma vez só
+eas login                # ou EXPO_TOKEN, se a conta usa login social (Google etc.)
+eas build --platform android --profile preview
+```
+
+O profile `preview` (definido em [eas.json](eas.json)) gera um `.apk` de instalação direta (`distribution: internal`). Ao final do build, a CLI mostra um link de download — baixe o `.apk` e instale no aparelho (o Android pede para liberar "fontes desconhecidas", já que não vem da Play Store).
+
+Para versionar os APKs gerados sem inchar o repositório com binários, publique-os como [GitHub Releases](https://github.com/Vanderberg/gym-flow/releases) em vez de commitá-los no git.
 
 ## Scripts disponíveis
 
@@ -354,9 +369,9 @@ Cada spec tem tarefas de teste por camada, e a `main` passa em `tsc --noEmit`, E
 
 ## Estado atual e pendências
 
-As 11 specs estão **implementadas e integradas na `main`**. O que ainda falta:
+As 11 specs estão **implementadas e integradas na `main`**. O app já rodou com sucesso via Expo Go em um aparelho Android real (ver [Rodar no celular com o Expo Go](#rodar-no-celular-com-o-expo-go-testado)). O que ainda falta:
 
-- **Validação manual em aparelhos reais** (Android e iOS): os roteiros de `quickstart.md` de cada spec ainda não foram executados em dispositivo. Isso inclui o tempo de abertura da Home e o comportamento de chaves estrangeiras (`PRAGMA foreign_keys`) dentro de transações no `expo-sqlite`, que só foi verificado com `better-sqlite3` nos testes.
+- **Validação formal dos roteiros de `quickstart.md`:** o app funciona em aparelho real, mas os roteiros de teste manual de cada spec ainda não foram executados e marcados um a um (`tasks.md` de cada spec). Inclui confirmar o comportamento de chaves estrangeiras (`PRAGMA foreign_keys`) dentro de transações no `expo-sqlite` em iOS, verificado até aqui só com `better-sqlite3` nos testes e em Android real.
 - **Revisão de conteúdo do seed:** os textos de exercícios, cardio e aquecimento aguardam aprovação do dono do app (`specs/003-programas-seed/content-review.md`).
 - **Formatação:** `npm run format:check` ainda acusa arquivos por diferença de fim de linha (CRLF/LF) em ambiente Windows; veja a seção abaixo.
 - **Pontos em aberto na documentação:** variações de exercício assumidas (por exemplo, "tríceps testa unilateral no cross" tratado como exercício distinto do "Tríceps testa"), comportamento ao escolher a sequência semanal num programa sem agenda e a troca de programa com sessão em andamento.
@@ -383,4 +398,4 @@ Os textos de prescrição, técnicas, aquecimento e cardio são conteúdo do pro
 
 ## Licença
 
-Este repositório ainda não define uma licença. Sem uma licença explícita, o código é publicado com todos os direitos reservados. Se a intenção é permitir uso e contribuições, adicione um arquivo `LICENSE` (por exemplo, MIT) e atualize esta seção.
+Distribuído sob a licença [MIT](LICENSE).
