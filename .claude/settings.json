@@ -1,0 +1,58 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .flow-guard/hooks/session-bootstrap.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash .flow-guard/hooks/adoption-check.sh"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .flow-guard/hooks/design-gate.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash .flow-guard/hooks/discipline-inject.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash .flow-guard/hooks/route-skills.sh"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .flow-guard/hooks/lgpd-gate.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .flow-guard/hooks/speckit-gates.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

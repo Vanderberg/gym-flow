@@ -1,0 +1,3 @@
+# [NOME_DO_PROJETO_PENDENTE] Constituição
+
+Perfil do projeto: [PERFIL_DO_PROJETO_PENDENTE]
