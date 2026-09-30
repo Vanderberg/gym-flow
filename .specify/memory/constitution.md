@@ -1,6 +1,12 @@
 <!--
 Sync Impact Report
-- Version change: 2.1.0 → 2.2.0 (MINOR: VII define bi-set como exercícios distintos; VIII esclarece
+- Version change: 2.2.0 → 2.3.0 (MINOR: XI passa a exigir TDD explícito — teste falho antes de
+  código de produção — e depuração sistemática (reproduzir → isolar → diagnosticar → corrigir);
+  XII passa a exigir YAGNI/anti-abstração prematura explicitamente; Fluxo de Desenvolvimento
+  passa a exigir o ciclo completo do Spec-Kit para mudanças de comportamento, confirmação de
+  pontos em aberto antes de implementar, e execução/verificação de `npm run check` antes de
+  declarar concluído. Origem: consolidação de `docs/boas-praticas.md`.)
+- Histórico: 2.1.0 → 2.2.0 (MINOR: VII define bi-set como exercícios distintos; VIII esclarece
   que textos da ficha do programa — aquecimento, dia opcional, sugestão de cardio — são conteúdo do
   programa, não recomendação do app)
 - Histórico: 2.0.0 → 2.1.0 (MINOR: VIII exige informações do exercício preenchidas para todo
@@ -117,19 +123,24 @@ antigas. As regras de integridade do modelo de dados (unicidades, chaves estrang
 MUST ser garantidas no schema. Cálculos de calendário e dia da semana MUST usar a data
 local do usuário, evitando deslocamento de dia por conversão UTC.
 
-### XI. Testes por Camada
+### XI. Testes por Camada e TDD
 Regras de domínio (sequência contínua, sequência semanal, reinício, troca de programa,
 troca de estratégia, médias, intervalo médio, filtros de período, datas) MUST ter testes
 unitários. Persistência e fluxos de sessão (criar, finalizar, recuperar, editar) MUST ter
 testes de integração. Fluxos de UI críticos (iniciar, marcar, registrar peso, finalizar,
 editar histórico, abrir ajuda sem alterar sessão) MUST ter testes com React Native Testing
-Library. Bugs corrigidos MUST ganhar teste de regressão. Ferramentas: Jest + RNTL.
+Library. Ferramentas: Jest + RNTL. Nenhum código de produção MUST ser escrito antes de
+existir um teste que falhe para ele (TDD: teste falho → código mínimo → refatorar). Todo
+bug corrigido MUST seguir reproduzir → isolar → diagnosticar → corrigir, e a correção MUST
+vir acompanhada do teste de regressão que reproduziu a falha.
 
 ### XII. Simplicidade e Privacidade
 Dependências MUST ser poucas, maduras e justificadas. Nenhum dado sai do aparelho e o
 app MUST NOT solicitar permissões desnecessárias. Funcionalidades fora do MVP (login,
 backend, nuvem, multiusuário, pagamentos, assinaturas, rede social, wearables, integrações
-de saúde) MUST NOT ser implementadas sem emenda a esta constituição. Aplica-se YAGNI.
+de saúde) MUST NOT ser implementadas sem emenda a esta constituição. Aplica-se YAGNI:
+preferir duplicação simples a uma abstração genérica sem múltiplos usos reais; uma correção
+de bug MUST NOT vir acompanhada de refatoração ou abstração não relacionada ao redor.
 
 ## Restrições Técnicas e de Escopo
 
@@ -150,7 +161,13 @@ de saúde) MUST NOT ser implementadas sem emenda a esta constituição. Aplica-s
 - O plano MUST passar pelo Constitution Check antes da pesquisa e ser reavaliado após o
   design; violações exigem justificativa em Complexity Tracking.
 - Mudanças que divergem de `docs/` MUST atualizar a documentação no mesmo trabalho.
-- Um item só está concluído com lint, checagem de tipos e testes passando.
+- Toda mudança que altera comportamento MUST seguir o ciclo completo do Spec-Kit
+  (specify → clarify → LGPD → plan → tasks → analyze → implementação com TDD). Só uma
+  mudança trivial (um arquivo, sem alterar comportamento) pode ser feita diretamente.
+- Pontos listados como "em aberto" na documentação (`CLAUDE.md`) MUST ser confirmados
+  antes de implementados; não presumir comportamento não especificado.
+- Um item só está concluído com `npm run check` (typecheck + lint + format + testes)
+  executado e a saída confirmada — não declarar pronto sem rodar e ver o resultado.
 
 ## Governance
 
@@ -161,4 +178,4 @@ MINOR para novo princípio ou expansão material, PATCH para esclarecimentos. To
 de spec, plano e código MUST verificar conformidade. Orientação de uso diário em
 `CLAUDE.md`.
 
-**Version**: 2.2.0 | **Ratified**: 2026-09-19 | **Last Amended**: 2026-09-19
+**Version**: 2.3.0 | **Ratified**: 2026-09-19 | **Last Amended**: 2026-09-30
