@@ -45,3 +45,5 @@ example
 # Claude local
 .claude/settings.local.json
 .worktrees/
+.flow-guard/.state/
+.flow-guard/hooks-errors.log
