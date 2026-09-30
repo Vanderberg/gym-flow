@@ -8,3 +8,11 @@ jest.mock('react-native-safe-area-context', () => {
   const mock = require('react-native-safe-area-context/jest/mock');
   return mock.default ?? mock;
 });
+
+// Mock de expo-audio: é um módulo nativo (sem binding em Jest); os testes do
+// RestTimerProvider injetam playSound/stopSound/setAudioMode por prop, então
+// este mock só precisa não quebrar o import e o hook useAudioPlayer.
+jest.mock('expo-audio', () => ({
+  useAudioPlayer: () => ({ play: jest.fn(), pause: jest.fn(), seekTo: jest.fn() }),
+  setAudioModeAsync: jest.fn(() => Promise.resolve()),
+}));

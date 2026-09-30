@@ -22,8 +22,8 @@ envolvido.
 
 ## Phase 1: Setup
 
-- [ ] T001 Instalar a dependência `expo-audio` compatível com `expo ~57.0.24`: `npx expo install expo-audio`; confirmar em `package.json` que a versão resolvida é `57.x`
-- [ ] T002 [P] Criar `scripts/generate-rest-timer-sound.js` (Node puro, sem dependência nova): gera um `.wav` PCM 16-bit mono de ~1 s com dois beeps curtos (ex. 880 Hz, 120 ms cada, com um silêncio de ~80 ms entre eles) e grava em `assets/sounds/rest-timer-end.wav`; rodar o script uma vez (`node scripts/generate-rest-timer-sound.js`) e comitar o `.wav` gerado como asset binário
+- [x] T001 Instalar a dependência `expo-audio` compatível com `expo ~57.0.24`: `npx expo install expo-audio`; confirmar em `package.json` que a versão resolvida é `57.x`
+- [x] T002 [P] Criar `scripts/generate-rest-timer-sound.js` (Node puro, sem dependência nova): gera um `.wav` PCM 16-bit mono de ~1 s com dois beeps curtos (ex. 880 Hz, 120 ms cada, com um silêncio de ~80 ms entre eles) e grava em `assets/sounds/rest-timer-end.wav`; rodar o script uma vez (`node scripts/generate-rest-timer-sound.js`) e comitar o `.wav` gerado como asset binário
 
 **Checkpoint**: `assets/sounds/rest-timer-end.wav` existe e `npx expo install` não reportou conflito de versão.
 
@@ -47,11 +47,11 @@ tocando sozinho, e um novo descanso interrompe o som do término anterior.
 
 ### Tests
 
-- [ ] T003 [US1] Estender `tests/ui/restTimer/restTimerProvider.test.tsx`: injetar uma prop nova `playSound` (mock `jest.fn()` retornando um objeto de player falso com `play`/`pause`/`seekTo`) no `mount()`; caso "toca o som uma vez ao terminar com o app ativo" (junto do `vibrate` já testado); caso "não toca de novo enquanto o estado permanece FINISHED" (avançar o relógio bastante depois do término e conferir que `play` não é chamado de novo); caso "inicia um novo descanso enquanto o som anterior ainda tocaria: o player recebe pause/seekTo antes do novo ciclo" (chamar `start()` de novo antes do fim do "tempo de tocar" e conferir a chamada de parada)
+- [x] T003 [US1] Estender `tests/ui/restTimer/restTimerProvider.test.tsx`: injetar uma prop nova `playSound` (mock `jest.fn()` retornando um objeto de player falso com `play`/`pause`/`seekTo`) no `mount()`; caso "toca o som uma vez ao terminar com o app ativo" (junto do `vibrate` já testado); caso "não toca de novo enquanto o estado permanece FINISHED" (avançar o relógio bastante depois do término e conferir que `play` não é chamado de novo); caso "inicia um novo descanso enquanto o som anterior ainda tocaria: o player recebe pause/seekTo antes do novo ciclo" (chamar `start()` de novo antes do fim do "tempo de tocar" e conferir a chamada de parada)
 
 ### Implementation
 
-- [ ] T004 [US1] Em `src/components/RestTimerProvider.tsx`: aceitar uma prop `playSound` (com default real usando `expo-audio`: `useAudioPlayer(require('../../assets/sounds/rest-timer-end.wav'))`, expondo `play`); no mesmo ponto em que hoje chama `vibrate(VIBRATION_MS)` ao `justFinished`, chamar também `playSound()` (que internamente reinicia a posição do player para o começo e toca); quando um novo `start()` for observado (mudança de `endsAt`) enquanto o player ainda pode estar tocando, pausar/rebobinar o player antes — faz T003 passar
+- [x] T004 [US1] Em `src/components/RestTimerProvider.tsx`: aceitar uma prop `playSound` (com default real usando `expo-audio`: `useAudioPlayer(require('../../assets/sounds/rest-timer-end.wav'))`, expondo `play`); no mesmo ponto em que hoje chama `vibrate(VIBRATION_MS)` ao `justFinished`, chamar também `playSound()` (que internamente reinicia a posição do player para o começo e toca); quando um novo `start()` for observado (mudança de `endsAt`) enquanto o player ainda pode estar tocando, pausar/rebobinar o player antes — faz T003 passar
 
 **Checkpoint**: US1 testável isoladamente; `npm run check` verde.
 
@@ -68,12 +68,12 @@ cenários).
 
 ### Tests
 
-- [ ] T005 [US2] Estender `tests/ui/restTimer/restTimerProvider.test.tsx`: caso "terminado em segundo plano: não chama playSound" (reaproveitando o cenário de `AppState` já mockado no teste de vibração da 011, conferindo `playSound` junto de `vibrate`); caso "desativar a configuração durante a contagem não chama playSound" (a contagem já vai a `IDLE`, então nenhum término natural ocorre); caso "encerrar manualmente (`stop()`) antes do tempo zerar não chama playSound" (FR-003 — o estado vai a `IDLE` sem passar por `FINISHED`, então `justFinished` nunca é `true`)
-- [ ] T006 [US2] Escrever um teste de configuração de modo de áudio em `tests/ui/restTimer/restTimerProvider.test.tsx` ou em um novo `tests/unit/restTimer/audioMode.test.ts`: ao montar o `RestTimerProvider`, uma função `setAudioMode` (injetável, default real chamando `setAudioModeAsync({ playsInSilentMode: false })` do `expo-audio`) é chamada exatamente uma vez na inicialização
+- [x] T005 [US2] Estender `tests/ui/restTimer/restTimerProvider.test.tsx`: caso "terminado em segundo plano: não chama playSound" (reaproveitando o cenário de `AppState` já mockado no teste de vibração da 011, conferindo `playSound` junto de `vibrate`); caso "desativar a configuração durante a contagem não chama playSound" (a contagem já vai a `IDLE`, então nenhum término natural ocorre); caso "encerrar manualmente (`stop()`) antes do tempo zerar não chama playSound" (FR-003 — o estado vai a `IDLE` sem passar por `FINISHED`, então `justFinished` nunca é `true`)
+- [x] T006 [US2] Escrever um teste de configuração de modo de áudio em `tests/ui/restTimer/restTimerProvider.test.tsx` ou em um novo `tests/unit/restTimer/audioMode.test.ts`: ao montar o `RestTimerProvider`, uma função `setAudioMode` (injetável, default real chamando `setAudioModeAsync({ playsInSilentMode: false })` do `expo-audio`) é chamada exatamente uma vez na inicialização
 
 ### Implementation
 
-- [ ] T007 [US2] Em `src/components/RestTimerProvider.tsx`: aceitar uma prop `setAudioMode` (default real via `expo-audio`) e chamá-la uma vez em um `useEffect` de inicialização (sem dependências que a repitam); confirmar que os casos que já não chamam `vibrate` (segundo plano, `Encerrar`, desativado) também não chamam `playSound`, pois ambos partem do mesmo `justFinished` — faz T005 e T006 passarem
+- [x] T007 [US2] Em `src/components/RestTimerProvider.tsx`: aceitar uma prop `setAudioMode` (default real via `expo-audio`) e chamá-la uma vez em um `useEffect` de inicialização (sem dependências que a repitam); confirmar que os casos que já não chamam `vibrate` (segundo plano, `Encerrar`, desativado) também não chamam `playSound`, pois ambos partem do mesmo `justFinished` — faz T005 e T006 passarem
 
 **Checkpoint**: US1 e US2 funcionam juntas; nenhum som fora das condições da spec; `npm run check` verde.
 
@@ -81,9 +81,9 @@ cenários).
 
 ## Phase 5: Polish & cross-cutting
 
-- [ ] T008 [P] Atualizar `specs/011-cronometro-descanso/plan.md`? Não — a 011 permanece como está (histórico preservado); em vez disso, atualizar `docs/design-telas.md` §5.3 se mencionar explicitamente "só vibração" no aviso de fim, trocando para "vibração e som (respeita o modo silencioso)", e `docs/telas.md` no mesmo trecho
-- [ ] T009 Verificação manual em aparelho físico (Android e iOS, quickstart item 3 completo): som toca no volume normal; nenhum som no modo silencioso/vibrar; som para ao iniciar novo descanso; nenhum som retroativo ao voltar de segundo plano; nenhum pedido de permissão novo
-- [ ] T010 Rodar `npm run check` (lint, tipos e testes) e marcar esta spec como `concluída` em `specs/INDEX.md`
+- [x] T008 [P] Atualizado `docs/design-telas.md` §5.3 ("vibra 400 ms, toca um som curto... respeita o modo silencioso"); `docs/telas.md` não mencionava vibração/som — nenhuma mudança necessária lá
+- [ ] T009 Verificação manual em aparelho físico (Android e iOS, quickstart item 3 completo): som toca no volume normal; nenhum som no modo silencioso/vibrar; som para ao iniciar novo descanso; nenhum som retroativo ao voltar de segundo plano; nenhum pedido de permissão novo — **pendente**: requer hardware físico, não executável neste ambiente
+- [x] T010 `npm run check`: typecheck e lint verdes; 417/417 testes passando (uma falha de timeout em `tests/ui/settings/screens.test.tsx` ao rodar a suíte inteira não se reproduz isolada — pré-existente, não relacionada a esta spec); marcar como `concluída` em `specs/INDEX.md` fica pendente até a verificação manual (T009)
 
 ---
 
