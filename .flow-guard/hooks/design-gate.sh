@@ -24,4 +24,18 @@ else
   MSG="[flow-guard] Esta feature inclui tela/UI. Antes do /speckit-tasks, invoque a skill ui-design-continuity (que aciona frontend-design) para travar direção visual e tokens em ${FEATURE_DIR}/design/tokens.md — cada task de UI deve referenciar esses tokens em vez de decidir estilo sozinha."
 fi
 
+# Loga uma vez por feature, não a cada prompt -- o gate continua disparando
+# (e reimprimindo a mensagem) em todo UserPromptSubmit até tokens.md
+# existir; o log.jsonl (Seção 8 da spec) serve para entender o que
+# aconteceu na sessão, não para contar quantas vezes o agente foi lembrado.
+FEATURE="$(basename "$FEATURE_DIR")"
+mkdir -p .flow-guard/.state
+DESIGN_LOGGED=".flow-guard/.state/gate-${FEATURE}.design-logged"
+if [ ! -f "$DESIGN_LOGGED" ]; then
+  touch "$DESIGN_LOGGED"
+  if [ -f "$HOOK_DIR/flowguard-log.sh" ]; then
+    bash "$HOOK_DIR/flowguard-log.sh" design_gate "$FEATURE" 2>/dev/null || true
+  fi
+fi
+
 jq -cn --arg msg "$MSG" '{hookSpecificOutput: {hookEventName: "UserPromptSubmit", additionalContext: $msg}}'

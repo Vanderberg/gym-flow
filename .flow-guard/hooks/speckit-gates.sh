@@ -3,6 +3,7 @@
 # UI, spec Seção 5.2) não seja pulado quando spec.md nasce sem ## Clarifications.
 set -euo pipefail
 
+HOOK_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ERRLOG=".flow-guard/hooks-errors.log"
 INPUT=""
 [ -t 0 ] || INPUT="$(cat 2>/dev/null || true)"
@@ -24,7 +25,17 @@ esac
 FEATURE_DIR="$(dirname "$PATH_TARGET")"
 FEATURE="$(basename "$FEATURE_DIR")"
 
-grep -q '^## *Clarifications' "$PATH_TARGET" 2>/dev/null && exit 0
+if grep -q '^## *Clarifications' "$PATH_TARGET" 2>/dev/null; then
+  mkdir -p .flow-guard/.state
+  CLARIFY_LOGGED=".flow-guard/.state/gate-${FEATURE}.clarify-logged"
+  if [ ! -f "$CLARIFY_LOGGED" ]; then
+    touch "$CLARIFY_LOGGED"
+    if [ -f "$HOOK_DIR/flowguard-log.sh" ]; then
+      bash "$HOOK_DIR/flowguard-log.sh" clarify ok 2>>"$ERRLOG" || true
+    fi
+  fi
+  exit 0
+fi
 
 mkdir -p .flow-guard/.state
 STATE=".flow-guard/.state/gate-${FEATURE}.clarify"
