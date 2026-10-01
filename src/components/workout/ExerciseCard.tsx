@@ -4,6 +4,7 @@ import { InfoIcon } from '@/components/common/InfoIcon';
 import { Button } from '@/components/common/Button';
 import { PrescriptionBlock } from '@/components/common/PrescriptionBlock';
 import { WeightInput } from '@/components/common/WeightInput';
+import { ExerciseImage } from '@/components/workout/ExerciseImage';
 import { colors, radius, sizes, spacing, typography } from '@/constants/theme';
 import type { WorkoutScreenItem } from '@/domain/workout/types';
 import { findLegendEntry } from '@/domain/help/legend';
@@ -63,6 +64,7 @@ export function ExerciseCard({
   const weightSummary = item.weight !== null ? `${formatWeight(item.weight)} kg` : null;
   return (
     <View style={[styles.card, item.completed && styles.done]}>
+      <ExerciseImage name={item.name} />
       <View style={styles.header}>
         <Pressable
           accessibilityRole="button"

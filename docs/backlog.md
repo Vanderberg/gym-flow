@@ -504,3 +504,36 @@ Exibir `training_program.home_suggestion` (cardio do Treino Monstro).
 ## BL-124 — Testar seed completo — P0
 
 Garantir que todo exercício do seed tenha músculos e descrição (BL-110) e que os bi-sets estejam separados.
+
+# 17. Épico — Imagens de exercício
+
+## BL-130 — Exibir imagem do exercício na execução — P1
+
+Na tela de execução do treino, mostrar uma imagem ilustrativa de cada exercício, resolvida por convenção a partir do `name_key`, sem exigir mudança de schema no banco.
+
+## BL-131 — Placeholder para exercício sem imagem — P1
+
+Quando não houver imagem cadastrada para o exercício, exibir um placeholder genérico, mantendo o layout consistente com os demais itens.
+
+## BL-132 — Testar cobertura parcial de imagens — P1
+
+Garantir que a tela de execução funcione corretamente com cobertura zero, parcial e total de imagens, e que bi-sets exibam a imagem de cada exercício do par de forma independente.
+
+# 18. Débito técnico
+
+## DT-001 — Completar imagens dos pares de bi-set sem foto própria — P2
+
+**Origem**: spec 013 (BL-130/131). Do pacote de imagens fornecido (`docs/pacote-imagens-treinos/`),
+4 dos 59 exercícios do seed ficaram sem imagem porque o pacote só trouxe foto de um dos dois lados
+do bi-set. Hoje mostram o placeholder genérico (comportamento correto e esperado, FR-003 da spec
+013 — não é um bug).
+
+Pendentes:
+- Remada cavalinho pegada neutra (Treino Monstro B — Costas e bíceps)
+- Puxada alta pegada supinada (Treino Monstro B — Costas e bíceps)
+- Crucifixo com halter pegada neutra (Treino Monstro D — Peito e tríceps)
+- Tríceps no cross com barra reta invertida (Treino Monstro D — Peito e tríceps)
+
+**Resolução**: ao obter cada foto, copiar o arquivo para `src/assets/exercises/` e adicionar a
+linha correspondente (já comentada como referência) em `EXERCISE_IMAGES`
+(`src/assets/exercises/index.ts`). Sem mudança de código além disso.

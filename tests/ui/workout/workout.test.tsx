@@ -209,3 +209,49 @@ describe('Tela de treino - US3', () => {
     expect(screen.queryByLabelText('Ajuda')).toBeNull();
   });
 });
+
+describe('Imagem do exercício (spec 013)', () => {
+  it('exercício com imagem cadastrada mostra a imagem', async () => {
+    mockHook.mockReturnValue(state(view([item(1, { name: 'Supino reto' })])));
+    await render(<WorkoutScreen />);
+    expect(screen.getByLabelText('Imagem de Supino reto')).toBeTruthy();
+    expect(screen.queryByLabelText('Sem imagem disponível para Supino reto')).toBeNull();
+  });
+
+  it('exercício sem imagem cadastrada mostra o placeholder, sem quebrar o layout', async () => {
+    mockHook.mockReturnValue(
+      state(view([item(1, { name: 'Exercício sem imagem cadastrada 123' })])),
+    );
+    await render(<WorkoutScreen />);
+    expect(
+      screen.getByLabelText('Sem imagem disponível para Exercício sem imagem cadastrada 123'),
+    ).toBeTruthy();
+  });
+
+  it('bi-set: cada exercício do par mostra sua própria imagem/placeholder de forma independente', async () => {
+    mockHook.mockReturnValue(
+      state(
+        view([
+          item(1, { name: 'Crucifixo com halter pegada pronada', technique: 'BI-SET' }),
+          item(2, { name: 'Crucifixo com halter pegada neutra', technique: 'BI-SET' }),
+        ]),
+      ),
+    );
+    await render(<WorkoutScreen />);
+    expect(screen.getByLabelText('Imagem de Crucifixo com halter pegada pronada')).toBeTruthy();
+    expect(
+      screen.getByLabelText('Sem imagem disponível para Crucifixo com halter pegada neutra'),
+    ).toBeTruthy();
+  });
+
+  it('lista com exercícios com e sem imagem misturados não dispara callbacks de sessão', async () => {
+    const s = state(view([item(1, { name: 'Supino reto' }), item(2, { name: 'Exercício novo' })]));
+    mockHook.mockReturnValue(s);
+    await render(<WorkoutScreen />);
+    expect(screen.getByLabelText('Imagem de Supino reto')).toBeTruthy();
+    expect(screen.getByLabelText('Sem imagem disponível para Exercício novo')).toBeTruthy();
+    expect(s.setCompleted).not.toHaveBeenCalled();
+    expect(s.saveWeight).not.toHaveBeenCalled();
+    expect(s.toggleExpanded).not.toHaveBeenCalled();
+  });
+});

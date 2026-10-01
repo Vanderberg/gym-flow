@@ -1,3 +1,8 @@
 {"ts":"2026-09-29T23:57:05Z","evento":"diagnostico","valor":"concluído: seções A e B do diagnostico.md preenchidas, constitution.md com Perfil do projeto: mobile"}
 {"ts":"2026-09-30T00:01:58Z","evento":"lgpd_parecer","valor":"gravado: specs/012-alarme-sonoro-descanso/parecer-lgpd.md (nenhuma das três formas se aplica)"}
 {"ts":"2026-09-30T00:42:34Z","evento":"disciplina","valor":"test-driven-development"}
+{"ts":"2026-09-30T23:25:35Z","evento":"clarify","valor":"ok"}
+{"ts":"2026-09-30T23:27:08Z","evento":"lgpd_parecer","valor":"gravado"}
+{"ts":"2026-09-30T23:33:42Z","evento":"design_gate","valor":"013-imagens-exercicio"}
+{"ts":"2026-09-30T23:37:11Z","evento":"disciplina","valor":"test-driven-development"}
+{"ts":"2026-10-01T00:37:07Z","evento":"disciplina","valor":"fechamento"}
