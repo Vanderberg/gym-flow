@@ -154,7 +154,8 @@ src/
 │   │   ├── strategies/
 │   │   └── services/
 │   ├── session/
-│   └── statistics/
+│   ├── statistics/
+│   └── backup/
 │
 ├── application/
 │   ├── program/
@@ -166,6 +167,7 @@ src/
 ├── data/
 │   ├── database/
 │   ├── repositories/
+│   ├── backup/
 │   ├── migrations/
 │   └── seed/
 │
@@ -382,3 +384,24 @@ ALTER TABLE exercise ADD COLUMN description TEXT;
 
 - Histórico (spec 009): `SessionRepository.listFinishedSummaries` (itens agregados: programa, treino, feitos/total, duração) e `getFinishedDetail` (linhas da sessão + prescrição atual da ficha quando o exercício ainda está no treino); edição em lote por `SaveSessionEdits` numa única transação; `listProgramsWithFinished` alimenta o filtro.
 - Estatísticas (spec 010): `SessionRepository.listFinishedDates` e `listProgramsWithFinished` (leitura; esta última também é usada pelo histórico, spec 009); cálculo em `domain/statistics` via `application/GetStatistics`.
+
+------------------------------------------------------------------------
+
+# 17. Backup e restauração do histórico
+
+Spec 014 (BL-140..143, RF-31). O backup é um arquivo que o usuário exporta e importa; não há
+nuvem, rede nem backup automático.
+
+- **Domain (`domain/backup`)**: puro. `buildBackupDocument`, `parseBackup`,
+  `checkBackupReferences`, `summarizeBackup`, `backupFileName` e a interface `BackupRepository`.
+  Formato em `specs/014-backup-restauracao-historico/contracts/backup-file-v1.md`.
+- **Application**: `ExportBackup`, `PrepareImportBackup` (bloqueia com treino em andamento, lê,
+  valida e resume), `ConfirmImportBackup` (substitui) e a porta `BackupFileGateway`.
+- **Data**: `SqliteBackupRepository` (leitura e `replaceAll` em uma única transação) e
+  `ExpoBackupFileGateway` (`expo-file-system` para o arquivo temporário e o seletor,
+  `expo-sharing` para a folha de compartilhamento).
+- **UI**: `BackupSection` em Configurações; só botões e diálogos.
+
+Referências a programa, treino e exercício usam chaves estáveis do seed (nome, `code` e
+`name_key`), nunca ids. A restauração é a **única** operação que substitui o histórico
+finalizado (constituição v2.4.0, princípio V).

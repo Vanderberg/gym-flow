@@ -8,6 +8,7 @@ import SettingsScreen from '@/app/(tabs)/settings';
 const mockPush = jest.fn();
 jest.mock('expo-router', () => ({ router: { push: (...a: unknown[]) => mockPush(...a) } }));
 
+jest.mock('@/components/settings/BackupSection', () => ({ BackupSection: () => null }));
 const mockHook = jest.fn();
 jest.mock('@/hooks/useSettings', () => ({ useSettings: () => mockHook() }));
 

@@ -4,7 +4,7 @@ App pessoal de controle de treinos (Android + iOS). Registra treinos de academia
 
 **Estado atual:** projeto Expo criado (spec 001: 4 abas, banco SQLite com migrations e `npm run check`); demais funcionalidades vêm das specs seguintes. A documentação é a fonte de verdade; consulte antes de implementar:
 
-- `docs/PRD.md` (v1.1) — produto, programas, sequências, requisitos (RF-01..26), critérios de aceite
+- `docs/PRD.md` (v1.1) — produto, programas, sequências, requisitos (RF-01..31), critérios de aceite
 - `docs/arquitetura.md` — stack, estratégias de sequência, camadas, estrutura de diretórios
 - `docs/modelo-dados.md` — entidades, schema SQL, regras de integridade
 - `docs/telas.md` — telas, fluxos, estados de UI
@@ -12,7 +12,7 @@ App pessoal de controle de treinos (Android + iOS). Registra treinos de academia
 - `docs/backlog.md` — épicos BL-xxx com prioridade P0/P1/P2 e roadmap por sprint
 - `docs/design-telas.md` e `docs/prototipo-telas.html` — direção visual "Placar de academia" (tema escuro), definição detalhada das telas e protótipo navegável. Cobrem programas, tipo de sequência, agenda semanal, filtros, `?` e `ⓘ`. A seção 12 do design lista propostas de UI para as lacunas abaixo (a confirmar).
 
-A constituição do projeto está em `.specify/memory/constitution.md` (v2.2.0) e prevalece sobre este arquivo. Ao implementar um item, referencie o ID do backlog (ex.: BL-031). Se o código divergir da documentação, atualize a documentação junto.
+A constituição do projeto está em `.specify/memory/constitution.md` (v2.4.0) e prevalece sobre este arquivo. Ao implementar um item, referencie o ID do backlog (ex.: BL-031). Se o código divergir da documentação, atualize a documentação junto.
 
 ## Stack
 
@@ -40,7 +40,7 @@ src/
 ├── domain/       # regras puras: program, workout, exercise, sequence/{strategies,services}, session, statistics
 ├── application/  # casos de uso: SelectProgram, SelectSequenceStrategy, StartWorkout, CompleteExercise,
 │                 #   FinishWorkout, ResetSequence, EditWorkoutSession, GetStatistics
-├── data/         # database, repositories, migrations, seed
+├── data/         # database, repositories, migrations, seed, backup (gateway de arquivo)
 ├── store/        # Zustand: workoutStore, settingsStore, sessionStore
 ├── components/  hooks/  utils/  constants/
 ```
@@ -53,7 +53,7 @@ Regras de camada:
 
 ## Regras de negócio essenciais
 
-- **Sequência contínua**: estado por programa (`program_sequence_state.current_position`); avança **somente ao finalizar**; independe de calendário. Reiniciar volta ao primeiro treino do programa e **nunca apaga histórico**. Reiniciar só existe para sequência contínua.
+- **Sequência contínua**: estado por programa (`program_sequence_state.current_position`); avança **somente ao finalizar**; independe de calendário. Reiniciar volta ao primeiro treino do programa e **nunca apaga histórico** (a única exceção é restaurar um backup). Reiniciar só existe para sequência contínua.
 - **Agenda semanal**: pertence ao programa (`weekly_schedule`). Dia sem treino → `null`. **Não criar sessão automaticamente**; o usuário inicia e finaliza.
 - **Trocar programa ou tipo de sequência** não apaga nem altera sessões antigas; respeitar sessão em andamento incompatível; ao voltar a um programa, ele retoma seu próprio estado.
 - **Sessão** guarda `program_id` e `workout_id`. Finalizar é **transacional** (persistir exercícios → `completed` → atualizar sequência quando aplicável → limpar sessão em andamento).
@@ -66,6 +66,7 @@ Regras de camada:
 - **Ajuda contextual** (sob demanda, bottom sheet): `?` abre a legenda de técnicas (bi-set, drop-set, pirâmides, falha, excêntrica, concêntrica, progressão de carga — conteúdo estático); `ⓘ` abre músculo principal, secundários e descrição (`exercise.primary_muscle/secondary_muscles/description`) e **deve estar preenchido para todo exercício de todo programa**: o seed não pode deixar nenhum exercício sem essas informações (teste de seed cobre isso). Abrir/fechar **não** altera exercício, peso, sequência, cronômetro ou sessão. Nunca exibir permanentemente.
 - **Nunca recomendar** cargas, exercícios ou treinos; sem IA, dieta, peso corporal.
 - **Histórico editável**: marcar/desmarcar e alterar peso; nunca muda programa/treino da sessão.
+- **Backup e restauração** (spec 014): Configurações → Backup exporta um JSON versionado (sessões finalizadas, sequência por programa e configurações; sem o seed) pela folha de compartilhamento e importa por arquivo escolhido. Importar **substitui tudo** (única operação que apaga histórico), só após confirmação explícita, validado por completo antes de tocar o banco, em uma transação com rollback, e **bloqueado com sessão em andamento**. Referências por chaves estáveis (nome do programa, `workout.code`, `exercise.name_key`), nunca ids. Sem backup automático, nuvem ou mescla; o conteúdo do backup nunca vai para log.
 - **Estatísticas** (semana/mês/trimestre/semestre/ano): só frequência e cadência (qtd, média/semana, intervalo médio), filtro por programa (Todos / cada programa); apenas sessões finalizadas; serviço centralizado sobre `workout_session`.
 
 ## Persistência
@@ -86,9 +87,9 @@ Regras de camada:
 
 ## Requisitos não funcionais
 
-- Offline-first, sem backend, sem login, sem sincronização no MVP; nenhum dado sai do aparelho e nenhuma permissão desnecessária.
+- Offline-first, sem backend, sem login, sem sincronização no MVP; nenhum dado sai do aparelho (a única saída é a exportação de backup iniciada pelo usuário) e nenhuma permissão desnecessária.
 - Código compartilhado entre Android e iOS; TypeScript strict; inicialização rápida.
-- Fora do escopo: recomendações, IA, personal virtual, dieta, calorias, peso corporal, rede social, login, pagamentos, assinaturas, nuvem, wearables.
+- Fora do escopo: recomendações, IA, personal virtual, dieta, calorias, peso corporal, rede social, login, pagamentos, assinaturas, nuvem, backup automático, wearables.
 
 ## Testes
 
@@ -103,5 +104,5 @@ Unitários (domínio): sequência contínua (primeiro, meio, último→primeiro,
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan:
-`specs/013-imagens-exercicio/plan.md` (spec ativa; bases: `specs/012-alarme-sonoro-descanso/plan.md`, `specs/011-cronometro-descanso/plan.md`, `specs/010-estatisticas-frequencia/plan.md`, `specs/009-historico-sessoes/plan.md`, `specs/008-ajuda-contextual/plan.md`, `specs/007-execucao-treino/plan.md`, `specs/006-home-proximo-treino/plan.md`, `specs/005-configuracoes-programa-sequencia/plan.md`, `specs/004-estrategias-sequencia/plan.md`, `specs/003-programas-seed/plan.md`, `specs/002-modelo-dados/plan.md`, `specs/001-fundacao-projeto/plan.md`)
+`specs/014-backup-restauracao-historico/plan.md` (spec ativa; bases: `specs/013-imagens-exercicio/plan.md`, `specs/012-alarme-sonoro-descanso/plan.md`, `specs/011-cronometro-descanso/plan.md`, `specs/010-estatisticas-frequencia/plan.md`, `specs/009-historico-sessoes/plan.md`, `specs/008-ajuda-contextual/plan.md`, `specs/007-execucao-treino/plan.md`, `specs/006-home-proximo-treino/plan.md`, `specs/005-configuracoes-programa-sequencia/plan.md`, `specs/004-estrategias-sequencia/plan.md`, `specs/003-programas-seed/plan.md`, `specs/002-modelo-dados/plan.md`, `specs/001-fundacao-projeto/plan.md`)
 <!-- SPECKIT END -->

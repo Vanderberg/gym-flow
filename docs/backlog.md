@@ -537,3 +537,23 @@ Pendentes:
 **Resolução**: ao obter cada foto, copiar o arquivo para `src/assets/exercises/` e adicionar a
 linha correspondente (já comentada como referência) em `EXERCISE_IMAGES`
 (`src/assets/exercises/index.ts`). Sem mudança de código além disso.
+
+# 18. Épico — Backup e restauração do histórico
+
+**Origem**: spec 014 (RF-31). Exportar e importar o histórico por arquivo, sem nuvem nem backup automático.
+
+## BL-140 — Exportar dados — P1
+
+Na aba Configurações, "Exportar dados" gera um arquivo JSON versionado (sessões finalizadas, estado de sequência por programa e configurações; sem o seed) e o entrega pela folha de compartilhamento do sistema, com nome `gymflow-backup-AAAA-MM-DD.json`.
+
+## BL-141 — Importar dados com validação e confirmação — P1
+
+"Importar dados" valida o arquivo por completo antes de alterar qualquer dado, mostra resumo (quantidade de sessões e período) e exige confirmação explícita de que o histórico atual será substituído. Bloqueado com sessão em andamento.
+
+## BL-142 — Restauração atômica — P1
+
+A substituição de sessões, estado de sequência e configurações acontece em uma única transação, com rollback em qualquer falha; arquivo inválido, de versão futura ou com referência desconhecida não altera nada.
+
+## BL-143 — Testar ida e volta do backup — P1
+
+Garantir que exportar, apagar e importar devolve histórico, estatísticas, posição na sequência, configurações e "última carga" idênticos, e que arquivos inválidos e falhas deixam os dados intactos.

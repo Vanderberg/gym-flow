@@ -520,7 +520,7 @@ O usuário pode ativar/desativar durante o treino.
 -   login;
 -   pagamentos;
 -   assinatura;
--   sincronização em nuvem;
+-   sincronização em nuvem e backup automático (o backup é um arquivo exportado e importado pelo usuário);
 -   wearables.
 
 ------------------------------------------------------------------------
@@ -666,6 +666,7 @@ e não gera recomendações próprias.
 - RF-28: exibir nota de aquecimento livre do treino, sem registrá-lo.
 - RF-29: exibir o texto do dia opcional sem criar sessão.
 - RF-30: exibir sugestão do programa (cardio) na Home.
+- RF-31: exportar e restaurar o histórico, a posição na sequência de cada programa e as configurações por um arquivo de backup, por ação explícita do usuário (spec 014; BL-140..143).
 
 ### Critérios de aceite
 
@@ -673,3 +674,5 @@ e não gera recomendações próprias.
 - O aquecimento livre não aparece nas contagens "X / Y realizados".
 - O dia opcional não cria sessão nem entra nas estatísticas.
 - A sugestão de cardio só aparece em programas que a definem.
+- Exportar, apagar os dados e importar o arquivo devolve histórico, estatísticas, posição na sequência, configurações e "última carga" idênticos.
+- Importar substitui o histórico atual somente após confirmação explícita; arquivo inválido, de versão futura, com referência desconhecida, falha na gravação ou treino em andamento não alteram nenhum dado.

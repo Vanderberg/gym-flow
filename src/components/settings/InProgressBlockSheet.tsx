@@ -10,9 +10,19 @@ interface Props {
   onClose: () => void;
   onContinue: () => void;
   onDiscard: () => void;
+  /** Texto do bloqueio; o padrão é o da troca de programa. */
+  message?: string;
 }
 
-export function InProgressBlockSheet({ visible, onClose, onContinue, onDiscard }: Props) {
+const DEFAULT_MESSAGE = 'Há um treino em andamento. Continue ou descarte para trocar de programa.';
+
+export function InProgressBlockSheet({
+  visible,
+  onClose,
+  onContinue,
+  onDiscard,
+  message = DEFAULT_MESSAGE,
+}: Props) {
   const [confirming, setConfirming] = useState(false);
   return (
     <>
@@ -20,9 +30,7 @@ export function InProgressBlockSheet({ visible, onClose, onContinue, onDiscard }
         <Text accessibilityRole="header" style={styles.title}>
           Treino em andamento
         </Text>
-        <Text style={styles.message}>
-          Há um treino em andamento. Continue ou descarte para trocar de programa.
-        </Text>
+        <Text style={styles.message}>{message}</Text>
         <Button label="Continuar" onPress={onContinue} variant="primary" />
         <Button label="Descartar" onPress={() => setConfirming(true)} variant="ghost" />
       </Sheet>

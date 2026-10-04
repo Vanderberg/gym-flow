@@ -462,3 +462,19 @@ cronologicamente enquanto o deslocamento for o mesmo; para ordem estrita, compar
 O índice único parcial `ux_workout_session_in_progress` (seção 13) garante no schema que só
 existe uma sessão com `finished_at IS NULL`. Sessão descartada é removida
 (não finalizada), portanto não conta como histórico.
+
+------------------------------------------------------------------------
+
+# 17. Formato de troca do backup (v1)
+
+O backup não muda o schema nem exige migration. É um documento JSON versionado
+(`format = "gymflow-backup"`, `schemaVersion = 1`) com configurações, estado de sequência por
+programa e sessões finalizadas com seus exercícios. Programas, treinos, exercícios, fichas e
+agenda ficam de fora (o seed os recria). As referências usam `training_program.name`,
+`workout.code` (dentro do programa) e `exercise.name_key`, nunca ids autoincrementais. Contrato
+completo e regras de validação: `specs/014-backup-restauracao-historico/contracts/backup-file-v1.md`.
+
+Restaurar substitui `workout_session`, `workout_session_exercise`, `program_sequence_state` e
+`app_settings` em uma única transação (programas ausentes do arquivo voltam à posição 1) e é
+bloqueado enquanto houver sessão em andamento. Datas são restauradas como gravadas, sem
+conversão de fuso.

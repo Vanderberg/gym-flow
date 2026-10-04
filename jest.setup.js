@@ -16,3 +16,35 @@ jest.mock('expo-audio', () => ({
   useAudioPlayer: () => ({ play: jest.fn(), pause: jest.fn(), seekTo: jest.fn() }),
   setAudioModeAsync: jest.fn(() => Promise.resolve()),
 }));
+
+// Mocks de expo-file-system e expo-sharing (spec 014, backup): módulos nativos sem binding em
+// Jest. Os testes de aplicação/UI injetam a porta BackupFileGateway; estes mocks só evitam
+// quebra de import e permitem testar ExpoBackupFileGateway sobre um File falso.
+jest.mock('expo-file-system', () => {
+  class File {
+    constructor(...parts) {
+      this.uri = parts.map((p) => (typeof p === 'string' ? p : (p.uri ?? ''))).join('/');
+      this.exists = false;
+      this.size = 0;
+    }
+    create() {
+      this.exists = true;
+    }
+    async write() {}
+    async text() {
+      return '';
+    }
+    delete() {
+      this.exists = false;
+    }
+    static async pickFileAsync() {
+      return { result: null, canceled: true };
+    }
+  }
+  return { File, Paths: { cache: { uri: 'file:///cache' } } };
+});
+
+jest.mock('expo-sharing', () => ({
+  isAvailableAsync: jest.fn(() => Promise.resolve(true)),
+  shareAsync: jest.fn(() => Promise.resolve()),
+}));

@@ -1,6 +1,17 @@
 <!--
 Sync Impact Report
-- Version change: 2.2.0 → 2.3.0 (MINOR: XI passa a exigir TDD explícito — teste falho antes de
+- Version change: 2.3.0 → 2.4.0 (MINOR: V passa a admitir uma única exceção à preservação do
+  histórico — a restauração de backup iniciada e confirmada pelo usuário, atômica, validada por
+  completo e bloqueada com sessão em andamento; XII passa a admitir a exportação de backup
+  iniciada explicitamente pelo usuário (folha de compartilhamento do sistema, sem rede, sem
+  permissão adicional, sem backup automático). Origem: spec 014-backup-restauracao-historico.)
+- Princípios modificados: V. Histórico Preservado (exceção de restauração); XII. Simplicidade e
+  Privacidade (exportação por ação do usuário). Backup automático, nuvem e mesclagem seguem
+  proibidos sem nova emenda.
+- Templates: ✅ plan-template.md, spec-template.md e tasks-template.md não exigem mudança
+  (o Constitution Check lê este arquivo); ✅ specs/014-backup-restauracao-historico/plan.md
+  (Complexity Tracking) passa a referenciar esta emenda.
+- Histórico: 2.2.0 → 2.3.0 (MINOR: XI passa a exigir TDD explícito — teste falho antes de
   código de produção — e depuração sistemática (reproduzir → isolar → diagnosticar → corrigir);
   XII passa a exigir YAGNI/anti-abstração prematura explicitamente; Fluxo de Desenvolvimento
   passa a exigir o ciclo completo do Spec-Kit para mudanças de comportamento, confirmação de
@@ -69,7 +80,10 @@ sequência nem entrar em estatísticas.
 ### V. Histórico Preservado
 Sessões finalizadas MUST NOT ser apagadas nem reescritas por nenhuma operação do app:
 trocar programa, trocar tipo de sequência e reiniciar sequência apenas afetam os próximos
-treinos. Cada sessão MUST registrar o programa e o treino executados. Sessões finalizadas
+treinos. A única exceção é a restauração de backup, que MUST ser iniciada e confirmada
+explicitamente pelo usuário (com resumo e aviso de que o histórico atual será substituído),
+validar o arquivo por completo antes de alterar qualquer dado, ser atômica (transação com
+rollback) e ser bloqueada enquanto houver sessão em andamento. Cada sessão MUST registrar o programa e o treino executados. Sessões finalizadas
 MUST poder ser corrigidas (marcação e carga) sem alterar programa, treino nem a ordem
 histórica. A "última carga" MUST ser derivada do histórico (última sessão finalizada do
 mesmo programa e exercício com peso preenchido), nunca armazenada em coluna própria.
@@ -135,7 +149,9 @@ bug corrigido MUST seguir reproduzir → isolar → diagnosticar → corrigir, e
 vir acompanhada do teste de regressão que reproduziu a falha.
 
 ### XII. Simplicidade e Privacidade
-Dependências MUST ser poucas, maduras e justificadas. Nenhum dado sai do aparelho e o
+Dependências MUST ser poucas, maduras e justificadas. Nenhum dado sai do aparelho, exceto a
+exportação de backup iniciada explicitamente pelo usuário e entregue pela folha de
+compartilhamento do sistema (sem rede, sem permissão adicional e sem backup automático); o
 app MUST NOT solicitar permissões desnecessárias. Funcionalidades fora do MVP (login,
 backend, nuvem, multiusuário, pagamentos, assinaturas, rede social, wearables, integrações
 de saúde) MUST NOT ser implementadas sem emenda a esta constituição. Aplica-se YAGNI:
@@ -178,4 +194,4 @@ MINOR para novo princípio ou expansão material, PATCH para esclarecimentos. To
 de spec, plano e código MUST verificar conformidade. Orientação de uso diário em
 `CLAUDE.md`.
 
-**Version**: 2.3.0 | **Ratified**: 2026-09-19 | **Last Amended**: 2026-09-30
+**Version**: 2.4.0 | **Ratified**: 2026-09-19 | **Last Amended**: 2026-10-04

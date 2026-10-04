@@ -503,9 +503,13 @@ DESCANSO
 
 SEQUÊNCIA
  Reiniciar sequência           ›      (só com "Sequência contínua")
+
+BACKUP
+ Exportar dados                ›
+ Importar dados                ›
 ```
 
-Linhas de 56 dp; rótulo à esquerda, valor atual + `›` à direita. "Gerenciar
+Linhas de 56 dp; rótulo à esquerda, valor atual + `›` à direita. A seção BACKUP (spec 014) só compõe `SettingsRow`, `ConfirmDialog` destrutivo e `Sheet`, sem token nem componente novo (ver `specs/014-backup-restauracao-historico/design/tokens.md`). "Gerenciar
 treinos/exercícios" ficam fora do MVP e não aparecem.
 
 ## 8.1 Seleção de programa

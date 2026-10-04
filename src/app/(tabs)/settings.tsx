@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { ScrollView, StyleSheet, Text } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ConfirmDialog } from '@/components/common/ConfirmDialog';
+import { BackupSection } from '@/components/settings/BackupSection';
 import { RestDurationSheet } from '@/components/settings/RestDurationSheet';
 import { SettingsSwitchRow } from '@/components/settings/SettingsSwitchRow';
 import { SettingsRow } from '@/components/settings/SettingsRow';
@@ -72,6 +73,7 @@ export default function SettingsScreen() {
             .catch(() => undefined);
         }}
       />
+      <BackupSection />
       <ConfirmDialog
         visible={confirmingReset}
         title="Reiniciar sequência"

@@ -60,6 +60,10 @@ Sequência contínua                   ›
 
 Cronômetro
 Desativado                           ›
+
+BACKUP
+Exportar dados                       ›
+Importar dados                       ›
 ```
 
 ------------------------------------------------------------------------
@@ -446,3 +450,21 @@ A lista é a constante estática do app e cobre todo valor de `technique` do see
 Informação essencial fica visível. Informação complementar fica escondida até ser solicitada.
 
 Nota (spec 007): na tela de treino não há descartar (fica na Home) e o resumo final não mostra "Próximo".
+
+------------------------------------------------------------------------
+
+# 18. Backup e restauração
+
+Seção "Backup" em Configurações (spec 014).
+
+- **Exportar dados**: gera `gymflow-backup-AAAA-MM-DD.json` e abre a folha de compartilhamento do
+  sistema. Cancelar a folha não mostra nada. Falhas abrem um sheet com "Entendi".
+- **Importar dados**: com treino em andamento, mostra o bloqueio (Continuar / Descartar) antes de
+  abrir o seletor de arquivos. Arquivo válido abre a confirmação "Substituir histórico?" com a
+  quantidade de treinos e o período; o cancelamento é a ação primária e "Substituir histórico" é
+  destrutiva. Sucesso: "Backup restaurado".
+- **Arquivo recusado** (não é backup ou está corrompido, versão mais recente, referência
+  desconhecida) e **falha ao gravar**: sheet com a explicação e "Entendi"; nada é alterado.
+- Enquanto uma operação roda, as duas linhas ficam desabilitadas.
+
+Textos e componentes: `specs/014-backup-restauracao-historico/design/tokens.md`.

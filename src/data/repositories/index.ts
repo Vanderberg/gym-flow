@@ -1,5 +1,6 @@
 import type { Database } from '../database/Database';
 import type { Clock } from '../../utils/localDate';
+import { SqliteBackupRepository } from './SqliteBackupRepository';
 import { SqliteExerciseRepository } from './SqliteExerciseRepository';
 import { SqliteProgramRepository } from './SqliteProgramRepository';
 import { SqliteScheduleRepository } from './SqliteScheduleRepository';
@@ -10,6 +11,7 @@ import { SqliteSettingsRepository } from './SqliteSettingsRepository';
 /** Constrói todos os repositórios sobre um Database (inclusive um transacional). */
 export function createRepositories(db: Database, clock?: Clock) {
   return {
+    backup: new SqliteBackupRepository(db, clock),
     exercises: new SqliteExerciseRepository(db, clock),
     programs: new SqliteProgramRepository(db, clock),
     schedule: new SqliteScheduleRepository(db),

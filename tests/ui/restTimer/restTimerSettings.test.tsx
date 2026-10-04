@@ -2,6 +2,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react-nativ
 import SettingsScreen from '@/app/(tabs)/settings';
 
 jest.mock('expo-router', () => ({ router: { push: jest.fn() } }));
+jest.mock('@/components/settings/BackupSection', () => ({ BackupSection: () => null }));
 const mockHook = jest.fn();
 jest.mock('@/hooks/useSettings', () => ({ useSettings: () => mockHook() }));
 
